@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ircell/app_theme.dart';
 import 'package:ircell/screens/page1.dart';
 import 'package:ircell/screens/page2.dart';
 import 'package:ircell/screens/page3.dart';
@@ -25,67 +26,62 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = const Page1();
-    if (_selectedPageIndex == 0) {
-      activePage = const Page1();
-    }
-    if (_selectedPageIndex == 1) {
-      activePage = const Page2();
-    }
-    if (_selectedPageIndex == 2) {
-      activePage = const Page3();
-    }
-    if (_selectedPageIndex == 3) {
-      activePage = const Page4();
+    String activePageTitle = '';
+    
+    switch (_selectedPageIndex) {
+      case 0:
+        activePage = const Page1();
+        activePageTitle = 'Home';
+        break;
+      case 1:
+        activePage = const Page2();
+        activePageTitle = 'Search';
+        break;
+      case 2:
+        activePage = const Page3();
+        activePageTitle = 'Saved';
+        break;
+      case 3:
+        activePage = const Page4();
+        activePageTitle = 'Notifications';
+        break;
     }
 
     return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(
         child: Scaffold(
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => const ChatBotScreen(),
-          //       ),
-          //     );
-          //   },
-          //   backgroundColor: Colors.blueAccent,
-          //   child: const Icon(Icons.forum, color: Colors.white),
-          // ),
-          //drawer: const MainDrawer(),
           body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 0, 15, 90),
-                  Color.fromARGB(255, 50, 100, 150),
-                  Color.fromARGB(255, 120, 230, 190),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+            decoration: AppTheme.gradientBackground,
             child: activePage,
           ),
           bottomNavigationBar: BottomNavigationBar(
             onTap: _selectPage,
             currentIndex: _selectedPageIndex,
-            fixedColor: Colors.white,
-            unselectedItemColor: const Color.fromARGB(192, 255, 255, 255),
-            backgroundColor: Colors.black,
+            selectedItemColor: AppTheme.primaryBlue,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.white,
             type: BottomNavigationBarType.fixed,
+            elevation: 8,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.local_activity_outlined),
-                label: '1',
+                icon: Icon(Icons.home),
+                label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.thumb_up_sharp),
-                label: '2',
+                icon: Icon(Icons.search),
+                label: 'Search',
               ),
-              BottomNavigationBarItem(icon: Icon(Icons.person), label: '3'),
-              BottomNavigationBarItem(icon: Icon(Icons.ballot), label: '4'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bookmark_border),
+                label: 'Saved',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notifications_none),
+                label: 'Notifications',
+              ),
             ],
           ),
         ),
