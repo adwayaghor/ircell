@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ircell/activities/events.dart';
 import 'package:ircell/activities/outbound.dart';
@@ -9,27 +10,51 @@ class Page2 extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<Page2> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  final List<String> imagePaths = [
+    'assets/images/img1.jpg',
+    'assets/images/img2.jpg',
+    'assets/images/img3.jpg',
+    'assets/images/img4.jpg',
+    'assets/images/img5.jpg',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = imagePaths.length * 1000; // Start far in for smooth infinite loop
+    _pageController = PageController(initialPage: _currentPage);
+
+    Timer.periodic(Duration(seconds: 3), (Timer timer) {
+      _currentPage++;
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   Widget _buildCategoryButton(int index, String title, IconData icon) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Events()),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Outbound()),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const User()),
-            );
-          }
-        });
+        if (index == 0) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const Events()));
+        } else if (index == 1) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const Outbound()));
+        } else if (index == 2) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const User()));
+        }
       },
       child: Column(
         children: [
@@ -72,127 +97,100 @@ class _HomeScreenState extends State<Page2> {
               _buildCategoryButton(2, 'User', Icons.person),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: CustomPaint(
-              size: Size(MediaQuery.of(context).size.width - 32, 1),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget buildCard(
-  String title,
-  String subtitle, 
-  double height,
-) {
-  return SizedBox(
-    height: height,
-    child: Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 2,
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          padding: EdgeInsets.all(12),
-          // 👇 Force child to take full height
-          height: double.infinity,
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top text content
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-                  ),
-                  SizedBox(height: 8),
-                  Text(subtitle),
-                ],
-              ),
-            ],
+  Widget buildCard(String title, String imagePath, double height) {
+    return SizedBox(
+      height: height,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 2,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {},
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo, // or your preferred background
-      appBar: AppBar(
-        title: Icon(Icons.star, color: Colors.amber),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          Icon(Icons.help_outline, color: Colors.black),
-          SizedBox(width: 16),
-        ],
-      ),
+      backgroundColor: Colors.indigo,
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCategoryButtons(), // Injected custom top UI
-            SizedBox(height: 20),
-            Column(
-              children: [
-                // Row 1
-                Row(
-                  children: [
-                    Expanded(
-                      child: buildCard("Events", '', 190),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        children: [
-                          buildCard("Student Mobility", '', 90),
-                          SizedBox(height: 10),
-                          buildCard("International Alumni", '', 90),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
+            // 🔄 Auto-scrolling image carousel
+            SizedBox(
+              height: 250,
+              child: PageView.builder(
+                controller: _pageController,
+                itemBuilder: (context, index) {
+                  final imageIndex = index % imagePaths.length;
+                  return Image.asset(
+                    imagePaths[imageIndex],
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  );
+                },
+              ),
+            ),
 
-                // Row 2
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Column(
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCategoryButtons(),
+                  SizedBox(height: 20),
+                  Column(
+                    children: [
+                      Row(
                         children: [
-                          buildCard("About Us", '', 95),
-                          SizedBox(height: 10),
-                          buildCard(
-                            "International Students",
-                            '',
-                            95,
+                          Expanded(child: buildCard("Events", 'assets/images/events.png', 190)),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                buildCard("Student Mobility", 'assets/images/student_mobility.png', 90),
+                                SizedBox(height: 10),
+                                buildCard("International Alumni", 'assets/images/international_alumini.png', 90),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: buildCard("Higher Studies", '', 200),
-                    ),
-                  ],
-                ),
-              ],
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                buildCard("About Us", 'assets/images/about_us.png', 95),
+                                SizedBox(height: 10),
+                                buildCard("International Students", 'assets/images/international_students.png', 95),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(child: buildCard("Higher Studies", 'assets/images/higher_studies.png', 200)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

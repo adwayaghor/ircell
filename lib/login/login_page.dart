@@ -11,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String errorMessage = '';
   bool isLogin = true;
 
   final TextEditingController emailController = TextEditingController();
@@ -21,6 +20,23 @@ class _LoginPageState extends State<LoginPage> {
   bool showPassword = false;
   bool showConfirmPassword = false;
 
+  // Show popup dialog with error
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Okay!'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> signInWithEmailAndPassword() async {
     try {
       await Auth().signInWithEmailAndPassword(
@@ -28,52 +44,42 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message!;
-      });
+      showErrorDialog(e.message ?? 'Login failed');
     }
   }
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      if (passwordController.text != passwordController.text) {
-        setState(() {
-          errorMessage = 'Passwords do not match';
-        });
+      if (passwordController.text != confirmPasswordController.text) {
+        showErrorDialog('Passwords do not match');
         return;
       }
       if (passwordController.text.length < 6) {
-        setState(() {
-          errorMessage = 'Password must be at least 6 characters';
-        });
+        showErrorDialog('Password must be at least 6 characters');
         return;
       }
       if (!RegExp(
         r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
       ).hasMatch(emailController.text)) {
-        setState(() {
-          errorMessage = 'Invalid email format';
-        });
+        showErrorDialog('Invalid email format');
         return;
       }
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-        setState(() {
-          errorMessage = 'Email and password cannot be empty';
-        });
+        showErrorDialog('Email and password cannot be empty');
         return;
       } else {
-        // otp verification code here 
-        
+        // OTP verification or Firebase registration logic
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => Onboarding(email: emailController.text, password: passwordController.text),
+            builder: (context) => Onboarding(
+              email: emailController.text,
+              password: passwordController.text,
+            ),
           ),
         );
       }
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message!;
-      });
+      showErrorDialog(e.message ?? 'Registration failed');
     }
   }
 
@@ -135,18 +141,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _errorMessage() {
-    return Text(
-      errorMessage,
-      style: const TextStyle(color: Colors.red),
-    );
-  }
-
   Widget submitButton() {
     return ElevatedButton(
-      onPressed: isLogin
-          ? signInWithEmailAndPassword
-          : createUserWithEmailAndPassword,
+      onPressed: isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
       child: Text(isLogin ? 'Login' : 'Register'),
     );
   }
@@ -156,8 +153,7 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         setState(() {
           isLogin = !isLogin;
-          errorMessage = '';
-          // Clear fields and visibility toggles
+          // Reset all fields and toggles
           passwordController.clear();
           confirmPasswordController.clear();
           showPassword = false;
@@ -188,7 +184,6 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 20),
                 submitButton(),
                 const SizedBox(height: 20),
-                _errorMessage(),
                 loginOrRegisterButton(),
               ],
             ),
