@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
+import 'package:ircell/login/onboarding.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -34,18 +35,41 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> createUserWithEmailAndPassword() async {
-    if (passwordController.text != confirmPasswordController.text) {
-      setState(() {
-        errorMessage = 'Passwords do not match';
-      });
-      return;
-    }
-
     try {
-      await Auth().createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+      if (passwordController.text != passwordController.text) {
+        setState(() {
+          errorMessage = 'Passwords do not match';
+        });
+        return;
+      }
+      if (passwordController.text.length < 6) {
+        setState(() {
+          errorMessage = 'Password must be at least 6 characters';
+        });
+        return;
+      }
+      if (!RegExp(
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      ).hasMatch(emailController.text)) {
+        setState(() {
+          errorMessage = 'Invalid email format';
+        });
+        return;
+      }
+      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+        setState(() {
+          errorMessage = 'Email and password cannot be empty';
+        });
+        return;
+      } else {
+        // otp verification code here 
+        
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => Onboarding(email: emailController.text, password: passwordController.text),
+          ),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message!;
