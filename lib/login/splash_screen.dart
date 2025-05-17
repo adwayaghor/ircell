@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/login/widget_tree.dart';
 import 'package:ircell/screens/tabs_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/scheduler.dart';
@@ -25,7 +26,7 @@ class _SplashScreenWidgetState extends State<SplashScreen>
       await Future.delayed(const Duration(seconds: 3));
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (ctx) => const TabsScreen()),
+          MaterialPageRoute(builder: (ctx) => const WidgetTree()),
         );
       }
     });

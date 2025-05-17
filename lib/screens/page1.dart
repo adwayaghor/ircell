@@ -14,11 +14,20 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   int _selectedTabIndex = 0;
 
   // For horizontal auto-scrolling
-  final ScrollController _scrollController = ScrollController();
+  late PageController _pageController;
   Timer? _autoScrollTimer;
-  int _currentCardIndex = 0;
-  final int _totalCards = 5; // Number of featured suggestion cards
-  bool _isAutoScrolling = true;
+  int _currentCardIndex = 1; // Start at 1 since we add dummy cards at beginning and end
+  final int _originalCardCount = 5; // Number of featured suggestion cards
+  final _isAutoScrolling = true;
+
+  // Generate list of cards with dummy cards for infinite scroll
+  List<int> get _cardIndexes {
+    return [
+      _originalCardCount - 1, // Add last card at beginning
+      ...List.generate(_originalCardCount, (index) => index),
+      0, // Add first card at end
+    ];
+  }
 
   @override
   void initState() {
@@ -30,8 +39,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       });
     });
 
-    // Add scroll listener to update pagination dots on manual scroll
-    _scrollController.addListener(_updateCurrentCardIndex);
+    // Initialize PageController with initial page being 1 (the first real card)
+    _pageController = PageController(
+      initialPage: _currentCardIndex,
+      viewportFraction: 0.8, // To show a bit of next card
+    );
+
+    // Add page change listener to handle infinite scroll
+    _pageController.addListener(_handlePageChange);
 
     // Initialize auto-scroll timer after a short delay
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,27 +57,38 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
-    _scrollController.dispose();
+    _pageController.dispose();
     _autoScrollTimer?.cancel();
     super.dispose();
   }
 
-  // Calculate current visible card from scroll position
-  void _updateCurrentCardIndex() {
-    if (_scrollController.positions.isNotEmpty &&
-        _scrollController.position.hasContentDimensions) {
-      // Calculate which card is most visible
-      final double cardWidth = MediaQuery.of(context).size.width * 0.8 + 16; // card width + padding
-      int index = (_scrollController.offset / cardWidth).round();
-
-      // Ensure index is within valid range
-      index = index.clamp(0, _totalCards - 1);
-
-      if (index != _currentCardIndex) {
-        setState(() {
-          _currentCardIndex = index;
-        });
-      }
+  void _handlePageChange() {
+    if (!_pageController.hasClients || _pageController.position.haveDimensions == false) {
+      return;
+    }
+    
+    final double page = _pageController.page ?? 0;
+    
+    // Handle when reaching the end (loop back to start)
+    if (page >= _cardIndexes.length - 1) {
+      // When it reaches the end (duplicate first card), jump to the real first card
+      _pageController.jumpToPage(1);
+      setState(() {
+        _currentCardIndex = 1;
+      });
+    } 
+    // Handle when reaching the beginning (loop back to end)
+    else if (page <= 0) {
+      // When it reaches the beginning (duplicate last card), jump to the real last card
+      _pageController.jumpToPage(_originalCardCount);
+      setState(() {
+        _currentCardIndex = _originalCardCount;
+      });
+    }
+    else {
+      setState(() {
+        _currentCardIndex = page.round();
+      });
     }
   }
 
@@ -70,15 +96,12 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     _autoScrollTimer?.cancel();
     if (!_isAutoScrolling) return;
 
-    // Auto scroll every 3 seconds
-    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_scrollController.hasClients && _isAutoScrolling) {
-        _currentCardIndex = (_currentCardIndex + 1) % _totalCards;
-
-        final double cardWidth = MediaQuery.of(context).size.width * 0.8 + 16;
-
-        _scrollController.animateTo(
-          _currentCardIndex * cardWidth,
+    // Auto scroll every 6 seconds
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 6), (timer) {
+      if (_pageController.hasClients && _isAutoScrolling) {
+        int nextPage = _currentCardIndex + 1;
+        _pageController.animateToPage(
+          nextPage,
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
@@ -88,22 +111,19 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
 
   // Method to manually navigate to a specific card when dot is tapped
   void _scrollToCard(int index) {
-    if (_scrollController.hasClients) {
+    if (_pageController.hasClients) {
       // Cancel the auto-scroll timer temporarily
       _autoScrollTimer?.cancel();
 
-      final double cardWidth = MediaQuery.of(context).size.width * 0.8 + 16;
+      // Account for the extra first item in the PageView
+      final adjustedIndex = index + 1;
 
       // Scroll to the selected card
-      _scrollController.animateTo(
-        index * cardWidth,
+      _pageController.animateToPage(
+        adjustedIndex,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-
-      setState(() {
-        _currentCardIndex = index;
-      });
 
       // Restart the auto-scroll timer after a short delay if auto-scrolling enabled
       Future.delayed(const Duration(seconds: 5), () {
@@ -114,26 +134,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     }
   }
 
-  void _toggleAutoScroll() {
-    setState(() {
-      _isAutoScrolling = !_isAutoScrolling;
-    });
-
-    if (_isAutoScrolling) {
-      _startAutoScroll();
-    } else {
-      _autoScrollTimer?.cancel();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final double cardWidth = MediaQuery.of(context).size.width * 0.8;
-    // Get available height for content (minus app bar and tab bar)
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double appBarHeight = AppBar().preferredSize.height;
-    final double tabBarHeight = 48.0; // Approximate tab bar height
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
     
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -189,17 +191,24 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildFeaturedSuggestions(cardWidth),
+          _buildFeaturedSuggestions(),
           _buildLikedEvents(),
         ],
       ),
     );
   }
 
-  Widget _buildFeaturedSuggestions(double cardWidth) {
+  Widget _buildFeaturedSuggestions() {
     // Calculate responsive feature card height based on screen size
     final double screenHeight = MediaQuery.of(context).size.height;
-    final double featureCardHeight = screenHeight * 0.25; // Adaptive height based on screen size
+    
+    // Make feature card height responsive to both screen dimensions
+    // Adjust the multiplier to ensure it fits well on different devices
+    final double featureCardHeight = screenHeight * 0.35;
+    // Cap the height to prevent overflow on smaller devices
+    final double maxHeight = screenHeight * 0.45;
+    final double minHeight = screenHeight * 0.25;
+    final double adaptiveHeight = featureCardHeight.clamp(minHeight, maxHeight);
     
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -213,42 +222,26 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Featured Events - Horizontal Scrollable Container with pause/start button overlay
-                  Stack(
-                    children: [
-                      SizedBox(
-                        height: featureCardHeight, // Dynamic height based on screen size
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _totalCards,
-                          itemBuilder: (context, index) => Padding(
-                            padding: const EdgeInsets.only(right: 16),
-                            child: _buildFeatureCard(index, cardWidth, featureCardHeight),
-                          ),
-                        ),
-                      ),
-                      // Pause/Play button overlay
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black26,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: IconButton(
-                            onPressed: _toggleAutoScroll,
-                            icon: Icon(
-                              _isAutoScrolling ? Icons.pause_circle_filled : Icons.play_circle_fill,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                            tooltip: _isAutoScrolling ? 'Pause Auto Scroll' : 'Start Auto Scroll',
-                          ),
-                        ),
-                      ),
-                    ],
+                  // Featured Events with PageView for infinite scrolling
+                  SizedBox(
+                    height: adaptiveHeight, // Dynamic height based on screen size
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: _cardIndexes.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentCardIndex = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        // Get the actual card index (accounting for the duplicates)
+                        final actualIndex = _cardIndexes[index]; 
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: _buildFeatureCard(actualIndex, constraints.maxWidth * 0.8, adaptiveHeight),
+                        );
+                      },
+                    ),
                   ),
 
                   // Pagination Indicators - interactive for manual navigation
@@ -257,7 +250,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        _totalCards,
+                        _originalCardCount,
                         (index) => GestureDetector(
                           onTap: () => _scrollToCard(index),
                           child: Container(
@@ -266,7 +259,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _currentCardIndex == index
+                              color: (_currentCardIndex - 1) % _originalCardCount == index
                                   ? Colors.white
                                   : Colors.white.withOpacity(0.4),
                             ),
@@ -275,6 +268,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       ),
                     ),
                   ),
+
+                
 
                   // Suggestions Header
                   const Padding(
@@ -396,7 +391,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
 
     // Calculate image height to be proportional to card height
     final double imageHeight = cardHeight * 0.65;
-    final double detailsHeight = cardHeight - imageHeight;
 
     return Container(
       width: cardWidth,

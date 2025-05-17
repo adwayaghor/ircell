@@ -26,24 +26,19 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = const Page1();
-    String activePageTitle = '';
-    
+
     switch (_selectedPageIndex) {
       case 0:
         activePage = const Page1();
-        activePageTitle = 'Home';
         break;
       case 1:
         activePage = const Page2();
-        activePageTitle = 'Search';
         break;
       case 2:
         activePage = const Page3();
-        activePageTitle = 'Saved';
         break;
       case 3:
-        activePage = const Page4();
-        activePageTitle = 'Notifications';
+        activePage = Page4();
         break;
     }
 
@@ -66,10 +61,7 @@ class _TabsScreenState extends State<TabsScreen> {
             showSelectedLabels: true,
             showUnselectedLabels: true,
             items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
                 icon: Icon(Icons.search),
                 label: 'Search',
