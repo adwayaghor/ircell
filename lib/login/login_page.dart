@@ -15,6 +15,10 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool showPassword = false;
+  bool showConfirmPassword = false;
 
   Future<void> signInWithEmailAndPassword() async {
     try {
@@ -30,6 +34,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> createUserWithEmailAndPassword() async {
+    if (passwordController.text != confirmPasswordController.text) {
+      setState(() {
+        errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+
     try {
       await Auth().createUserWithEmailAndPassword(
         email: emailController.text,
@@ -55,26 +66,47 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   Widget passwordField() {
     return TextField(
       controller: passwordController,
-      decoration: const InputDecoration(
+      obscureText: !showPassword,
+      decoration: InputDecoration(
         labelText: 'Password',
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
+          onPressed: () {
+            setState(() {
+              showPassword = !showPassword;
+            });
+          },
+        ),
       ),
-      obscureText: true,
     );
   }
+
   Widget confirmPasswordField() {
     return Visibility(
       visible: !isLogin,
-      child: TextField(
-        controller: passwordController,
-        decoration: const InputDecoration(
-          labelText: 'Confirm Password',
-          border: OutlineInputBorder(),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: TextField(
+          controller: confirmPasswordController,
+          obscureText: !showConfirmPassword,
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            border: const OutlineInputBorder(),
+            suffixIcon: IconButton(
+              icon: Icon(showConfirmPassword ? Icons.visibility : Icons.visibility_off),
+              onPressed: () {
+                setState(() {
+                  showConfirmPassword = !showConfirmPassword;
+                });
+              },
+            ),
+          ),
         ),
-        obscureText: true,
       ),
     );
   }
@@ -101,6 +133,11 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           isLogin = !isLogin;
           errorMessage = '';
+          // Clear fields and visibility toggles
+          passwordController.clear();
+          confirmPasswordController.clear();
+          showPassword = false;
+          showConfirmPassword = false;
         });
       },
       child: Text(isLogin ? 'Create an account' : 'Already have an account?'),
@@ -116,19 +153,21 @@ class _LoginPageState extends State<LoginPage> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              emailField(),
-              passwordField(),
-              const SizedBox(height: 20),
-              confirmPasswordField(),
-              submitButton(),
-              const SizedBox(height: 20),
-              _errorMessage(),
-              const SizedBox(height: 20),
-              loginOrRegisterButton(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                emailField(),
+                const SizedBox(height: 20),
+                passwordField(),
+                confirmPasswordField(),
+                const SizedBox(height: 20),
+                submitButton(),
+                const SizedBox(height: 20),
+                _errorMessage(),
+                loginOrRegisterButton(),
+              ],
+            ),
           ),
         ),
       ),
