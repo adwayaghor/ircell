@@ -32,7 +32,7 @@ class _TabsScreenState extends State<TabsScreen> {
         activePage = const Page1();
         break;
       case 1:
-        activePage = const Page2();
+        activePage = Page2();
         break;
       case 2:
         activePage = const Page3();
