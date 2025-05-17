@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/login/widget_tree.dart';
-import 'package:ircell/screens/tabs_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/scheduler.dart';
 

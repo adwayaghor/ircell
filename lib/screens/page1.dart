@@ -11,12 +11,12 @@ class Page1 extends StatefulWidget {
 
 class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _selectedTabIndex = 0;
 
   // For horizontal auto-scrolling
   late PageController _pageController;
   Timer? _autoScrollTimer;
-  int _currentCardIndex = 1; // Start at 1 since we add dummy cards at beginning and end
+  int _currentCardIndex =
+      1; // Start at 1 since we add dummy cards at beginning and end
   final int _originalCardCount = 5; // Number of featured suggestion cards
   final _isAutoScrolling = true;
 
@@ -33,11 +33,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      setState(() {
-        _selectedTabIndex = _tabController.index;
-      });
-    });
 
     // Initialize PageController with initial page being 1 (the first real card)
     _pageController = PageController(
@@ -63,12 +58,13 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   }
 
   void _handlePageChange() {
-    if (!_pageController.hasClients || _pageController.position.haveDimensions == false) {
+    if (!_pageController.hasClients ||
+        _pageController.position.haveDimensions == false) {
       return;
     }
-    
+
     final double page = _pageController.page ?? 0;
-    
+
     // Handle when reaching the end (loop back to start)
     if (page >= _cardIndexes.length - 1) {
       // When it reaches the end (duplicate first card), jump to the real first card
@@ -76,7 +72,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       setState(() {
         _currentCardIndex = 1;
       });
-    } 
+    }
     // Handle when reaching the beginning (loop back to end)
     else if (page <= 0) {
       // When it reaches the beginning (duplicate last card), jump to the real last card
@@ -84,8 +80,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       setState(() {
         _currentCardIndex = _originalCardCount;
       });
-    }
-    else {
+    } else {
       setState(() {
         _currentCardIndex = page.round();
       });
@@ -136,7 +131,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -150,17 +144,20 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               backgroundColor: Colors.white.withOpacity(0.2),
               child: const Icon(Icons.info_rounded, color: Colors.white),
             ),
-            
-            // Right side icons 
+
+            // Right side icons
             Row(
               children: [
                 // Notification icon with circular background
                 CircleAvatar(
                   backgroundColor: Colors.white.withOpacity(0.2),
-                  child: const Icon(Icons.notifications_outlined, color: Colors.white),
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // User avatar
                 const CircleAvatar(
                   backgroundColor: Colors.white,
@@ -178,10 +175,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Featured Suggestions'),
-            Tab(text: 'Liked'),
-          ],
+          tabs: const [Tab(text: 'Featured Suggestions'), Tab(text: 'Liked')],
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
@@ -190,10 +184,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildFeaturedSuggestions(),
-          _buildLikedEvents(),
-        ],
+        children: [_buildFeaturedSuggestions(), _buildLikedEvents()],
       ),
     );
   }
@@ -201,7 +192,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   Widget _buildFeaturedSuggestions() {
     // Calculate responsive feature card height based on screen size
     final double screenHeight = MediaQuery.of(context).size.height;
-    
+
     // Make feature card height responsive to both screen dimensions
     // Adjust the multiplier to ensure it fits well on different devices
     final double featureCardHeight = screenHeight * 0.35;
@@ -209,14 +200,12 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     final double maxHeight = screenHeight * 0.45;
     final double minHeight = screenHeight * 0.25;
     final double adaptiveHeight = featureCardHeight.clamp(minHeight, maxHeight);
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -224,7 +213,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 children: [
                   // Featured Events with PageView for infinite scrolling
                   SizedBox(
-                    height: adaptiveHeight, // Dynamic height based on screen size
+                    height:
+                        adaptiveHeight, // Dynamic height based on screen size
                     child: PageView.builder(
                       controller: _pageController,
                       itemCount: _cardIndexes.length,
@@ -235,10 +225,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       },
                       itemBuilder: (context, index) {
                         // Get the actual card index (accounting for the duplicates)
-                        final actualIndex = _cardIndexes[index]; 
+                        final actualIndex = _cardIndexes[index];
                         return Padding(
                           padding: const EdgeInsets.only(right: 16),
-                          child: _buildFeatureCard(actualIndex, constraints.maxWidth * 0.8, adaptiveHeight),
+                          child: _buildFeatureCard(
+                            actualIndex,
+                            constraints.maxWidth * 0.8,
+                            adaptiveHeight,
+                          ),
                         );
                       },
                     ),
@@ -259,17 +253,18 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: (_currentCardIndex - 1) % _originalCardCount == index
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.4),
+                              color:
+                                  (_currentCardIndex - 1) %
+                                              _originalCardCount ==
+                                          index
+                                      ? Colors.white
+                                      : Colors.white.withOpacity(0.4),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-
-                
 
                   // Suggestions Header
                   const Padding(
@@ -308,9 +303,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
           child: Row(
             children: [
@@ -328,7 +321,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 ),
               ),
               const SizedBox(width: 16),
-              
+
               // Event Details
               Expanded(
                 child: Column(
@@ -353,7 +346,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-              
+
               // Action button
               IconButton(
                 icon: const Icon(
@@ -405,10 +398,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,7 +420,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             child: Center(
               child: Icon(
                 icons[index % icons.length],
-                size: MediaQuery.of(context).size.width * 0.15, // Responsive icon size
+                size:
+                    MediaQuery.of(context).size.width *
+                    0.15, // Responsive icon size
                 color: Colors.white.withOpacity(0.8),
               ),
             ),
