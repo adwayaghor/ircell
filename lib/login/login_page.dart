@@ -4,6 +4,8 @@ import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/onboarding.dart';
 import 'package:ircell/screens/tabs_screen.dart';
 
+const Color accentBlue = Colors.blueAccent; // Replace with your custom blue if needed
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -31,7 +33,10 @@ class _LoginPageState extends State<LoginPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Okay!'),
+            child: Text(
+              'Okay!',
+              style: TextStyle(color: accentBlue),
+            ),
           ),
         ],
       ),
@@ -63,9 +68,8 @@ class _LoginPageState extends State<LoginPage> {
         showErrorDialog('Password must be at least 6 characters');
         return;
       }
-      if (!RegExp(
-        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      ).hasMatch(emailController.text)) {
+      if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+          .hasMatch(emailController.text)) {
         showErrorDialog('Invalid email format');
         return;
       }
@@ -73,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
         showErrorDialog('Email and password cannot be empty');
         return;
       } else {
-        // OTP verification or Firebase registration logic
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => Onboarding(
@@ -133,7 +136,8 @@ class _LoginPageState extends State<LoginPage> {
             labelText: 'Confirm Password',
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
-              icon: Icon(showConfirmPassword ? Icons.visibility : Icons.visibility_off),
+              icon: Icon(
+                  showConfirmPassword ? Icons.visibility : Icons.visibility_off),
               onPressed: () {
                 setState(() {
                   showConfirmPassword = !showConfirmPassword;
@@ -158,14 +162,16 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         setState(() {
           isLogin = !isLogin;
-          // Reset all fields and toggles
           passwordController.clear();
           confirmPasswordController.clear();
           showPassword = false;
           showConfirmPassword = false;
         });
       },
-      child: Text(isLogin ? 'Create an account' : 'Already have an account?'),
+      child: Text(
+        isLogin ? 'Create an account' : 'Already have an account?',
+        style: TextStyle(color: accentBlue),
+      ),
     );
   }
 
@@ -185,14 +191,17 @@ class _LoginPageState extends State<LoginPage> {
                 emailField(),
                 const SizedBox(height: 20),
                 passwordField(),
-                ElevatedButton(onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TabsScreen(),
-                    ),
-                  );
-                }, child: Text('Temp Login')),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TabsScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Temp Login'),
+                ),
                 confirmPasswordField(),
                 const SizedBox(height: 20),
                 submitButton(),

@@ -9,9 +9,7 @@ class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() {
-    return _TabsScreenState();
-  }
+  State<TabsScreen> createState() => _TabsScreenState();
 }
 
 class _TabsScreenState extends State<TabsScreen> {
@@ -53,27 +51,18 @@ class _TabsScreenState extends State<TabsScreen> {
           bottomNavigationBar: BottomNavigationBar(
             onTap: _selectPage,
             currentIndex: _selectedPageIndex,
-            selectedItemColor: AppTheme.primaryBlue,
-            unselectedItemColor: Colors.grey,
-            backgroundColor: Colors.white,
+            selectedItemColor: AppTheme.accentBlue,
+            unselectedItemColor: AppTheme.textSecondary,
+            backgroundColor: AppTheme.cardColor,
             type: BottomNavigationBarType.fixed,
             elevation: 8,
             showSelectedLabels: true,
             showUnselectedLabels: true,
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bookmark_border),
-                label: 'Saved',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_none),
-                label: 'Notifications',
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+              BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Saved'),
+              BottomNavigationBarItem(icon: Icon(Icons.notifications_none), label: 'Notifications'),
             ],
           ),
         ),

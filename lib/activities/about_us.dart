@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:ui'; 
+import 'dart:ui';
 import 'package:ircell/app_theme.dart';
 
 class AboutUsPage extends StatelessWidget {
@@ -12,52 +12,33 @@ class AboutUsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('About Us'),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.primaryDarkBlue.withOpacity(0.9),
         elevation: 0,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF0088CC),
-              Color(0xFF00BCD4),
-              Color(0xFF5CDEFC),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: AppTheme.primaryDarkBlue,  // Changed to solid primaryDarkBlue color
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(top: 100, bottom: 40),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Developers Section
                 _buildSectionTitle('Our Team'),
                 const SizedBox(height: 20),
-                _buildDevelopersSection(),
-                const SizedBox(height: 40),
-                
-                // About IR Section
+                _buildDevelopersGrid(),  // Changed for grid layout instead of horizontal scroll
+                const SizedBox(height: 20),
                 _buildSectionTitle('About IR'),
                 const SizedBox(height: 20),
                 _buildAboutIRSection(),
                 const SizedBox(height: 40),
-                
-                // IR Coordinators Section
                 _buildSectionTitle('IR Coordinators'),
                 const SizedBox(height: 20),
                 _buildCoordinatorsSection(),
                 const SizedBox(height: 40),
-                
-                // Partnerships Section
                 _buildSectionTitle('Partnerships'),
                 const SizedBox(height: 20),
                 _buildPartnershipsSection(),
                 const SizedBox(height: 40),
-                
-                // Contact Us Section
                 _buildSectionTitle('Contact Us'),
                 const SizedBox(height: 20),
                 _buildContactUsSection(),
@@ -77,7 +58,7 @@ class AboutUsPage extends StatelessWidget {
         child: Text(
           title,
           style: const TextStyle(
-            color: Colors.white,
+            color: AppTheme.textPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -86,75 +67,73 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDevelopersSection() {
+  // Changed developers section to a 2-column Grid instead of horizontal ListView
+  Widget _buildDevelopersGrid() {
     const developers = [
       {
         'name': 'Alex Johnson',
         'role': 'Flutter Developer',
-        'image': 'assets/dev1.jpg', // Replace with actual asset path
+        'image': 'assets/dev1.jpg',
       },
       {
         'name': 'Maria Garcia',
         'role': 'UI/UX Designer',
-        'image': 'assets/dev2.jpg', // Replace with actual asset path
+        'image': 'assets/dev2.jpg',
       },
       {
         'name': 'James Smith',
         'role': 'Backend Developer',
-        'image': 'assets/dev3.jpg', // Replace with actual asset path
+        'image': 'assets/dev3.jpg',
       },
       {
         'name': 'Sarah Williams',
         'role': 'Project Manager',
-        'image': 'assets/dev4.jpg', // Replace with actual asset path
+        'image': 'assets/dev4.jpg',
       },
     ];
 
-    return SizedBox(
-      height: 220,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: developers.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,  // 2 cards per row
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 3 / 4, // Adjust height/width ratio
+        ),
         itemBuilder: (context, index) {
           final dev = developers[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SizedBox(
-              width: 160,
-              child: _buildGlassCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: const AssetImage('assets/placeholder.png'), // Fallback image
-                        backgroundColor: Colors.transparent,
-                        child: dev['image'] != null 
-                            ? ClipOval(child: Image.asset(dev['image']!, fit: BoxFit.cover))
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        dev['name']!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        dev['role']!,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+          return _buildGlassCard(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage(dev['image']!),
+                    backgroundColor: Colors.transparent,
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Text(
+                    dev['name']!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    dev['role']!,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -170,11 +149,11 @@ class AboutUsPage extends StatelessWidget {
         child: const Padding(
           padding: EdgeInsets.all(16),
           child: Text(
-            'IR (Investor Relations) is a strategic management responsibility that integrates finance, communication, marketing and securities law compliance to enable the most effective two-way communication between a company, the financial community, and other constituencies, which ultimately contributes to a company\'s securities achieving fair valuation.',
+            'IR (Investor Relations) integrates finance, communication, marketing, and legal compliance to foster effective communication between companies and investors, enabling fair market valuation.',
             style: TextStyle(
-              fontSize: 16, 
+              fontSize: 16,
               height: 1.5,
-              color: Colors.white,
+              color: AppTheme.textPrimary,
             ),
           ),
         ),
@@ -188,13 +167,13 @@ class AboutUsPage extends StatelessWidget {
         'name': 'Dr. Robert Chen',
         'position': 'Head of Investor Relations',
         'department': 'Finance Department',
-        'image': 'assets/coordinator1.jpg', // Replace with actual asset path
+        'image': 'assets/coordinator1.jpg',
       },
       {
         'name': 'Emily Wilson',
         'position': 'IR Communications Manager',
         'department': 'Marketing Department',
-        'image': 'assets/coordinator2.jpg', // Replace with actual asset path
+        'image': 'assets/coordinator2.jpg',
       },
     ];
 
@@ -212,11 +191,8 @@ class AboutUsPage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: const AssetImage('assets/placeholder.png'), // Fallback image
+                      backgroundImage: AssetImage(coordinator['image']!),
                       backgroundColor: Colors.transparent,
-                      child: coordinator['image'] != null
-                          ? ClipOval(child: Image.asset(coordinator['image']!, fit: BoxFit.cover))
-                          : null,
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -228,14 +204,14 @@ class AboutUsPage extends StatelessWidget {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.white,
+                              color: AppTheme.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             coordinator['position']!,
                             style: const TextStyle(
-                              color: Colors.white70,
+                              color: AppTheme.textSecondary,
                               fontSize: 16,
                             ),
                           ),
@@ -243,7 +219,7 @@ class AboutUsPage extends StatelessWidget {
                           Text(
                             coordinator['department']!,
                             style: const TextStyle(
-                              color: Colors.white70,
+                              color: AppTheme.textSecondary,
                               fontSize: 14,
                             ),
                           ),
@@ -282,7 +258,7 @@ class AboutUsPage extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Colors.white,
+                  color: AppTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -292,11 +268,11 @@ class AboutUsPage extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       children: [
-                        const Icon(Icons.business, size: 20, color: Colors.white70),
+                        const Icon(Icons.business, size: 20, color: AppTheme.textSecondary),
                         const SizedBox(width: 8),
                         Text(
                           partner,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: AppTheme.textPrimary),
                         ),
                       ],
                     ),
@@ -323,26 +299,18 @@ class AboutUsPage extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Colors.white,
+                  color: AppTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
-              _buildContactItem(
-                icon: Icons.email,
-                label: 'Email',
-                value: 'contact@irplatform.com',
-              ),
+              _buildContactItem(Icons.email, 'Email', 'contact@irplatform.com'),
+              const SizedBox(height: 12),
+              _buildContactItem(Icons.phone, 'Phone', '+1 (555) 123-4567'),
               const SizedBox(height: 12),
               _buildContactItem(
-                icon: Icons.phone,
-                label: 'Phone',
-                value: '+1 (555) 123-4567',
-              ),
-              const SizedBox(height: 12),
-              _buildContactItem(
-                icon: Icons.location_on,
-                label: 'Address',
-                value: '123 Financial District, New York, NY 10005',
+                Icons.location_on,
+                'Address',
+                '123 Financial District,\nNew York, NY 10005',  // Inserted \n for line break
               ),
               const SizedBox(height: 16),
               const Text(
@@ -350,7 +318,7 @@ class AboutUsPage extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Colors.white,
+                  color: AppTheme.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -359,7 +327,7 @@ class AboutUsPage extends StatelessWidget {
                 children: [
                   _buildSocialIcon(Icons.facebook),
                   const SizedBox(width: 16),
-                  _buildSocialIcon(Icons.camera_alt), // Instagram alternative
+                  _buildSocialIcon(Icons.camera_alt),
                   const SizedBox(width: 16),
                   _buildSocialIcon(Icons.link),
                 ],
@@ -371,32 +339,29 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactItem({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
+  Widget _buildContactItem(IconData icon, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.white70),
+        Icon(icon, size: 20, color: AppTheme.textSecondary),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+        Expanded( // Add Expanded to prevent overflow horizontally
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(color: Colors.white70),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(value,
+                style: const TextStyle(color: AppTheme.textSecondary),
+                softWrap: true,  // allow wrapping text
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -407,13 +372,10 @@ class AboutUsPage extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withOpacity(0.15),
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        color: Colors.white,
-      ),
+      child: Icon(icon, color: AppTheme.textPrimary),
     );
   }
 
@@ -421,18 +383,7 @@ class AboutUsPage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
+        decoration: AppTheme.glassDecoration,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: child,

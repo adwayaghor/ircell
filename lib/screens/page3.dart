@@ -15,34 +15,41 @@ class _Page3State extends State<Page3> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // 🚫 This hides the default back button
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Info icon with circular background
-            CircleAvatar(
-              backgroundColor: Colors.white.withOpacity(0.2),
-              child: const Icon(Icons.info_rounded, color: Colors.white),
+            // Info icon with glass decoration
+            Container(
+              decoration: AppTheme.glassDecoration,
+              child: IconButton(
+                icon: const Icon(Icons.info_rounded, color: AppTheme.textPrimary),
+                onPressed: () {},
+              ),
             ),
             
             // Right side icons 
             Row(
               children: [
-                // Notification icon with circular background
-                CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  child: const Icon(Icons.notifications_outlined, color: Colors.white),
+                // Notification icon with glass decoration
+                Container(
+                  decoration: AppTheme.glassDecoration,
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
+                    onPressed: () {},
+                  ),
                 ),
                 const SizedBox(width: 8),
                 
                 // User avatar
-                const CircleAvatar(
-                  backgroundColor: Colors.white,
+                CircleAvatar(
+                  backgroundColor: AppTheme.accentBlue,
                   child: Text(
                     'A',
                     style: TextStyle(
-                      color: AppTheme.primaryBlue,
+                      color: AppTheme.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -52,8 +59,9 @@ class _Page3State extends State<Page3> {
           ],
         ),
       ),
+
       
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.backgroundColor,
       body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -87,24 +95,17 @@ class _Page3State extends State<Page3> {
   Widget _buildHeaderSection() {
     return Row(
       children: [
-        // IR Logo/Image Placeholder
+        // IR Logo/Image Placeholder with glass decoration
         Container(
           width: 80,
           height: 80,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+          decoration: AppTheme.glassDecoration.copyWith(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.3),
-              width: 1,
-            ),
           ),
           child: Center(
             child: Text(
               'IR',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
+              style: Theme.of(context).textTheme.displayMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -120,27 +121,15 @@ class _Page3State extends State<Page3> {
             children: [
               Text(
                 'Book a',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
                 'ticket for',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
                 'an event',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
           ),
@@ -150,108 +139,83 @@ class _Page3State extends State<Page3> {
   }
   
   Widget _buildTabSelector() {
-    return Row(
-      children: [
-        // Currently Booked Tab
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedTab = 0;
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: _selectedTab == 0 
-                      ? Colors.white 
-                      : Colors.white.withOpacity(0.2),
-                    width: 2,
-                  ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // Currently Booked Tab
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedTab = 0;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedTab == 0 ? AppTheme.accentBlue.withOpacity(0.3) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              child: Text(
-                'Currently Booked',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: _selectedTab == 0 
-                    ? Colors.white 
-                    : Colors.white.withOpacity(0.6),
-                  fontWeight: _selectedTab == 0 
-                    ? FontWeight.bold 
-                    : FontWeight.normal,
-                  fontSize: 16,
+                child: Text(
+                  'Currently Booked',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: _selectedTab == 0 ? AppTheme.textPrimary : AppTheme.textSecondary,
+                    fontWeight: _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        
-        // Past Tickets Tab
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedTab = 1;
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: _selectedTab == 1 
-                      ? Colors.white 
-                      : Colors.white.withOpacity(0.2),
-                    width: 2,
-                  ),
+          
+          // Past Tickets Tab
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedTab = 1;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedTab == 1 ? AppTheme.accentBlue.withOpacity(0.3) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              child: Text(
-                'Past Tickets',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: _selectedTab == 1 
-                    ? Colors.white 
-                    : Colors.white.withOpacity(0.6),
-                  fontWeight: _selectedTab == 1 
-                    ? FontWeight.bold 
-                    : FontWeight.normal,
-                  fontSize: 16,
+                child: Text(
+                  'Past Tickets',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: _selectedTab == 1 ? AppTheme.textPrimary : AppTheme.textSecondary,
+                    fontWeight: _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
   
   Widget _buildCurrentlyBookedContent() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+      decoration: AppTheme.glassDecoration.copyWith(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Event ticket content
-          const Text(
+          Text(
             'Event name',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           
           const SizedBox(height: 16),
@@ -263,14 +227,13 @@ class _Page3State extends State<Page3> {
               Container(
                 width: 60,
                 height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                decoration: AppTheme.glassDecoration.copyWith(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.calendar_today,
-                    color: Colors.white,
+                    color: AppTheme.textPrimary,
                     size: 28,
                   ),
                 ),
@@ -303,16 +266,13 @@ class _Page3State extends State<Page3> {
       children: [
         Icon(
           icon,
-          color: Colors.white.withOpacity(0.7),
+          color: AppTheme.textSecondary,
           size: 14,
         ),
         const SizedBox(width: 8),
         Text(
           text,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 14,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
     );
@@ -321,13 +281,8 @@ class _Page3State extends State<Page3> {
   Widget _buildPastTicketsContent() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+      decoration: AppTheme.glassDecoration.copyWith(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -335,15 +290,14 @@ class _Page3State extends State<Page3> {
         children: [
           Icon(
             Icons.history,
-            color: Colors.white.withOpacity(0.7),
+            color: AppTheme.textSecondary,
             size: 48,
           ),
           const SizedBox(height: 16),
           Text(
             'Past event tickets will appear here',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 16,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppTheme.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -365,26 +319,33 @@ class _Page3State extends State<Page3> {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.white.withOpacity(0.3),
+                  color: AppTheme.textSecondary.withOpacity(0.3),
                   width: 1,
                 ),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Internships',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           
-          // This would be populated with internship content
-          // For now keeping it empty as per the sketch
+          // Internship content placeholder
           Container(
             height: 80,
             width: double.infinity,
+            margin: const EdgeInsets.only(top: 12),
+            decoration: AppTheme.glassDecoration.copyWith(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                'Internship opportunities will appear here',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
           ),
         ],
       ),

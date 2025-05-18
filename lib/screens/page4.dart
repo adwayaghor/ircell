@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/login/auth.dart';
+import 'package:ircell/app_theme.dart'; 
 
 class Page4 extends StatelessWidget {
   Page4({super.key});
@@ -11,6 +12,9 @@ class Page4 extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardColor,
+        titleTextStyle: Theme.of(context).textTheme.titleLarge,
+        contentTextStyle: Theme.of(context).textTheme.bodyLarge,
         title: const Text('Sign Out'),
         content: const Text('Are you sure you want to sign out?'),
         actions: [
@@ -33,6 +37,9 @@ class Page4 extends StatelessWidget {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
+            backgroundColor: AppTheme.cardColor,
+            titleTextStyle: Theme.of(context).textTheme.titleLarge,
+            contentTextStyle: Theme.of(context).textTheme.bodyLarge,
             title: const Text('Error'),
             content: Text(e.message ?? 'An error occurred'),
             actions: [
@@ -47,8 +54,11 @@ class Page4 extends StatelessWidget {
     }
   }
 
-  Widget userUID() {
-    return Text(user?.email ?? 'User email');
+  Widget userUID(BuildContext context) {
+    return Text(
+      user?.email ?? 'User email',
+      style: Theme.of(context).textTheme.bodyLarge,
+    );
   }
 
   Widget signOutButton(BuildContext context) {
@@ -61,15 +71,25 @@ class Page4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Page 4')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            userUID(),
-            const SizedBox(height: 20),
-            signOutButton(context),
-          ],
+      appBar: AppBar(
+        title: const Text('Page 4'),
+      ),
+      body: Container(
+        decoration: AppTheme.gradientBackground,
+        child: Center(
+          child: Container(
+            decoration: AppTheme.cardDecoration,
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                userUID(context),
+                const SizedBox(height: 20),
+                signOutButton(context),
+              ],
+            ),
+          ),
         ),
       ),
     );

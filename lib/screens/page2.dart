@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:ircell/app_theme.dart';
 import 'package:ircell/screens/activities/events_screen.dart';
 import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
@@ -13,41 +13,6 @@ class Page2 extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<Page2> {
-  late final PageController _pageController;
-  int _currentPage = 0;
-
-  final List<String> imagePaths = [
-    'assets/images/img1.jpg',
-    'assets/images/img2.jpg',
-    'assets/images/img3.jpg',
-    'assets/images/img4.jpg',
-    'assets/images/img5.jpg',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _currentPage = imagePaths.length * 1000; // Infinite loop trick
-    _pageController = PageController(initialPage: _currentPage);
-
-    Timer.periodic(Duration(seconds: 3), (Timer timer) {
-      _currentPage++;
-      if (_pageController.hasClients) {
-        _pageController.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   Widget _buildCategoryButton(int index, String title, IconData icon) {
     return GestureDetector(
       onTap: () {
@@ -114,7 +79,6 @@ class _HomeScreenState extends State<Page2> {
     );
   }
 
-  // ✅ Modified to accept onTap as optional named parameter
   Widget buildCard(String title, String imagePath, double height, {VoidCallback? onTap}) {
     return SizedBox(
       height: height,
@@ -138,106 +102,175 @@ class _HomeScreenState extends State<Page2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo,
-      body: SingleChildScrollView(
+      backgroundColor: AppTheme.cardColor,
+      body: SafeArea(
         child: Column(
           children: [
-            // 🔄 Auto-scrolling image carousel
-            SizedBox(
-              height: 250,
-              child: PageView.builder(
-                controller: _pageController,
-                itemBuilder: (context, index) {
-                  final imageIndex = index % imagePaths.length;
-                  return Image.asset(
-                    imagePaths[imageIndex],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  );
-                },
+            // Custom AppBar like Page3
+            // Custom AppBar like Page3 with back button and 'i' info icon
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left side: Back button and Info icon
+                  // Left side: Info icon only (back button removed)
+                  Row(
+                    children: [
+                      Container(
+                        decoration: AppTheme.glassDecoration,
+                        child: IconButton(
+                          icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Information"),
+                                content: const Text("This is the International Relations Cell app."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("OK"),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+                  // Right side icons
+                  Row(
+                    children: [
+                      Container(
+                        decoration: AppTheme.glassDecoration,
+                        child: IconButton(
+                          icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
+                          onPressed: () {},
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      CircleAvatar(
+                        backgroundColor: AppTheme.accentBlue,
+                        child: const Text(
+                          'A',
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCategoryButtons(),
-                  SizedBox(height: 20),
-                  Column(
+
+            // Top strip with text below app bar
+            Container(
+              width: double.infinity,
+              height: 50,
+              color: AppTheme.accentBlue,
+              alignment: Alignment.center,
+              child: const Text(
+                "International Relations Cell",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      _buildCategoryButtons(),
+                      const SizedBox(height: 20),
+                      Column(
                         children: [
-                          Expanded(
-                            child: buildCard(
-                              "Events",
-                              'assets/images/events.png',
-                              190,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: buildCard(
+                                  "Events",
+                                  'assets/images/events.png',
+                                  190,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    buildCard(
+                                      "Student Mobility",
+                                      'assets/images/student_mobility.png',
+                                      90,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    buildCard(
+                                      "International Alumni",
+                                      'assets/images/international_alumini.png',
+                                      90,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                buildCard(
-                                  "Student Mobility",
-                                  'assets/images/student_mobility.png',
-                                  90,
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    buildCard(
+                                      "About Us",
+                                      'assets/images/about_us.png',
+                                      95,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const AboutUsPage(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 10),
+                                    buildCard(
+                                      "International Students",
+                                      'assets/images/international_students.png',
+                                      95,
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 10),
-                                buildCard(
-                                  "International Alumni",
-                                  'assets/images/international_alumini.png',
-                                  90,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: buildCard(
+                                  "Higher Studies",
+                                  'assets/images/higher_studies.png',
+                                  200,
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                buildCard(
-                                  "About Us",
-                                  'assets/images/about_us.png',
-                                  95,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const AboutUsPage(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: 10),
-                                buildCard(
-                                  "International Students",
-                                  'assets/images/international_students.png',
-                                  95,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: buildCard(
-                              "Higher Studies",
-                              'assets/images/higher_studies.png',
-                              200,
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
