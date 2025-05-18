@@ -477,7 +477,7 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     ];
     
     final gradientIndex = int.parse(event.id.split('-')[1]) % gradients.length;
-    final cardHeight = screenSize.height * 0.3;
+    //final cardHeight = screenSize.height * 0.3;
     
     return Card(
       margin: EdgeInsets.only(bottom: screenSize.height * 0.02),

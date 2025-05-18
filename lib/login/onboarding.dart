@@ -2,40 +2,783 @@ import 'package:flutter/material.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/screens/tabs_screen.dart';
 
-class Onboarding extends StatelessWidget {
-  Onboarding({super.key, required this.email, required this.password});
+class Onboarding extends StatefulWidget {
+  const Onboarding({super.key, required this.email, required this.password});
   final String email;
   final String password;
-  final fullNameController = TextEditingController();
+  @override
+  _OnboardingScreenState createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<Onboarding> {
+  late String email;
+  late String password;
+
+  @override
+  void initState() {
+    super.initState();
+    email = widget.email;
+    password = widget.password;
+  }
+
+  int currentPage = 0;
+  String userType = '';
+  String externalCollegeType = '';
+  List<String> selectedInterests = [];
+
+  final _formKey = GlobalKey<FormState>();
+
+  // Controllers for Page 2
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController contactController = TextEditingController();
+  final TextEditingController rollController = TextEditingController();
+  final TextEditingController yearController = TextEditingController();
+  final TextEditingController deptController = TextEditingController();
+  final TextEditingController collegeNameController = TextEditingController();
+
+  // International student fields
+  final TextEditingController quotaController = TextEditingController();
+  final TextEditingController admittedYearController = TextEditingController();
+  final TextEditingController currentYearController = TextEditingController();
+  final TextEditingController prnController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController parentsNameController = TextEditingController();
+  final TextEditingController branchController = TextEditingController();
+  final TextEditingController nationalityController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+  final TextEditingController idDocumentController = TextEditingController();
+  final TextEditingController passportNumberController = TextEditingController();
+  final TextEditingController passportPhotoController = TextEditingController();
+
+  // Alumni fields
+  final TextEditingController passOutYearController = TextEditingController();
+  final TextEditingController highestQualificationController = TextEditingController();
+  final TextEditingController pgNameController = TextEditingController();
+  final TextEditingController industryNameController = TextEditingController();
+  final TextEditingController designationController = TextEditingController();
+  final TextEditingController stateNameController = TextEditingController();
+  final TextEditingController countryNameController = TextEditingController();
+  final TextEditingController questionController = TextEditingController();
+  final TextEditingController linkedinController = TextEditingController();
+
+  final PageController _pageController = PageController();
+
+  // List of interest keywords
+  final List<String> interestKeywords = [
+    'Higher Studies', 'IELTS', 'GRE', 'GMAT', 'Internships', 
+    'IR Events', 'Germany', 'Japan', 'USA', 'Singapore', 
+    'Language Study', 'German Language', 'Japanese Language',
+    'Career Guidance', 'Scholarships', 'Exchange Programs',
+    'Research', 'UK', 'Australia', 'Canada', 'Technical Skills',
+    'Cultural Exchange', 'Networking', 'Mentorship'
+  ];
+
+  void _nextPage() {
+    if (_validateCurrentPage()) {
+      if (currentPage < 2) {
+        setState(() => currentPage++);
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+        );
+      }
+    }
+  }
+
+  void _previousPage() {
+    if (currentPage > 0) {
+      setState(() => currentPage--);
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  bool _validateCurrentPage() {
+    if (currentPage == 0) {
+      if (userType.isEmpty) {
+        _showErrorDialog('Please select your user type to continue.');
+        return false;
+      }
+      if (userType == 'external' && externalCollegeType.isEmpty) {
+        _showErrorDialog('Please select your institute.');
+        return false;
+      }
+      if (userType == 'external' && externalCollegeType == 'Other' && collegeNameController.text.isEmpty) {
+        _showErrorDialog('Please enter your college name.');
+        return false;
+      }
+      return true;
+    } else if (currentPage == 1) {
+      if (!_formKey.currentState!.validate()) {
+        return false;
+      }
+      return true;
+    }
+    return true;
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Input Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserTypePage() {
+    return ListView(
+      children: [
+        const Text(
+          "Tell us about yourself",
+          style: TextStyle(
+            fontSize: 22, 
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(height: 15),
+        const Text(
+          "Who are you?",
+          style: TextStyle(
+            fontSize: 16, 
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildSelectableListTile("PCCOE Student", 'pccoe', Icons.school),
+        _buildSelectableListTile("International Student", 'international', Icons.public),
+        _buildSelectableListTile("International Alumni", 'alumni', Icons.emoji_events),
+        _buildSelectableListTile("External College Student", 'external', Icons.account_balance),
+        
+        if (userType == 'external') ...[
+          const SizedBox(height: 12),
+          const Text(
+            "Select your institute:",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.blue.shade200),
+            ),
+            child: DropdownButton<String>(
+              value: externalCollegeType.isEmpty ? null : externalCollegeType,
+              hint: const Text("Select Institute"),
+              isExpanded: true,
+              underline: Container(),
+              onChanged: (value) => setState(() => externalCollegeType = value!),
+              items: ['PCCOE-R', 'PCU', 'Other']
+                  .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                  .toList(),
+            ),
+          ),
+          if (externalCollegeType == 'Other') ...[
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: collegeNameController,
+              decoration: InputDecoration(
+                labelText: 'Enter college name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ],
+        ],
+        const SizedBox(height: 40),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                backgroundColor: Colors.grey.shade400,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text("Back"),
+            ),
+            ElevatedButton(
+              onPressed: _nextPage,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                backgroundColor: Colors.blue.shade700,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text(
+                "Next",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildSelectableListTile(String title, String value, IconData icon) {
+    final isSelected = userType == value;
+    
+    return Card(
+      elevation: isSelected ? 4 : 1,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: isSelected ? Colors.blue.shade700 : Colors.transparent,
+          width: 2,
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        leading: Icon(
+          icon,
+          color: isSelected ? Colors.blue.shade700 : Colors.grey,
+          size: 26,
+        ),
+        tileColor: isSelected ? Colors.blue.shade100 : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        onTap: () => setState(() => userType = value),
+      ),
+    );
+  }
+
+  Widget _buildDetailsFormPage() {
+    return Form(
+      key: _formKey,
+      child: ListView(
+        children: [
+          const Text(
+            "Personal Information",
+            style: TextStyle(
+              fontSize: 24, 
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Roboto',
+            ),
+          ),
+          const SizedBox(height: 15),
+          Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Basic Details",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: firstNameController,
+                    decoration: _buildInputDecoration('First Name'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your first name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: lastNameController,
+                    decoration: _buildInputDecoration('Last Name'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your last name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: _buildInputDecoration('Email'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: contactController,
+                    decoration: _buildInputDecoration('Contact Number'),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your contact number';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          // Specific fields based on user type
+          if (userType == 'pccoe' || userType == 'external') ...[
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Academic Information",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: deptController, 
+                      decoration: _buildInputDecoration('Department'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your department';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: yearController, 
+                      decoration: _buildInputDecoration('Year'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your year';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: rollController, 
+                      decoration: _buildInputDecoration('Roll Number'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your roll number';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else if (userType == 'international') ...[
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "International Student Details",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: quotaController, decoration: _buildInputDecoration('Quota')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: admittedYearController, decoration: _buildInputDecoration('Admitted Academic Year')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: currentYearController, decoration: _buildInputDecoration('Current Year')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: prnController, decoration: _buildInputDecoration('PRN Number')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: fullNameController, decoration: _buildInputDecoration('Full Name')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: parentsNameController, decoration: _buildInputDecoration('Parents Name')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: branchController, decoration: _buildInputDecoration('Branch')),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Identity Information",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: nationalityController, decoration: _buildInputDecoration('Nationality')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: genderController, decoration: _buildInputDecoration('Gender')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: idDocumentController, decoration: _buildInputDecoration('Identification Document')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: passportNumberController, decoration: _buildInputDecoration('Passport/Citizenship No.')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: passportPhotoController, decoration: _buildInputDecoration('Passport/Citizenship Photo URL')),
+                  ],
+                ),
+              ),
+            ),
+          ] else if (userType == 'alumni') ...[
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Alumni Information",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: passOutYearController, decoration: _buildInputDecoration('Pass Out Year')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: branchController, decoration: _buildInputDecoration('Branch')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: highestQualificationController, decoration: _buildInputDecoration('Latest Highest Qualification')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: pgNameController, decoration: _buildInputDecoration('PG Name')),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Professional Information",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: industryNameController, decoration: _buildInputDecoration('Industry Name')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: designationController, decoration: _buildInputDecoration('Designation')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: stateNameController, decoration: _buildInputDecoration('State Name')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: countryNameController, decoration: _buildInputDecoration('Country Name')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: questionController, decoration: _buildInputDecoration('Why do you want to connect?')),
+                    const SizedBox(height: 15),
+                    TextFormField(controller: linkedinController, decoration: _buildInputDecoration('LinkedIn Profile')),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: _previousPage,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  backgroundColor: Colors.grey.shade400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text("Back"),
+              ),
+              ElevatedButton(
+                onPressed: _nextPage,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  backgroundColor: Colors.blue.shade700,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text("Next"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInterestPage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Select Your Interests",
+          style: TextStyle(
+            fontSize: 22, 
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        const SizedBox(height: 5),
+        const Text(
+          "Choose topics that interest you most",
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 15),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: interestKeywords.map((interest) {
+                final isSelected = selectedInterests.contains(interest);
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        selectedInterests.remove(interest);
+                      } else {
+                        selectedInterests.add(interest);
+                      }
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.blue.shade700 : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: isSelected ? Colors.blue.shade700 : Colors.grey.shade300,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      interest,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: _previousPage,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  backgroundColor: Colors.grey.shade400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text("Back"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  try {
+                    await Auth().createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const TabsScreen()),
+                    );
+                  } catch (e) {
+                    _showErrorDialog('Registration failed: ${e.toString()}');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  backgroundColor: Colors.blue.shade700,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  "Submit",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.blue),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.blue),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Complete Profile')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: fullNameController,
-              decoration: const InputDecoration(labelText: 'Full Name'),
+      appBar: AppBar(
+        title: const Text(
+          'Complete Your Profile',
+          style: TextStyle(fontSize: 18),
+        ),
+        backgroundColor: Colors.blue.shade700,
+        actions: [
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Text(
+                "${currentPage + 1} of 3",
+                style: TextStyle(
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
-                await Auth().createUserWithEmailAndPassword(
-                  email: email,
-                  password: password,
-                );
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const TabsScreen(),
-                  ),
-                );
-              },
-              child: const Text('Continue'),
+          )
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.blue.shade100],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildUserTypePage(),
+                _buildDetailsFormPage(),
+                _buildInterestPage(),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
