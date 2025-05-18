@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:ircell/screens/activities/events_screen.dart';
 import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
+import 'package:ircell/activities/about_us.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key});
+
   @override
   State<Page2> createState() => _HomeScreenState();
 }
@@ -25,8 +27,7 @@ class _HomeScreenState extends State<Page2> {
   @override
   void initState() {
     super.initState();
-    _currentPage =
-        imagePaths.length * 1000; // Start far in for smooth infinite loop
+    _currentPage = imagePaths.length * 1000; // Infinite loop trick
     _pageController = PageController(initialPage: _currentPage);
 
     Timer.periodic(Duration(seconds: 3), (Timer timer) {
@@ -113,7 +114,8 @@ class _HomeScreenState extends State<Page2> {
     );
   }
 
-  Widget buildCard(String title, String imagePath, double height) {
+  // ✅ Modified to accept onTap as optional named parameter
+  Widget buildCard(String title, String imagePath, double height, {VoidCallback? onTap}) {
     return SizedBox(
       height: height,
       child: Card(
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<Page2> {
         elevation: 2,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {},
+          onTap: onTap,
           child: Image.asset(
             imagePath,
             fit: BoxFit.cover,
@@ -155,7 +157,6 @@ class _HomeScreenState extends State<Page2> {
                 },
               ),
             ),
-
             Padding(
               padding: EdgeInsets.all(12),
               child: Column(
@@ -206,6 +207,14 @@ class _HomeScreenState extends State<Page2> {
                                   "About Us",
                                   'assets/images/about_us.png',
                                   95,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const AboutUsPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 SizedBox(height: 10),
                                 buildCard(
