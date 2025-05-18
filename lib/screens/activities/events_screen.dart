@@ -195,19 +195,22 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen size to make components responsive
+    final screenSize = MediaQuery.of(context).size;
+    
     return Scaffold(
       body: Container(
         decoration: AppTheme.gradientBackground,
         child: SafeArea(
           child: Column(
             children: [
-              _buildAppBar(),
-              _buildSearchBar(),
-              _buildTabBar(),
+              _buildAppBar(screenSize),
+              _buildSearchBar(screenSize),
+              _buildTabBar(screenSize),
               Expanded(
                 child: _isLoading 
                   ? _buildLoadingView() 
-                  : _buildEventList(),
+                  : _buildEventList(screenSize),
               ),
             ],
           ),
@@ -216,9 +219,16 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(Size screenSize) {
+    // Make padding responsive to screen width
+    final horizontalPadding = screenSize.width * 0.04;
+    final verticalPadding = screenSize.height * 0.02;
+    
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -229,10 +239,10 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
               child: const Icon(Icons.arrow_back, color: Colors.white),
             ),
           ),
-          const Text(
+          Text(
             'Events',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: screenSize.width * 0.05, // Responsive font size
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -246,9 +256,16 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(Size screenSize) {
+    // Make padding responsive to screen width
+    final horizontalPadding = screenSize.width * 0.04;
+    final verticalPadding = screenSize.height * 0.01;
+    
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.15),
@@ -263,7 +280,9 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
             prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.7)),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: screenSize.height * 0.015,
+            ),
           ),
           onChanged: (value) {
             setState(() {
@@ -275,9 +294,16 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(Size screenSize) {
+    // Make padding responsive to screen width
+    final horizontalPadding = screenSize.width * 0.04;
+    final verticalPadding = screenSize.height * 0.01;
+    
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      margin: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
@@ -292,61 +318,88 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
         unselectedLabelColor: Colors.white.withOpacity(0.7),
         tabs: [
           Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.event_available),
-                const SizedBox(width: 8),
-                const Text('Upcoming'),
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _selectedTabIndex == 0 
-                        ? AppTheme.tealAccent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_upcomingEvents.length}',
-                    style: TextStyle(
-                      color: _selectedTabIndex == 0 
-                          ? AppTheme.primaryBlue
-                          : Colors.white.withOpacity(0.7),
-                      fontWeight: FontWeight.bold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Use LayoutBuilder to adapt to tab width
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.event_available, size: screenSize.width * 0.04),
+                    SizedBox(width: screenSize.width * 0.02),
+                    const Text('Upcoming'),
+                    SizedBox(width: screenSize.width * 0.01),
+                    // Fix the overflow by using constraints.maxWidth to size the container properly
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: constraints.maxWidth * 0.08, 
+                        vertical: screenSize.height * 0.003,
+                      ),
+                      constraints: BoxConstraints(
+                        // Ensure minimum width for the counter
+                        minWidth: screenSize.width * 0.06,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _selectedTabIndex == 0 
+                            ? AppTheme.tealAccent
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${_upcomingEvents.length}',
+                        style: TextStyle(
+                          color: _selectedTabIndex == 0 
+                              ? AppTheme.primaryBlue
+                              : Colors.white.withOpacity(0.7),
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenSize.width * 0.03, // Responsive font size
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              }
             ),
           ),
           Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.history),
-                const SizedBox(width: 8),
-                const Text('Past'),
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _selectedTabIndex == 1 
-                        ? AppTheme.tealAccent
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_pastEvents.length}',
-                    style: TextStyle(
-                      color: _selectedTabIndex == 1 
-                          ? AppTheme.primaryBlue
-                          : Colors.white.withOpacity(0.7),
-                      fontWeight: FontWeight.bold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.history, size: screenSize.width * 0.04),
+                    SizedBox(width: screenSize.width * 0.02),
+                    const Text('Past'),
+                    SizedBox(width: screenSize.width * 0.01),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: constraints.maxWidth * 0.08,
+                        vertical: screenSize.height * 0.003,
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: screenSize.width * 0.06,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _selectedTabIndex == 1 
+                            ? AppTheme.tealAccent
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${_pastEvents.length}',
+                        style: TextStyle(
+                          color: _selectedTabIndex == 1 
+                              ? AppTheme.primaryBlue
+                              : Colors.white.withOpacity(0.7),
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenSize.width * 0.03, // Responsive font size
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              }
             ),
           ),
         ],
@@ -375,7 +428,7 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildEventList() {
+  Widget _buildEventList(Size screenSize) {
     final currentEvents = _selectedTabIndex == 0 ? _upcomingEvents : _pastEvents;
     
     if (currentEvents.isEmpty) {
@@ -386,27 +439,27 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
             Icon(
               _selectedTabIndex == 0 ? Icons.event_busy : Icons.history,
               color: Colors.white.withOpacity(0.5),
-              size: 64,
+              size: screenSize.width * 0.15, // Responsive icon size
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: screenSize.height * 0.02),
             Text(
               _selectedTabIndex == 0 
                   ? 'No upcoming events found'
                   : 'No past events found',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.8),
-                fontSize: 16,
+                fontSize: screenSize.width * 0.04, // Responsive font size
                 fontWeight: FontWeight.bold,
               ),
             ),
             if (_searchQuery.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: EdgeInsets.only(top: screenSize.height * 0.01),
                 child: Text(
                   'Try changing your search query',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.6),
-                    fontSize: 14,
+                    fontSize: screenSize.width * 0.035, // Responsive font size
                   ),
                 ),
               ),
@@ -416,9 +469,9 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     }
     
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.04),
       child: ListView.builder(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: EdgeInsets.only(top: screenSize.height * 0.01),
         itemCount: currentEvents.length,
         itemBuilder: (context, index) {
           final event = currentEvents[index];
@@ -440,17 +493,20 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
             children: [
               if (headerDate != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                  padding: EdgeInsets.only(
+                    top: screenSize.height * 0.02, 
+                    bottom: screenSize.height * 0.01
+                  ),
                   child: Text(
                     headerDate,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: screenSize.width * 0.045, // Responsive font size
                     ),
                   ),
                 ),
-              _buildEventCard(event),
+              _buildEventCard(event, screenSize),
             ],
           );
         },
@@ -458,7 +514,7 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildEventCard(Event event) {
+  Widget _buildEventCard(Event event, Size screenSize) {
     // Parse the date for displaying
     DateTime? eventDate;
     try {
@@ -477,9 +533,10 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
     ];
     
     final gradientIndex = int.parse(event.id.split('-')[1]) % gradients.length;
+    final cardHeight = screenSize.height * 0.3; // Responsive card height
     
     return Card(
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: EdgeInsets.only(bottom: screenSize.height * 0.02),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -505,7 +562,7 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
             children: [
               // Event image/header
               Container(
-                height: 120,
+                height: screenSize.height * 0.15, // Responsive header height
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
@@ -522,27 +579,31 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                     // Date display
                     if (eventDate != null)
                       Positioned(
-                        top: 16,
-                        left: 16,
+                        top: screenSize.height * 0.02,
+                        left: screenSize.width * 0.04,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenSize.height * 0.008, 
+                            horizontal: screenSize.width * 0.03,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.calendar_today,
                                 color: Colors.white,
-                                size: 14,
+                                size: screenSize.width * 0.035,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: screenSize.width * 0.01),
                               Text(
                                 DateFormat('dd MMM').format(eventDate),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: screenSize.width * 0.033,
                                 ),
                               ),
                             ],
@@ -552,12 +613,12 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                     
                     // Favorite button
                     Positioned(
-                      top: 16,
-                      right: 16,
+                      top: screenSize.height * 0.02,
+                      right: screenSize.width * 0.04,
                       child: GestureDetector(
                         onTap: () => _toggleInterest(event),
                         child: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(screenSize.width * 0.02),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.3),
                             shape: BoxShape.circle,
@@ -565,7 +626,7 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                           child: Icon(
                             event.isInterested ? Icons.favorite : Icons.favorite_border,
                             color: event.isInterested ? Colors.red : Colors.white,
-                            size: 20,
+                            size: screenSize.width * 0.05,
                           ),
                         ),
                       ),
@@ -574,15 +635,15 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                     // Event icon
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(screenSize.width * 0.04),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.event_note,
                           color: Colors.white,
-                          size: 36,
+                          size: screenSize.width * 0.09,
                         ),
                       ),
                     ),
@@ -592,37 +653,38 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
               
               // Event details
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(screenSize.width * 0.04),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title
                     Text(
                       event.title,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: screenSize.width * 0.045,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: screenSize.height * 0.01),
                     
                     // Speaker
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.person,
                           color: Colors.white70,
-                          size: 16,
+                          size: screenSize.width * 0.04,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: screenSize.width * 0.02),
                         Expanded(
                           child: Text(
                             'Speaker: ${event.speaker}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white70,
+                              fontSize: screenSize.width * 0.035,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -630,22 +692,23 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: screenSize.height * 0.005),
                     
                     // Location
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.location_on,
                           color: Colors.white70,
-                          size: 16,
+                          size: screenSize.width * 0.04,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: screenSize.width * 0.02),
                         Expanded(
                           child: Text(
                             event.location,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white70,
+                              fontSize: screenSize.width * 0.035,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -653,32 +716,34 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: screenSize.height * 0.005),
                     
                     // Time
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.access_time,
                           color: Colors.white70,
-                          size: 16,
+                          size: screenSize.width * 0.04,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: screenSize.width * 0.02),
                         Text(
                           event.time,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white70,
+                            fontSize: screenSize.width * 0.035,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: screenSize.height * 0.01),
                     
                     // Description preview
                     Text(
                       event.description,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
+                        fontSize: screenSize.width * 0.035,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -702,9 +767,17 @@ class _EventsScreenState extends State<EventsScreen> with SingleTickerProviderSt
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text('View details'),
-                            Icon(Icons.arrow_forward, size: 16),
+                          children: [
+                            Text(
+                              'View details',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.035,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward, 
+                              size: screenSize.width * 0.04,
+                            ),
                           ],
                         ),
                       ),

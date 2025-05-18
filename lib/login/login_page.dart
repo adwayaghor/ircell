@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/onboarding.dart';
+import 'package:ircell/screens/tabs_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,6 +40,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithEmailAndPassword() async {
     try {
+      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+        showErrorDialog('Email and password cannot be empty');
+        return;
+      }
       await Auth().signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
@@ -180,6 +185,14 @@ class _LoginPageState extends State<LoginPage> {
                 emailField(),
                 const SizedBox(height: 20),
                 passwordField(),
+                ElevatedButton(onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TabsScreen(),
+                    ),
+                  );
+                }, child: Text('Temp Login')),
                 confirmPasswordField(),
                 const SizedBox(height: 20),
                 submitButton(),
