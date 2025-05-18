@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:ircell/activities/events.dart';
-import 'package:ircell/activities/outbound.dart';
-import 'package:ircell/activities/user.dart';
+import 'package:ircell/screens/activities/events_screen.dart';
+import 'package:ircell/screens/activities/internships_screen.dart';
+import 'package:ircell/screens/activities/user.dart';
 
 class Page2 extends StatefulWidget {
+  const Page2({super.key});
   @override
   State<Page2> createState() => _HomeScreenState();
 }
@@ -24,7 +25,8 @@ class _HomeScreenState extends State<Page2> {
   @override
   void initState() {
     super.initState();
-    _currentPage = imagePaths.length * 1000; // Start far in for smooth infinite loop
+    _currentPage =
+        imagePaths.length * 1000; // Start far in for smooth infinite loop
     _pageController = PageController(initialPage: _currentPage);
 
     Timer.periodic(Duration(seconds: 3), (Timer timer) {
@@ -49,11 +51,20 @@ class _HomeScreenState extends State<Page2> {
     return GestureDetector(
       onTap: () {
         if (index == 0) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const Events()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const EventsScreen()),
+          );
         } else if (index == 1) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const Outbound()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const InternshipsScreen()),
+          );
         } else if (index == 2) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const User()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const User()),
+          );
         }
       },
       child: Column(
@@ -156,15 +167,29 @@ class _HomeScreenState extends State<Page2> {
                     children: [
                       Row(
                         children: [
-                          Expanded(child: buildCard("Events", 'assets/images/events.png', 190)),
+                          Expanded(
+                            child: buildCard(
+                              "Events",
+                              'assets/images/events.png',
+                              190,
+                            ),
+                          ),
                           SizedBox(width: 10),
                           Expanded(
                             flex: 1,
                             child: Column(
                               children: [
-                                buildCard("Student Mobility", 'assets/images/student_mobility.png', 90),
+                                buildCard(
+                                  "Student Mobility",
+                                  'assets/images/student_mobility.png',
+                                  90,
+                                ),
                                 SizedBox(height: 10),
-                                buildCard("International Alumni", 'assets/images/international_alumini.png', 90),
+                                buildCard(
+                                  "International Alumni",
+                                  'assets/images/international_alumini.png',
+                                  90,
+                                ),
                               ],
                             ),
                           ),
@@ -177,14 +202,28 @@ class _HomeScreenState extends State<Page2> {
                             flex: 1,
                             child: Column(
                               children: [
-                                buildCard("About Us", 'assets/images/about_us.png', 95),
+                                buildCard(
+                                  "About Us",
+                                  'assets/images/about_us.png',
+                                  95,
+                                ),
                                 SizedBox(height: 10),
-                                buildCard("International Students", 'assets/images/international_students.png', 95),
+                                buildCard(
+                                  "International Students",
+                                  'assets/images/international_students.png',
+                                  95,
+                                ),
                               ],
                             ),
                           ),
                           SizedBox(width: 10),
-                          Expanded(child: buildCard("Higher Studies", 'assets/images/higher_studies.png', 200)),
+                          Expanded(
+                            child: buildCard(
+                              "Higher Studies",
+                              'assets/images/higher_studies.png',
+                              200,
+                            ),
+                          ),
                         ],
                       ),
                     ],
