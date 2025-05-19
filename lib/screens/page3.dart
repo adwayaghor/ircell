@@ -15,25 +15,40 @@ class _Page3State extends State<Page3> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // 🚫 This hides the default back button
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Info icon with glass decoration
             Container(
-              decoration: AppTheme.glassDecoration,
-              child: IconButton(
-                icon: const Icon(Icons.info_rounded, color: AppTheme.textPrimary),
-                onPressed: () {},
-              ),
-            ),
-            
-            // Right side icons 
+                        decoration: AppTheme.glassDecoration,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: AppTheme.textPrimary,
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) => AlertDialog(
+                                    title: const Text("Information"),
+                                    content: const Text(
+                                      "This is the International Relations Cell app.",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  ),
+                            );
+                          },
+                        ),
+                      ),
             Row(
               children: [
-                // Notification icon with glass decoration
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
@@ -42,17 +57,9 @@ class _Page3State extends State<Page3> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                
-                // User avatar
                 CircleAvatar(
                   backgroundColor: AppTheme.accentBlue,
-                  child: Text(
-                    'A',
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('A', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

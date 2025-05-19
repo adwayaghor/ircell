@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/models/dashed_line_painter.dart';
 import 'package:ircell/screens/activities/events_screen.dart';
 import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
@@ -79,7 +80,12 @@ class _HomeScreenState extends State<Page2> {
     );
   }
 
-  Widget buildCard(String title, String imagePath, double height, {VoidCallback? onTap}) {
+  Widget buildCard(
+    String title,
+    String imagePath,
+    double height, {
+    VoidCallback? onTap,
+  }) {
     return SizedBox(
       height: height,
       child: Card(
@@ -102,73 +108,62 @@ class _HomeScreenState extends State<Page2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.cardColor,
-      body: SafeArea(
-        child: Column(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Custom AppBar like Page3
-            // Custom AppBar like Page3 with back button and 'i' info icon
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Left side: Back button and Info icon
-                  // Left side: Info icon only (back button removed)
-                  Row(
-                    children: [
-                      Container(
+            Container(
                         decoration: AppTheme.glassDecoration,
                         child: IconButton(
-                          icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: AppTheme.textPrimary,
+                          ),
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text("Information"),
-                                content: const Text("This is the International Relations Cell app."),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text("OK"),
-                                  )
-                                ],
-                              ),
+                              builder:
+                                  (context) => AlertDialog(
+                                    title: const Text("Information"),
+                                    content: const Text(
+                                      "This is the International Relations Cell app.",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  ),
                             );
                           },
                         ),
                       ),
-                    ],
+            Row(
+              children: [
+                Container(
+                  decoration: AppTheme.glassDecoration,
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
+                    onPressed: () {},
                   ),
-
-
-                  // Right side icons
-                  Row(
-                    children: [
-                      Container(
-                        decoration: AppTheme.glassDecoration,
-                        child: IconButton(
-                          icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
-                          onPressed: () {},
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      CircleAvatar(
-                        backgroundColor: AppTheme.accentBlue,
-                        child: const Text(
-                          'A',
-                          style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  backgroundColor: AppTheme.accentBlue,
+                  child: const Text('A', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
-
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
             // Top strip with text below app bar
             Container(
               width: double.infinity,
@@ -194,6 +189,16 @@ class _HomeScreenState extends State<Page2> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildCategoryButtons(),
+                      // Separator line (dashed)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: CustomPaint(
+                            size: Size(MediaQuery.of(context).size.width * 0.8, 1),
+                            painter: DashedLinePainter(),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       Column(
                         children: [
@@ -242,7 +247,9 @@ class _HomeScreenState extends State<Page2> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => const AboutUsPage(),
+                                            builder:
+                                                (context) =>
+                                                    const AboutUsPage(),
                                           ),
                                         );
                                       },

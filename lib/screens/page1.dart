@@ -80,19 +80,38 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // ✅ Removes back button
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              decoration: AppTheme.glassDecoration,
-              child: IconButton(
-                icon: const Icon(Icons.info_rounded, color: AppTheme.textPrimary),
-                onPressed: () {},
-              ),
-            ),
+                        decoration: AppTheme.glassDecoration,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: AppTheme.textPrimary,
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) => AlertDialog(
+                                    title: const Text("Information"),
+                                    content: const Text(
+                                      "This is the International Relations Cell app.",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  ),
+                            );
+                          },
+                        ),
+                      ),
             Row(
               children: [
                 Container(
@@ -110,14 +129,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               ],
             ),
           ],
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Featured Suggestions'), Tab(text: 'Liked')],
-          labelColor: AppTheme.textPrimary,
-          unselectedLabelColor: AppTheme.textSecondary,
-          indicatorColor: AppTheme.accentBlue,
-          indicatorWeight: 3,
         ),
       ),
 
