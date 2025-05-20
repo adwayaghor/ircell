@@ -3,6 +3,7 @@ import 'package:ircell/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
+import 'package:ircell/screens/profile_page.dart';
 
 class Page4 extends StatefulWidget {
   const Page4({super.key});
@@ -13,13 +14,13 @@ class Page4 extends StatefulWidget {
 
 class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   final User? user = Auth().currentUser;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -87,42 +88,34 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final padding = MediaQuery.of(context).padding;
-    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Container(
-                decoration: AppTheme.glassDecoration,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.info_outline,
-                    color: AppTheme.textPrimary,
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: const Text("Information"),
-                            content: const Text(
-                              "This is the International Relations Cell app.",
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text("OK"),
-                              ),
-                            ],
-                          ),
-                    );
-                  },
-                ),
-              ),
+          decoration: AppTheme.glassDecoration,
+          child: IconButton(
+            icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text("Information"),
+                      content: const Text(
+                        "This is the International Relations Cell app.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+              );
+            },
+          ),
+        ),
         title: const Text('IR Community'),
         actions: [
           Row(
@@ -141,13 +134,28 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundColor: AppTheme.accentBlue,
-                    child: const Text(
-                      'A',
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.bold,
+                  Material(
+                    color: Colors.transparent, // to keep your design intact
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: AppTheme.accentBlue,
+                        child: const Text(
+                          'A',
+                          style: TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -168,7 +176,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                   Tab(text: 'Resources'),
                   Tab(text: 'Articles'),
                   Tab(text: 'Videos'),
-                  // Tab(text: 'Guides'),
                 ],
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.white70,
@@ -187,7 +194,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           _buildResourcesTab(),
           _buildArticlesTab(),
           _buildVideosTab(),
-          _buildGuidesTab(),
         ],
       ),
     );
@@ -196,7 +202,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
   Widget _buildResourcesTab() {
     final screenWidth = MediaQuery.of(context).size.width;
     final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-    
+
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(contentPadding),
@@ -279,7 +285,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
   Widget _buildArticlesTab() {
     final screenWidth = MediaQuery.of(context).size.width;
     final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-    
+
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(contentPadding),
@@ -394,222 +400,110 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildVideosTab() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-    final crossAxisCount = screenWidth > 600 ? 3 : 2;
-    
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(contentPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Featured Videos',
-              //style: AppTheme.headingStyle,
-            ),
-            const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return _buildVideoCard(index);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+Widget _buildVideosTab() {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+  final crossAxisCount = screenWidth > 600 ? 3 : 2;
 
-  Widget _buildVideoCard(int index) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+  return SingleChildScrollView(
+    child: Padding(
+      padding: EdgeInsets.all(contentPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
+          const Text(
+            'Featured Videos',
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                color: Colors.blue.withOpacity(0.3),
-                child: const Center(
-                  child: Icon(
-                    Icons.play_circle_outline,
-                    size: 40,
-                    color: Colors.white,
-                  ),
+          ),
+          const SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return _buildVideoCard(index);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildVideoCard(int index) {
+  return Container(
+    decoration: AppTheme.cardDecoration,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.accentBlue.withOpacity(0.7),
+                    AppTheme.darkTeal.withOpacity(0.5),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.play_circle_outline,
+                  size: 40,
+                  color: AppTheme.textPrimary,
                 ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Video Title ${index + 1}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '2:45 • May ${10 + index}, 2025',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGuidesTab() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-    
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(contentPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Guidance Section
-            const Text(
-              'Guidance',
-              //style: AppTheme.headingStyle
-            ),
-            const SizedBox(height: 16),
-            ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildGuideItem(
-                  title: 'SOP Writing',
-                  description:
-                      'Learn how to write effective statements of purpose',
-                  icon: Icons.edit_document,
-                ),
-                const SizedBox(height: 16),
-                _buildGuideItem(
-                  title: 'Visa Registration',
-                  description:
-                      'Step-by-step guide to student visa applications',
-                  icon: Icons.card_travel,
-                ),
-                const SizedBox(height: 16),
-                _buildGuideItem(
-                  title: 'Interview Prep',
-                  description: 'Tips for university admission interviews',
-                  icon: Icons.record_voice_over,
-                ),
-                const SizedBox(height: 16),
-                _buildGuideItem(
-                  title: 'Scholarship Apps',
-                  description: 'How to find and apply for scholarships',
-                  icon: Icons.school,
-                ),
-              ],
-            ),
-          ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGuideItem({
-    required String title,
-    required String description,
-    required IconData icon,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, size: 32, color: Colors.blue),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Video Title ${index + 1}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '2:45 • May ${10 + index}, 2025',
+                style: const TextStyle(
+                  fontSize: 12, 
+                  color: AppTheme.textSecondary
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.arrow_forward_ios,
-              color: AppTheme.textSecondary,
-              size: 16,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildFacilitationCard({
     String title = 'Japan Study & Career Support',

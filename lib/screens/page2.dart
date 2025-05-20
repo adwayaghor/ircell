@@ -5,6 +5,7 @@ import 'package:ircell/screens/activities/events_screen.dart';
 import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
 import 'package:ircell/activities/about_us.dart';
+import 'package:ircell/screens/profile_page.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key});
@@ -153,9 +154,30 @@ class _HomeScreenState extends State<Page2> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: AppTheme.accentBlue,
-                  child: const Text('A', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                Material(
+                  color: Colors.transparent, // to keep your design intact
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppTheme.accentBlue,
+                      child: const Text(
+                        'A',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

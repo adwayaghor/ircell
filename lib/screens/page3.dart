@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/screens/profile_page.dart';
 
 class Page3 extends StatefulWidget {
   const Page3({super.key});
@@ -58,9 +59,30 @@ class _Page3State extends State<Page3> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: AppTheme.accentBlue,
-                  child: const Text('A', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                Material(
+                  color: Colors.transparent, // to keep your design intact
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppTheme.accentBlue,
+                      child: const Text(
+                        'A',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
