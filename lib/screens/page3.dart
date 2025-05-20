@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 
 class Page3 extends StatefulWidget {
   const Page3({super.key});
@@ -23,32 +24,31 @@ class _Page3State extends State<Page3> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                        decoration: AppTheme.glassDecoration,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.info_outline,
-                            color: AppTheme.textPrimary,
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: const Text("Information"),
-                                    content: const Text(
-                                      "This is the International Relations Cell app.",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          },
-                        ),
+              decoration: AppTheme.glassDecoration,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Information"),
+                      content: const Text(
+                        "This is the International Relations Cell app.",
                       ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
             Row(
               children: [
                 Container(
@@ -60,7 +60,7 @@ class _Page3State extends State<Page3> {
                 ),
                 const SizedBox(width: 8),
                 Material(
-                  color: Colors.transparent, // to keep your design intact
+                  color: Colors.transparent,
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
@@ -89,35 +89,44 @@ class _Page3State extends State<Page3> {
           ],
         ),
       ),
-
-      
       backgroundColor: AppTheme.backgroundColor,
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header section with IR image and "Book a ticket" text
-            _buildHeaderSection(),
-            
-            const SizedBox(height: 20),
-            
-            // Currently Booked & Past Tickets tabs
-            _buildTabSelector(),
-            
-            const SizedBox(height: 16),
-            
-            // Main content area based on selected tab
-            Expanded(
-              child: _selectedTab == 0 
-                ? _buildCurrentlyBookedContent() 
-                : _buildPastTicketsContent(),
+      body: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header section with IR image and "Book a ticket" text
+                _buildHeaderSection(),
+                
+                const SizedBox(height: 20),
+                
+                // Currently Booked & Past Tickets tabs
+                _buildTabSelector(),
+                
+                const SizedBox(height: 16),
+                
+                // Main content area based on selected tab
+                Expanded(
+                  child: _selectedTab == 0 
+                    ? _buildCurrentlyBookedContent() 
+                    : _buildPastTicketsContent(),
+                ),
+                
+                // Internships section at bottom
+                _buildInternshipsSection(),
+              ],
             ),
-            
-            // Internships section at bottom
-            _buildInternshipsSection(),
-          ],
-        ),
+          ),
+          
+          // Chatbot icon positioned in the bottom right corner
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ChatbotIcon(),
+          ),
+        ],
       ),
     );
   }

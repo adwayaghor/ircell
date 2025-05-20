@@ -6,6 +6,7 @@ import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
 import 'package:ircell/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key});
@@ -118,38 +119,38 @@ class _HomeScreenState extends State<Page2> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                        decoration: AppTheme.glassDecoration,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.info_outline,
-                            color: AppTheme.textPrimary,
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: const Text("Information"),
-                                    content: const Text(
-                                      "This is the International Relations Cell app.",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          },
-                        ),
+              decoration: AppTheme.glassDecoration,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Information"),
+                      content: const Text(
+                        "This is the International Relations Cell app.",
                       ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
             Row(
               children: [
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
-                    icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
+                    icon: const Icon(Icons.notifications_outlined,
+                        color: AppTheme.textPrimary),
                     onPressed: () {},
                   ),
                 ),
@@ -217,7 +218,8 @@ class _HomeScreenState extends State<Page2> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: CustomPaint(
-                            size: Size(MediaQuery.of(context).size.width * 0.8, 1),
+                            size:
+                                Size(MediaQuery.of(context).size.width * 0.8, 1),
                             painter: DashedLinePainter(),
                           ),
                         ),
@@ -270,9 +272,8 @@ class _HomeScreenState extends State<Page2> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder:
-                                                (context) =>
-                                                    const AboutUsPage(),
+                                            builder: (context) =>
+                                                const AboutUsPage(),
                                           ),
                                         );
                                       },
@@ -306,6 +307,12 @@ class _HomeScreenState extends State<Page2> {
           ],
         ),
       ),
+      // Floating chatbot icon on bottom right
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 16, right: 16),
+        child: ChatbotIcon(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

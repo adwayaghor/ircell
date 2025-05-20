@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 
 class Page1 extends StatefulWidget {
   const Page1({super.key});
@@ -101,19 +102,18 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: const Text("Information"),
-                          content: const Text(
-                            "This is the International Relations Cell app.",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            ),
-                          ],
+                    builder: (context) => AlertDialog(
+                      title: const Text("Information"),
+                      content: const Text(
+                        "This is the International Relations Cell app.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
                         ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -132,7 +132,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 ),
                 const SizedBox(width: 8),
                 Material(
-                  color: Colors.transparent, // to keep your design intact
+                  color: Colors.transparent,
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
@@ -174,6 +174,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         controller: _tabController,
         children: [_buildFeaturedSuggestions(), _buildLikedEvents()],
       ),
+
+      // <-- Added floating chatbot icon here
+      floatingActionButton: const ChatbotIcon(),
     );
   }
 
@@ -215,7 +218,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       },
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
@@ -266,8 +269,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     Text(
                       'Event ${index + 1}',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -337,8 +340,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     Text(
                       'Featured Event ${index + 1}',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

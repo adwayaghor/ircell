@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 
 class Page4 extends StatefulWidget {
   const Page4({super.key});
@@ -135,7 +136,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                   ),
                   const SizedBox(width: 8),
                   Material(
-                    color: Colors.transparent, // to keep your design intact
+                    color: Colors.transparent,
                     shape: const CircleBorder(),
                     child: InkWell(
                       customBorder: const CircleBorder(),
@@ -181,19 +182,28 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 unselectedLabelColor: Colors.white70,
                 indicatorColor: Colors.white,
                 indicatorWeight: 3,
-                // isScrollable: true,
                 labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Stack(
         children: [
-          _buildResourcesTab(),
-          _buildArticlesTab(),
-          _buildVideosTab(),
+          TabBarView(
+            controller: _tabController,
+            children: [
+              _buildResourcesTab(),
+              _buildArticlesTab(),
+              _buildVideosTab(),
+            ],
+          ),
+          // Chatbot icon positioned in the bottom right corner
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ChatbotIcon(),
+          ),
         ],
       ),
     );
@@ -209,10 +219,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Japan Facilitation Centre
             const Text(
               'Japan Facilitation Centre',
-              //style: AppTheme.headingStyle,
             ),
             const SizedBox(height: 16),
             SingleChildScrollView(
@@ -238,10 +246,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
 
             const SizedBox(height: 32),
 
-            // Higher Studies Archive
             const Text(
               'Higher Studies Archive',
-              //style: AppTheme.headingStyle,
             ),
             const SizedBox(height: 16),
             SingleChildScrollView(
@@ -271,7 +277,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               ),
             ),
 
-            // Add user information and sign out button at the bottom
             const SizedBox(height: 24),
             userUID(),
             const SizedBox(height: 20),
@@ -292,10 +297,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Alumni Blogs
             const Text(
               'Alumni Blogs',
-              //style: AppTheme.headingStyle
             ),
             const SizedBox(height: 16),
             SingleChildScrollView(
@@ -331,7 +334,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
-            // Add some placeholder content
             const SizedBox(height: 24),
             _buildArticlesList(),
           ],
@@ -400,110 +402,110 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
     );
   }
 
-Widget _buildVideosTab() {
-  final screenWidth = MediaQuery.of(context).size.width;
-  final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-  final crossAxisCount = screenWidth > 600 ? 3 : 2;
+  Widget _buildVideosTab() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+    final crossAxisCount = screenWidth > 600 ? 3 : 2;
 
-  return SingleChildScrollView(
-    child: Padding(
-      padding: EdgeInsets.all(contentPadding),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(contentPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Featured Videos',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return _buildVideoCard(index);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoCard(int index) {
+    return Container(
+      decoration: AppTheme.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Featured Videos',
-            style: TextStyle(
-              color: AppTheme.textPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.accentBlue.withOpacity(0.7),
+                      AppTheme.darkTeal.withOpacity(0.5),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.play_circle_outline,
+                    size: 40,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Video Title ${index + 1}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '2:45 • May ${10 + index}, 2025',
+                  style: const TextStyle(
+                    fontSize: 12, 
+                    color: AppTheme.textSecondary
+                  ),
+                ),
+              ],
             ),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return _buildVideoCard(index);
-            },
           ),
         ],
       ),
-    ),
-  );
-}
-
-Widget _buildVideoCard(int index) {
-  return Container(
-    decoration: AppTheme.cardDecoration,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.accentBlue.withOpacity(0.7),
-                    AppTheme.darkTeal.withOpacity(0.5),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.play_circle_outline,
-                  size: 40,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Video Title ${index + 1}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '2:45 • May ${10 + index}, 2025',
-                style: const TextStyle(
-                  fontSize: 12, 
-                  color: AppTheme.textSecondary
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildFacilitationCard({
     String title = 'Japan Study & Career Support',
@@ -522,7 +524,6 @@ Widget _buildVideoCard(int index) {
             children: [
               Text(
                 title,
-                //style: AppTheme.subHeadingStyl
               ),
               const SizedBox(height: 8),
               Text(
@@ -547,7 +548,6 @@ Widget _buildVideoCard(int index) {
     required String date,
   }) {
     return Container(
-      //decoration: AppTheme.successStoryDecoration,
       padding: const EdgeInsets.all(16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -596,7 +596,6 @@ Widget _buildVideoCard(int index) {
                       'Read more',
                       style: TextStyle(
                         fontSize: 12,
-                        //color: AppTheme.primaryBlue,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -612,7 +611,6 @@ Widget _buildVideoCard(int index) {
 
   Widget _buildArchiveItem({required String title, required IconData icon}) {
     return Container(
-      //decoration: AppTheme.successStoryDecoration,
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
