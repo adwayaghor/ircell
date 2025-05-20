@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/screens/profile_page.dart';
 
 class Page1 extends StatefulWidget {
   const Page1({super.key});
@@ -29,7 +30,10 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _pageController = PageController(initialPage: _currentCardIndex, viewportFraction: 0.8);
+    _pageController = PageController(
+      initialPage: _currentCardIndex,
+      viewportFraction: 0.8,
+    );
     _pageController.addListener(_handlePageChange);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoScroll();
@@ -45,7 +49,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   }
 
   void _handlePageChange() {
-    if (!_pageController.hasClients || !_pageController.position.haveDimensions) return;
+    if (!_pageController.hasClients || !_pageController.position.haveDimensions)
+      return;
 
     final double page = _pageController.page ?? 0;
 
@@ -87,49 +92,81 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                        decoration: AppTheme.glassDecoration,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.info_outline,
-                            color: AppTheme.textPrimary,
+              decoration: AppTheme.glassDecoration,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text("Information"),
+                          content: const Text(
+                            "This is the International Relations Cell app.",
                           ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: const Text("Information"),
-                                    content: const Text(
-                                      "This is the International Relations Cell app.",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          },
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("OK"),
+                            ),
+                          ],
                         ),
-                      ),
+                  );
+                },
+              ),
+            ),
             Row(
               children: [
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
-                    icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
+                    icon: const Icon(
+                      Icons.notifications_outlined,
+                      color: AppTheme.textPrimary,
+                    ),
                     onPressed: () {},
                   ),
                 ),
                 const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: AppTheme.accentBlue,
-                  child: const Text('A', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                Material(
+                  color: Colors.transparent, // to keep your design intact
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppTheme.accentBlue,
+                      child: const Text(
+                        'A',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ],
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [Tab(text: 'Featured'), Tab(text: 'Liked')],
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
         ),
       ),
 
@@ -178,32 +215,13 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        _originalCardCount,
-                        (index) => GestureDetector(
-                          onTap: () => _scrollToCard(index),
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: (_currentCardIndex - 1) % _originalCardCount == index
-                                  ? AppTheme.accentBlue
-                                  : AppTheme.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('Suggestions', style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(
+                      'Suggestions',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                   ),
                   _buildSuggestionList(),
                 ],
@@ -213,23 +231,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         );
       },
     );
-  }
-
-  void _scrollToCard(int index) {
-    if (_pageController.hasClients) {
-      _autoScrollTimer?.cancel();
-      final adjustedIndex = index + 1;
-      _pageController.animateToPage(
-        adjustedIndex,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-      Future.delayed(const Duration(seconds: 5), () {
-        if (mounted && _isAutoScrolling) {
-          _startAutoScroll();
-        }
-      });
-    }
   }
 
   Widget _buildSuggestionList() {
@@ -277,7 +278,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.arrow_forward_ios, color: AppTheme.textSecondary, size: 16),
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppTheme.textSecondary,
+                  size: 16,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -305,7 +310,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 topRight: Radius.circular(16),
               ),
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+                image: NetworkImage(
+                  'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -338,7 +345,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.calendar_today, color: AppTheme.textSecondary, size: 14),
+                        Icon(
+                          Icons.calendar_today,
+                          color: AppTheme.textSecondary,
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
@@ -367,9 +378,15 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         children: [
           Icon(Icons.favorite_border, color: AppTheme.textSecondary, size: 64),
           const SizedBox(height: 16),
-          Text('No liked events yet', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'No liked events yet',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
-          Text('Your liked events will appear here', style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            'Your liked events will appear here',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ],
       ),
     );

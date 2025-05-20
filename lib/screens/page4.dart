@@ -4,10 +4,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
 
-class Page4 extends StatelessWidget {
-  Page4({super.key});
+class Page4 extends StatefulWidget {
+  const Page4({super.key});
 
+  @override
+  State<Page4> createState() => _Page4State();
+}
+
+class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  
   final User? user = Auth().currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   Future<void> signOut(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -33,9 +52,7 @@ class Page4 extends StatelessWidget {
       try {
         await Auth().signOut();
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const SplashScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const SplashScreen()),
           (route) => false,
         );
       } on FirebaseAuthException catch (e) {
@@ -70,219 +87,526 @@ class Page4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final padding = MediaQuery.of(context).padding;
+    
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+                decoration: AppTheme.glassDecoration,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.info_outline,
+                    color: AppTheme.textPrimary,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text("Information"),
+                            content: const Text(
+                              "This is the International Relations Cell app.",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                    );
+                  },
+                ),
+              ),
         title: const Text('IR Community'),
         actions: [
-          IconButton(
-            icon: const CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                'A',
-                style: TextStyle(
-                  //color: AppTheme.primaryBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            onPressed: () {
-              // Profile action
-            },
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Categories tabs
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildCategoryChip('Resources', isSelected: true),
-                    _buildCategoryChip('Articles'),
-                    _buildCategoryChip('Videos'),
-                    _buildCategoryChip('Guides'),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Japan Facilitation Centre
-              const Text(
-                'Japan Facilitation Centre',
-                //style: AppTheme.headingStyle,
-              ),
-              const SizedBox(height: 16),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildFacilitationCard(),
-                    const SizedBox(width: 16),
-                    _buildFacilitationCard(
-                      title: 'Job Placement in Japan',
-                      description:
-                          'Connect with top Japanese companies and get placed in your dream job.',
+              Row(
+                children: [
+                  Container(
+                    decoration: AppTheme.glassDecoration,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.notifications_outlined,
+                        color: AppTheme.textPrimary,
+                      ),
+                      onPressed: () {},
                     ),
-                    const SizedBox(width: 16),
-                    _buildFacilitationCard(
-                      title: 'Language Training',
-                      description:
-                          'Intensive Japanese language courses for international students and professionals.',
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Alumni Blogs
-              const Text(
-                'Alumni Blogs',
-                //style: AppTheme.headingStyle
-              ),
-              const SizedBox(height: 16),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      child: _buildBlogItem(
-                        title: 'My Experience at Tokyo University',
-                        author: 'Akira Tanaka',
-                        date: 'May 10, 2025',
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundColor: AppTheme.accentBlue,
+                    child: const Text(
+                      'A',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      child: _buildBlogItem(
-                        title: 'Navigating Student Life in Osaka',
-                        author: 'Chen Wei',
-                        date: 'April 22, 2025',
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      child: _buildBlogItem(
-                        title: 'From Engineering Student to Tech Lead in Tokyo',
-                        author: 'Kim Soo-jin',
-                        date: 'March 15, 2025',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 32),
-
-              // Higher Studies Archive
-              const Text(
-                'Higher Studies Archive',
-                //style: AppTheme.headingStyle,
-              ),
-              const SizedBox(height: 16),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildArchiveItem(
-                      title: 'Colleges in Germany',
-                      icon: Icons.school,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildArchiveItem(
-                      title: 'US Scholarships',
-                      icon: Icons.attach_money,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildArchiveItem(
-                      title: 'UK Universities',
-                      icon: Icons.account_balance,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildArchiveItem(
-                      title: 'Australia Education',
-                      icon: Icons.menu_book,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Guidance Section
-              const Text(
-                'Guidance',
-                //style: AppTheme.headingStyle
-              ),
-              const SizedBox(height: 16),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildGuidanceItem(
-                      title: 'SOP Writing',
-                      description:
-                          'Learn how to write effective statements of purpose',
-                      icon: Icons.edit_document,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildGuidanceItem(
-                      title: 'Visa Registration',
-                      description:
-                          'Step-by-step guide to student visa applications',
-                      icon: Icons.card_travel,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildGuidanceItem(
-                      title: 'Interview Prep',
-                      description: 'Tips for university admission interviews',
-                      icon: Icons.record_voice_over,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildGuidanceItem(
-                      title: 'Scholarship Apps',
-                      description: 'How to find and apply for scholarships',
-                      icon: Icons.school,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-              userUID(),
-              const SizedBox(height: 20),
-              signOutButton(context),
             ],
           ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Resources'),
+                  Tab(text: 'Articles'),
+                  Tab(text: 'Videos'),
+                  // Tab(text: 'Guides'),
+                ],
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white70,
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+                // isScrollable: true,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildResourcesTab(),
+          _buildArticlesTab(),
+          _buildVideosTab(),
+          _buildGuidesTab(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResourcesTab() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+    
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(contentPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Japan Facilitation Centre
+            const Text(
+              'Japan Facilitation Centre',
+              //style: AppTheme.headingStyle,
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFacilitationCard(),
+                  const SizedBox(width: 16),
+                  _buildFacilitationCard(
+                    title: 'Job Placement in Japan',
+                    description:
+                        'Connect with top Japanese companies and get placed in your dream job.',
+                  ),
+                  const SizedBox(width: 16),
+                  _buildFacilitationCard(
+                    title: 'Language Training',
+                    description:
+                        'Intensive Japanese language courses for international students and professionals.',
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Higher Studies Archive
+            const Text(
+              'Higher Studies Archive',
+              //style: AppTheme.headingStyle,
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildArchiveItem(
+                    title: 'Colleges in Germany',
+                    icon: Icons.school,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildArchiveItem(
+                    title: 'US Scholarships',
+                    icon: Icons.attach_money,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildArchiveItem(
+                    title: 'UK Universities',
+                    icon: Icons.account_balance,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildArchiveItem(
+                    title: 'Australia Education',
+                    icon: Icons.menu_book,
+                  ),
+                ],
+              ),
+            ),
+
+            // Add user information and sign out button at the bottom
+            const SizedBox(height: 24),
+            userUID(),
+            const SizedBox(height: 20),
+            signOutButton(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryChip(String label, {bool isSelected = false}) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      child: Chip(
-        label: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : AppTheme.textPrimary,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+  Widget _buildArticlesTab() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+    
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(contentPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Alumni Blogs
+            const Text(
+              'Alumni Blogs',
+              //style: AppTheme.headingStyle
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: _buildBlogItem(
+                      title: 'My Experience at Tokyo University',
+                      author: 'Akira Tanaka',
+                      date: 'May 10, 2025',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: _buildBlogItem(
+                      title: 'Navigating Student Life in Osaka',
+                      author: 'Chen Wei',
+                      date: 'April 22, 2025',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: _buildBlogItem(
+                      title: 'From Engineering Student to Tech Lead in Tokyo',
+                      author: 'Kim Soo-jin',
+                      date: 'March 15, 2025',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Add some placeholder content
+            const SizedBox(height: 24),
+            _buildArticlesList(),
+          ],
         ),
-        //backgroundColor: isSelected ? AppTheme.primaryBlue : Colors.grey[200],
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    );
+  }
+
+  Widget _buildArticlesList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12.0),
+          padding: const EdgeInsets.all(16.0),
+          decoration: AppTheme.glassDecoration,
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.article, size: 30, color: Colors.grey),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Article Title ${index + 1}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Short description of article ${index + 1} with important information.',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppTheme.textSecondary,
+                  size: 16,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildVideosTab() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+    final crossAxisCount = screenWidth > 600 ? 3 : 2;
+    
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(contentPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Featured Videos',
+              //style: AppTheme.headingStyle,
+            ),
+            const SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return _buildVideoCard(index);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoCard(int index) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                color: Colors.blue.withOpacity(0.3),
+                child: const Center(
+                  child: Icon(
+                    Icons.play_circle_outline,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Video Title ${index + 1}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '2:45 • May ${10 + index}, 2025',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGuidesTab() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
+    
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(contentPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Guidance Section
+            const Text(
+              'Guidance',
+              //style: AppTheme.headingStyle
+            ),
+            const SizedBox(height: 16),
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildGuideItem(
+                  title: 'SOP Writing',
+                  description:
+                      'Learn how to write effective statements of purpose',
+                  icon: Icons.edit_document,
+                ),
+                const SizedBox(height: 16),
+                _buildGuideItem(
+                  title: 'Visa Registration',
+                  description:
+                      'Step-by-step guide to student visa applications',
+                  icon: Icons.card_travel,
+                ),
+                const SizedBox(height: 16),
+                _buildGuideItem(
+                  title: 'Interview Prep',
+                  description: 'Tips for university admission interviews',
+                  icon: Icons.record_voice_over,
+                ),
+                const SizedBox(height: 16),
+                _buildGuideItem(
+                  title: 'Scholarship Apps',
+                  description: 'How to find and apply for scholarships',
+                  icon: Icons.school,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuideItem({
+    required String title,
+    required String description,
+    required IconData icon,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 32, color: Colors.blue),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_forward_ios,
+              color: AppTheme.textSecondary,
+              size: 16,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
     );
   }
@@ -409,50 +733,6 @@ class Page4 extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGuidanceItem({
-    required String title,
-    required String description,
-    required IconData icon,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 32, color: Colors.blue),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            description,
-            style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
