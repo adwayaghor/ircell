@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ircell/backend/firestore_service.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/screens/tabs_screen.dart';
 
@@ -7,12 +10,13 @@ class Onboarding extends StatefulWidget {
   final String email;
   final String password;
   @override
-  _OnboardingScreenState createState() => _OnboardingScreenState();
+  State<Onboarding> createState() => _OnboardState();
 }
 
-class _OnboardingScreenState extends State<Onboarding> {
+class _OnboardState extends State<Onboarding> {
   late String email;
   late String password;
+  final user_type = '';
 
   @override
   void initState() {
@@ -28,7 +32,6 @@ class _OnboardingScreenState extends State<Onboarding> {
 
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for Page 2
   final TextEditingController emailController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -87,7 +90,7 @@ class _OnboardingScreenState extends State<Onboarding> {
     }
   }
 
-  void _previousPage() {
+   void _previousPage() {
     if (currentPage > 0) {
       setState(() => currentPage--);
       _pageController.previousPage(
@@ -677,11 +680,23 @@ class _OnboardingScreenState extends State<Onboarding> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // Validate the form first
+                  final isValid = _formKey.currentState!.validate();
+                  if (!isValid) return;
+
+                  _formKey.currentState!.save();
+
                   try {
+                    // Register user in Firebase
                     await Auth().createUserWithEmailAndPassword(
                       email: email,
                       password: password,
                     );
+
+                    // Then save form data to Firestore
+                    _submitForm();
+
+                    // Navigate after successful registration & Firestore write
                     // ignore: use_build_context_synchronously
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const TabsScreen()),
@@ -783,4 +798,82 @@ class _OnboardingScreenState extends State<Onboarding> {
       ),
     );
   }
+
+  void _submitForm() async {
+    
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) {
+    _showErrorDialog("User ID not found. Please try again.");
+    return;
+  }
+
+  final firestoreService = FirestoreService();
+
+  // Collect common data
+  final commonData = {
+    'email': email,
+    'first_name': firstNameController.text,
+    'last_name': lastNameController.text,
+    'contact': contactController.text,
+    'interests': selectedInterests,
+    'timestamp': FieldValue.serverTimestamp(),
+  };
+
+  try {
+    if (userType == 'pccoe') {
+      final data = {
+        ...commonData,
+        'roll_number': rollController.text,
+        'department': deptController.text,
+        'year': yearController.text,
+      };
+      await firestoreService.addPccoeStudent(uid, data);
+    } else if (userType == 'international') {
+      final data = {
+        ...commonData,
+        'prn': prnController.text,
+        'quota': quotaController.text,
+        'branch': branchController.text,
+        'full_name': fullNameController.text,
+        'parents_name': parentsNameController.text,
+        'admitted_year': admittedYearController.text,
+        'current_year': currentYearController.text,
+        'gender': genderController.text,
+        'nationality': nationalityController.text,
+        'id_document': idDocumentController.text,
+        'passport_number': passportNumberController.text,
+        'passport_photo': passportPhotoController.text,
+      };
+      await firestoreService.addInternationalStudent(uid, data);
+    } else if (userType == 'alumni') {
+      final data = {
+        ...commonData,
+        'passout_year': passOutYearController.text,
+        'qualification': highestQualificationController.text,
+        'pg_name': pgNameController.text,
+        'industry': industryNameController.text,
+        'designation': designationController.text,
+        'state': stateNameController.text,
+        'country': countryNameController.text,
+        'linkedin': linkedinController.text,
+        'question_response': questionController.text,
+      };
+      await firestoreService.addAlumni(uid, data);
+    } else if (userType == 'external') {
+      final data = {
+        ...commonData,
+        'institute_type': externalCollegeType,
+        'college_name': collegeNameController.text,
+      };
+      await firestoreService.addExternalCollegeStudent(uid, data);
+    }
+
+    // Navigate after successful submission
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (ctx) => const TabsScreen(),
+    ));
+  } catch (e) {
+    _showErrorDialog('Something went wrong while saving your data. Please try again.\n\n$e');
+  }
+}
 }

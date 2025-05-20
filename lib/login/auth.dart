@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ircell/backend/shared_pref.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -23,24 +24,30 @@ class Auth {
     }
   }
   Future<void> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw e;
+  required String email,
+  required String password,
+}) async {
+  try {
+    await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      await LocalStorage.saveUID(uid);
     }
+  } on FirebaseAuthException catch (e) {
+    throw e;
   }
+}
+
 
   Future<void> signOut() async {
-    try {
-      await _firebaseAuth.signOut();
-    } on FirebaseAuthException catch (e) {
-      throw e;
-    }
+  try {
+    await _firebaseAuth.signOut();
+    await LocalStorage.clearUID(); // clear stored UID
+  } on FirebaseAuthException catch (e) {
+    throw e;
   }
+}
 }
