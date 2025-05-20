@@ -80,6 +80,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(

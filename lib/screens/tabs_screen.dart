@@ -59,12 +59,12 @@ class _TabsScreenState extends State<TabsScreen> {
             showSelectedLabels: true,
             showUnselectedLabels: true,
             items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Featured'),
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-              BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Saved'),
-              BottomNavigationBarItem(icon: Icon(Icons.notifications_none), label: 'Notifications'),
+              BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'Tickets'),
+              BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Community'),
             ],
-          ),
+          ),  
         ),
       ),
     );
