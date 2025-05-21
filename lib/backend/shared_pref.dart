@@ -54,15 +54,3 @@ class EventCache {
     return null;
   }
 }
-
-List<String> scannedRollNumbers = [];
-
-Future<void> saveAttendanceList() async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList('attendance', scannedRollNumbers);
-}
-
-Future<void> loadAttendanceList() async {
-  final prefs = await SharedPreferences.getInstance();
-  scannedRollNumbers = prefs.getStringList('attendance') ?? [];
-}

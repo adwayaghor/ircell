@@ -3,11 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AttendanceListScreen extends StatelessWidget {
-  const AttendanceListScreen({super.key});
+  const AttendanceListScreen({super.key, required this.eventId});
+
+  final String eventId;
+  
 
   Future<List<String>> _getAttendanceList() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('attendance') ?? [];
+    return prefs.getStringList('attendance_$eventId') ?? [];
   }
 
   Future<void> _publishAttendance(BuildContext context) async {
@@ -27,7 +30,7 @@ class AttendanceListScreen extends StatelessWidget {
     final timestamp = DateTime.now().toIso8601String();
 
     try {
-      await firestore.collection('event_attendance').doc('timestamp').set({
+      await firestore.collection('event_attendance').doc(eventId).set({
         'published_at': timestamp,
         'attendees': attendanceList,
       });
@@ -98,7 +101,7 @@ class AttendanceListScreen extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      'Roll No: ${list[index]}',
+                      'UID: ${list[index]}',
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   ),

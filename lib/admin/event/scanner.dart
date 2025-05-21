@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/attend_list.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -14,9 +13,25 @@ class AttendanceScannerScreen extends StatefulWidget {
 }
 
 class _AttendanceScannerScreenState extends State<AttendanceScannerScreen> {
+
   final List<String> scannedRollNumbers = [];
   bool isScanning = true;
   bool isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadAttendanceList();
+  }
+
+  Future<void> loadAttendanceList() async {
+  final prefs = await SharedPreferences.getInstance();
+  final savedList = prefs.getStringList('attendance_${widget.eventId}') ?? [];
+  setState(() {
+    scannedRollNumbers.addAll(savedList);
+  });
+}
+
 
   void _onDetect(BarcodeCapture capture) async {
     if (isProcessing) return;
@@ -27,16 +42,15 @@ class _AttendanceScannerScreenState extends State<AttendanceScannerScreen> {
       setState(() {
         isProcessing = true;
         scannedRollNumbers.add(code);
-        
       });
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('attendance', scannedRollNumbers);
+      await prefs.setStringList('attendance_${widget.eventId}', scannedRollNumbers);
 
       // Show Snackbar confirmation
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Roll No: $code scanned and added'),
+          content: Text('UID: $code scanned and added'),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 2),
         ),
@@ -48,6 +62,10 @@ class _AttendanceScannerScreenState extends State<AttendanceScannerScreen> {
         isProcessing = false;
       });
     }
+
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("UID already scanned"), backgroundColor: Colors.orange, duration: const Duration(seconds: 2)));
+    }
   }
 
   void _exitScanning() {
@@ -55,14 +73,14 @@ class _AttendanceScannerScreenState extends State<AttendanceScannerScreen> {
       isScanning = false;
     });
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return AttendanceListScreen();
+      return AttendanceListScreen(eventId: widget.eventId,);
     },));
   }
 
   void _viewAttendanceList() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const AttendanceListScreen(),
+        builder: (context) => AttendanceListScreen(eventId: widget.eventId,),
       ),
     );
   }
