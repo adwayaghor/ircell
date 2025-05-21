@@ -6,6 +6,9 @@ import 'package:ircell/providers/event_provider.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/event_details.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/info.dart';
+import 'package:ircell/screens/notification.dart';
+
 
 class Page1 extends StatefulWidget {
   const Page1({super.key});
@@ -102,28 +105,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             Container(
               decoration: AppTheme.glassDecoration,
               child: IconButton(
-                icon: const Icon(
-                  Icons.info_outline,
-                  color: AppTheme.textPrimary,
-                ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: const Text("Information"),
-                          content: const Text(
-                            "This is the International Relations Cell app.",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                  );
-                },
+                icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+                onPressed: () => PageInfo.showInfoDialog(context, 'Page1'), 
               ),
             ),
             Row(
@@ -131,11 +114,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppTheme.textPrimary,
-                    ),
-                    onPressed: () {},
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () => PageNotification.showNotificationDialog(context, 'Page1'),
+                    // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
                 const SizedBox(width: 8),
