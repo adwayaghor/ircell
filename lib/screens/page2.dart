@@ -7,6 +7,8 @@ import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
 import 'package:ircell/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/info.dart';
+import 'package:ircell/screens/notification.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key});
@@ -119,30 +121,10 @@ class _HomeScreenState extends State<Page2> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-                        decoration: AppTheme.glassDecoration,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.info_outline,
-                            color: AppTheme.textPrimary,
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: const Text("Information"),
-                                    content: const Text(
-                                      "This is the International Relations Cell app.",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                          },
+                      decoration: AppTheme.glassDecoration,
+                       child: IconButton(
+                        icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+                        onPressed: () => PageInfo.showInfoDialog(context, 'Page2'), 
                         ),
                       ),
             Row(
@@ -150,8 +132,9 @@ class _HomeScreenState extends State<Page2> {
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
-                    icon: const Icon(Icons.notifications_outlined, color: AppTheme.textPrimary),
-                    onPressed: () {},
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () => PageNotification.showNotificationDialog(context, 'Page2'),
+                    // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
                 const SizedBox(width: 8),
