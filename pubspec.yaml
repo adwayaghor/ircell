@@ -45,6 +45,8 @@ dependencies:
   carousel_slider: ^5.0.0
   shared_preferences: ^2.5.3
   font_awesome_flutter: ^10.8.0
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.0.0
 
 dev_dependencies:
   flutter_test:

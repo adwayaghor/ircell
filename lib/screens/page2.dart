@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/models/dashed_line_painter.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/events_screen.dart';
 import 'package:ircell/screens/activities/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
@@ -185,125 +186,135 @@ class _HomeScreenState extends State<Page2> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top strip with text below app bar
-            Container(
-              width: double.infinity,
-              height: 50,
-              color: AppTheme.accentBlue,
-              alignment: Alignment.center,
-              child: const Text(
-                "International Relations Cell",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+        child: Stack(
+          children:[
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildCategoryButtons(),
-                      // Separator line (dashed)
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: CustomPaint(
-                            size: Size(MediaQuery.of(context).size.width * 0.8, 1),
-                            painter: DashedLinePainter(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: buildCard(
-                                  "Events",
-                                  'assets/images/events.png',
-                                  190,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    buildCard(
-                                      "Student Mobility",
-                                      'assets/images/student_mobility.png',
-                                      90,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    buildCard(
-                                      "International Alumni",
-                                      'assets/images/international_alumini.png',
-                                      90,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    buildCard(
-                                      "About Us",
-                                      'assets/images/about_us.png',
-                                      95,
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) =>
-                                                    const AboutUsPage(),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    buildCard(
-                                      "International Students",
-                                      'assets/images/international_students.png',
-                                      95,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: buildCard(
-                                  "Higher Studies",
-                                  'assets/images/higher_studies.png',
-                                  200,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+          Column(
+            children: [
+              // Top strip with text below app bar
+              Container(
+                width: double.infinity,
+                height: 50,
+                color: AppTheme.accentBlue,
+                alignment: Alignment.center,
+                child: const Text(
+                  "International Relations Cell",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-            ),
-          ],
+          
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildCategoryButtons(),
+                        // Separator line (dashed)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: CustomPaint(
+                              size: Size(MediaQuery.of(context).size.width * 0.8, 1),
+                              painter: DashedLinePainter(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: buildCard(
+                                    "Events",
+                                    'assets/images/events.png',
+                                    190,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      buildCard(
+                                        "Student Mobility",
+                                        'assets/images/student_mobility.png',
+                                        90,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      buildCard(
+                                        "International Alumni",
+                                        'assets/images/international_alumini.png',
+                                        90,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    children: [
+                                      buildCard(
+                                        "About Us",
+                                        'assets/images/about_us.png',
+                                        95,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const AboutUsPage(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                      buildCard(
+                                        "International Students",
+                                        'assets/images/international_students.png',
+                                        95,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: buildCard(
+                                    "Higher Studies",
+                                    'assets/images/higher_studies.png',
+                                    200,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ChatbotIcon(),
+          ),
+          ] 
         ),
       ),
     );

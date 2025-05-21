@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -17,4 +18,51 @@ class LocalStorage {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(_uidKey);
   }
+}
+
+
+class EventCache {
+  static const _key = 'cached_user_event_data';
+
+  static Future<void> cacheEvents(String uid, List<String> events) async {
+    final prefs = await SharedPreferences.getInstance();
+    final Map<String, dynamic> data = {
+      'uid': uid,
+      'events': events,
+    };
+    prefs.setString(_key, jsonEncode(data));
+  }
+
+  static Future<List<String>> getCachedEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_key);
+    if (jsonString != null) {
+      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      final List<dynamic> jsonList = jsonMap['events'];
+      return List<String>.from(jsonList);
+    }
+    return [];
+  }
+
+  static Future<String?> getCachedUid() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_key);
+    if (jsonString != null) {
+      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      return jsonMap['uid'] as String?;
+    }
+    return null;
+  }
+}
+
+List<String> scannedRollNumbers = [];
+
+Future<void> saveAttendanceList() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList('attendance', scannedRollNumbers);
+}
+
+Future<void> loadAttendanceList() async {
+  final prefs = await SharedPreferences.getInstance();
+  scannedRollNumbers = prefs.getStringList('attendance') ?? [];
 }

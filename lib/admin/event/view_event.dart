@@ -1,11 +1,12 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/event_actions.dart';
+import 'package:ircell/admin/event/scanner.dart';
 import 'package:ircell/providers/event_provider.dart';
 
 class ViewEvents extends StatefulWidget {
-  const ViewEvents({super.key});
+  const ViewEvents({super.key, required this.function});
+
+  final String function;
 
   @override
   State<ViewEvents> createState() => _ViewEventsState();
@@ -14,18 +15,19 @@ class ViewEvents extends StatefulWidget {
 class _ViewEventsState extends State<ViewEvents> {
   late Future<List<Event>> _eventsFuture;
 
+  late String function;
+
   @override
   void initState() {
     super.initState();
+    function = widget.function;
     _eventsFuture = fetchAllEvents();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Events'),
-      ),
+      appBar: AppBar(title: const Text('Events')),
       body: FutureBuilder<List<Event>>(
         future: _eventsFuture,
         builder: (context, snapshot) {
@@ -44,7 +46,21 @@ class _ViewEventsState extends State<ViewEvents> {
                 return ListTile(
                   title: Text(event.title),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => EventActions(eventId: event.id)));
+                    if (function == 'publish') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AttendanceScannerScreen(eventId: event.id),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EventActions(eventId: event.id),
+                        ),
+                      );
+                    }
                   },
                 );
               },

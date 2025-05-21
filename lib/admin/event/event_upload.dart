@@ -34,7 +34,7 @@ class EventUpload extends StatelessWidget {
               onTap: () {
                 Navigator.of(
                   context,
-                ).push(MaterialPageRoute(builder: (ctx) => ViewEvents()));
+                ).push(MaterialPageRoute(builder: (ctx) => ViewEvents(function: 'view',)));
               },
               child: Card(
                 child: Padding(

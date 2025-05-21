@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/providers/event_provider.dart';
+import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/event_details.dart';
 import 'package:ircell/screens/profile_page.dart';
 
@@ -177,9 +178,19 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         ),
       ),
 
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildFeaturedSuggestions(), _buildLikedEvents()],
+      body: Stack(
+        children:[
+
+         TabBarView(
+          controller: _tabController,
+          children: [_buildFeaturedSuggestions(), _buildLikedEvents()],
+        ),
+        Positioned(
+            bottom: 20,
+            right: 20,
+            child: ChatbotIcon(),
+          ),
+        ]
       ),
     );
   }

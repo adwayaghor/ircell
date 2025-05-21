@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/event_upload.dart';
+import 'package:ircell/admin/event/view_event.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
@@ -27,14 +28,14 @@ class AdminPage extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                // Navigator.of(
-                //   context,
-                // ).push(MaterialPageRoute(builder: (ctx) => EventUpload()));
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (ctx) => ViewEvents(function: 'publish',)));
               },
               child: Card(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Text('Users'),
+                  child: Text('Attendance Scanner'),
                 ),
               ),
             ),
