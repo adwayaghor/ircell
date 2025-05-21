@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/event_actions.dart';
-import 'package:ircell/admin/event/scanner.dart';
+import 'package:ircell/admin/event/middle_screen.dart';
 import 'package:ircell/providers/event_provider.dart';
 
 class ViewEvents extends StatefulWidget {
@@ -50,7 +50,7 @@ class _ViewEventsState extends State<ViewEvents> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AttendanceScannerScreen(eventId: event.id),
+                          builder: (_) => MiddleScreen(eventId: event.id),
                         ),
                       );
                     } else {
