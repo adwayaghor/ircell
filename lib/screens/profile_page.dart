@@ -1,5 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/login/auth.dart';
+import 'package:ircell/login/splash_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,17 +22,14 @@ class _ProfilePageState extends State<ProfilePage> {
     final double horizontalPadding = screenSize.width * 0.04;
     final double verticalPadding = screenSize.height * 0.02;
     final double iconSize = screenSize.width * 0.06;
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        // Removed leading and automatically implied leading properties
-        // This will prevent the double back button issue
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Using empty container to maintain alignment
             const SizedBox(width: 48),
             Text(
               'Profile',
@@ -41,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: AppTheme.glassDecoration,
               child: IconButton(
                 icon: Icon(
-                  Icons.edit, 
+                  Icons.edit,
                   color: AppTheme.textPrimary,
                   size: iconSize,
                 ),
@@ -54,36 +56,43 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       backgroundColor: AppTheme.backgroundColor,
-      body: Container(
-        padding: EdgeInsets.all(horizontalPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile header section
-            _buildProfileHeader(),
-            
-            SizedBox(height: verticalPadding * 1.5),
-            
-            // Personal Info & Preferences tabs
-            _buildTabSelector(),
-            
-            SizedBox(height: verticalPadding),
-            
-            // Main content area based on selected tab
-            Expanded(
-              child: _selectedTab == 0 
-                ? _buildPersonalInfoContent() 
-                : _buildPreferencesContent(),
+      // Wrap the main body in a SafeArea to avoid system intrusions
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(horizontalPadding),
+          // Make the entire content scrollable
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile header section
+                _buildProfileHeader(),
+        
+                SizedBox(height: verticalPadding * 1.5),
+        
+                // Personal Info & Preferences tabs
+                _buildTabSelector(),
+        
+                SizedBox(height: verticalPadding),
+        
+                // Main content area based on selected tab
+                _selectedTab == 0
+                    ? _buildPersonalInfoContent()
+                    : _buildPreferencesContent(),
+        
+                SizedBox(height: verticalPadding),
+        
+                // Account actions section at bottom
+                _buildAccountActionsSection(),
+              ],
             ),
-            
-            // Account actions section at bottom
-            _buildAccountActionsSection(),
-          ],
+          ),
         ),
       ),
     );
   }
-  
+
   Widget _buildProfileHeader() {
     final Size screenSize = MediaQuery.of(context).size;
     final double profilePicSize = screenSize.width * 0.22;
@@ -91,8 +100,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final double smallFontSize = screenSize.width * 0.035;
     final double spacing = screenSize.height * 0.01;
     final double iconSize = screenSize.width * 0.04;
-    
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center, // Align items properly
       children: [
         // Profile Picture with glass decoration
         Container(
@@ -121,13 +131,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
-        
+
         SizedBox(width: screenSize.width * 0.04),
-        
+
         // Profile name and info
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // Only take necessary space
             children: [
               Text(
                 'John Doe',
@@ -136,7 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontWeight: FontWeight.bold,
                   color: AppTheme.textPrimary,
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // Handle text overflow
               ),
               SizedBox(height: spacing / 2),
               Text(
@@ -145,35 +156,40 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontSize: smallFontSize,
                   color: AppTheme.textSecondary,
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // Handle text overflow
               ),
               SizedBox(height: spacing),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenSize.width * 0.03,
-                  vertical: screenSize.height * 0.006,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentBlue.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(screenSize.width * 0.05),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.qr_code,
-                      color: AppTheme.accentBlue,
-                      size: iconSize,
-                    ),
-                    SizedBox(width: screenSize.width * 0.01),
-                    Text(
-                      'View QR Code',
-                      style: TextStyle(
-                        fontSize: smallFontSize,
+              InkWell(
+                onTap: () {
+                  // QR Code action
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenSize.width * 0.03,
+                    vertical: screenSize.height * 0.006,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentBlue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(screenSize.width * 0.05),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // Only take necessary space
+                    children: [
+                      Icon(
+                        Icons.qr_code,
                         color: AppTheme.accentBlue,
+                        size: iconSize,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: screenSize.width * 0.01),
+                      Text(
+                        'View QR Code',
+                        style: TextStyle(
+                          fontSize: smallFontSize,
+                          color: AppTheme.accentBlue,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -182,12 +198,12 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-  
+
   Widget _buildTabSelector() {
     final Size screenSize = MediaQuery.of(context).size;
     final double tabHeight = screenSize.height * 0.05;
     final double fontSize = screenSize.width * 0.04;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardColor.withOpacity(0.5),
@@ -206,7 +222,10 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: tabHeight * 0.5),
                 decoration: BoxDecoration(
-                  color: _selectedTab == 0 ? AppTheme.accentBlue.withOpacity(0.3) : Colors.transparent,
+                  color:
+                      _selectedTab == 0
+                          ? AppTheme.accentBlue.withOpacity(0.3)
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(screenSize.width * 0.03),
                 ),
                 child: Text(
@@ -214,14 +233,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: fontSize,
-                    color: _selectedTab == 0 ? AppTheme.textPrimary : AppTheme.textSecondary,
-                    fontWeight: _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
+                    color:
+                        _selectedTab == 0
+                            ? AppTheme.textPrimary
+                            : AppTheme.textSecondary,
+                    fontWeight:
+                        _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
             ),
           ),
-          
+
           // Preferences Tab
           Expanded(
             child: GestureDetector(
@@ -233,7 +256,10 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: tabHeight * 0.5),
                 decoration: BoxDecoration(
-                  color: _selectedTab == 1 ? AppTheme.accentBlue.withOpacity(0.3) : Colors.transparent,
+                  color:
+                      _selectedTab == 1
+                          ? AppTheme.accentBlue.withOpacity(0.3)
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(screenSize.width * 0.03),
                 ),
                 child: Text(
@@ -241,8 +267,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: fontSize,
-                    color: _selectedTab == 1 ? AppTheme.textPrimary : AppTheme.textSecondary,
-                    fontWeight: _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
+                    color:
+                        _selectedTab == 1
+                            ? AppTheme.textPrimary
+                            : AppTheme.textSecondary,
+                    fontWeight:
+                        _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
@@ -252,7 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  
+
   Widget _buildPersonalInfoContent() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
@@ -260,41 +290,46 @@ class _ProfilePageState extends State<ProfilePage> {
     final double titleSize = screenSize.width * 0.05;
     final double buttonHeight = screenSize.height * 0.06;
     final double iconSize = screenSize.width * 0.05;
-    
+
     return Container(
       width: double.infinity,
       decoration: AppTheme.glassDecoration.copyWith(
         borderRadius: BorderRadius.circular(screenSize.width * 0.04),
       ),
       padding: EdgeInsets.all(padding),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Personal Information',
-              style: TextStyle(
-                fontSize: titleSize,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
+      // Fixed height constraint removed to prevent overflow
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Take only needed space
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Personal Information',
+            style: TextStyle(
+              fontSize: titleSize,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
             ),
-            
-            SizedBox(height: spacing),
-            
-            // Personal info fields
-            _buildInfoItem('Email', 'john.doe@example.com', Icons.email),
-            SizedBox(height: spacing * 0.8),
-            _buildInfoItem('Phone', '+1 123 456 7890', Icons.phone),
-            SizedBox(height: spacing * 0.8),
-            _buildInfoItem('Department', 'Computer Science', Icons.school),
-            SizedBox(height: spacing * 0.8),
-            _buildInfoItem('Year', '3rd Year', Icons.calendar_today),
-            
-            SizedBox(height: spacing * 1.5),
-            
-            // Change password button
-            Container(
+          ),
+
+          SizedBox(height: spacing),
+
+          // Personal info fields
+          _buildInfoItem('Email', 'john.doe@example.com', Icons.email),
+          SizedBox(height: spacing * 0.8),
+          _buildInfoItem('Phone', '+1 123 456 7890', Icons.phone),
+          SizedBox(height: spacing * 0.8),
+          _buildInfoItem('Department', 'Computer Science', Icons.school),
+          SizedBox(height: spacing * 0.8),
+          _buildInfoItem('Year', '3rd Year', Icons.calendar_today),
+
+          SizedBox(height: spacing * 1.5),
+
+          // Change password button
+          InkWell(
+            onTap: () {
+              // Change password action
+            },
+            child: Container(
               width: double.infinity,
               height: buttonHeight,
               decoration: BoxDecoration(
@@ -321,20 +356,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-  
+
   Widget _buildInfoItem(String label, String value, IconData icon) {
     final Size screenSize = MediaQuery.of(context).size;
     final double iconContainerSize = screenSize.width * 0.1;
     final double iconSize = screenSize.width * 0.05;
     final double labelSize = screenSize.width * 0.035;
     final double valueSize = screenSize.width * 0.04;
-    
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center, // Align vertically
       children: [
         Container(
           width: iconContainerSize,
@@ -344,17 +380,14 @@ class _ProfilePageState extends State<ProfilePage> {
             borderRadius: BorderRadius.circular(screenSize.width * 0.02),
           ),
           child: Center(
-            child: Icon(
-              icon,
-              color: AppTheme.accentBlue,
-              size: iconSize,
-            ),
+            child: Icon(icon, color: AppTheme.accentBlue, size: iconSize),
           ),
         ),
         SizedBox(width: screenSize.width * 0.03),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // Take only necessary space
             children: [
               Text(
                 label,
@@ -369,7 +402,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontSize: valueSize,
                   color: AppTheme.textPrimary,
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // Handle text overflow
               ),
             ],
           ),
@@ -377,68 +410,73 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-  
+
   Widget _buildPreferencesContent() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
     final double spacing = screenSize.height * 0.015;
     final double titleSize = screenSize.width * 0.05;
     final double chipSpacing = screenSize.width * 0.02;
-    
+
     return Container(
       width: double.infinity,
       decoration: AppTheme.glassDecoration.copyWith(
         borderRadius: BorderRadius.circular(screenSize.width * 0.04),
       ),
       padding: EdgeInsets.all(padding),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Preferences',
-              style: TextStyle(
-                fontSize: titleSize,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
+      // Fixed height constraint removed to prevent overflow
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Take only needed space
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Preferences',
+            style: TextStyle(
+              fontSize: titleSize,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
             ),
-            
-            SizedBox(height: spacing),
-            
-            // Notification preferences
-            _buildSettingItem(
-              'Notifications', 
-              'Receive app notifications', 
-              Icons.notifications_none,
-              true,
+          ),
+
+          SizedBox(height: spacing),
+
+          // Notification preferences
+          _buildSettingItem(
+            'Notifications',
+            'Receive app notifications',
+            Icons.notifications_none,
+            true,
+          ),
+
+          SizedBox(height: spacing * 0.8),
+
+          // Email preferences
+          _buildSettingItem(
+            'Email updates',
+            'Receive updates via email',
+            Icons.mark_email_unread_outlined,
+            true,
+          ),
+
+          SizedBox(height: spacing),
+
+          Text(
+            'Interests',
+            style: TextStyle(
+              fontSize: titleSize,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
             ),
-            
-            SizedBox(height: spacing * 0.8),
-            
-            // Email preferences
-            _buildSettingItem(
-              'Email updates', 
-              'Receive updates via email', 
-              Icons.mark_email_unread_outlined,
-              true,
+          ),
+
+          SizedBox(height: spacing * 0.8),
+
+          // Interests chips - wrap in a ConstrainedBox to ensure it wraps properly
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: screenSize.width - (2 * padding),
             ),
-            
-            SizedBox(height: spacing),
-            
-            Text(
-              'Interests',
-              style: TextStyle(
-                fontSize: titleSize,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
-            
-            SizedBox(height: spacing * 0.8),
-            
-            // Interests chips
-            Wrap(
+            child: Wrap(
               spacing: chipSpacing,
               runSpacing: chipSpacing,
               children: [
@@ -449,11 +487,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildInterestChip('Diplomacy'),
               ],
             ),
-            
-            SizedBox(height: spacing),
-            
-            // Add interest button
-            Container(
+          ),
+
+          SizedBox(height: spacing),
+
+          // Add interest button
+          InkWell(
+            onTap: () {
+              // Add interest action
+            },
+            child: Container(
               padding: EdgeInsets.symmetric(
                 vertical: screenSize.height * 0.008,
                 horizontal: screenSize.width * 0.03,
@@ -481,20 +524,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-  
-  Widget _buildSettingItem(String title, String subtitle, IconData icon, bool value) {
+
+  Widget _buildSettingItem(
+    String title,
+    String subtitle,
+    IconData icon,
+    bool value,
+  ) {
     final Size screenSize = MediaQuery.of(context).size;
     final double iconContainerSize = screenSize.width * 0.1;
     final double iconSize = screenSize.width * 0.05;
     final double titleSize = screenSize.width * 0.04;
     final double subtitleSize = screenSize.width * 0.035;
-    
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center, // Align items properly
       children: [
         Container(
           width: iconContainerSize,
@@ -504,17 +553,14 @@ class _ProfilePageState extends State<ProfilePage> {
             borderRadius: BorderRadius.circular(screenSize.width * 0.02),
           ),
           child: Center(
-            child: Icon(
-              icon,
-              color: AppTheme.accentBlue,
-              size: iconSize,
-            ),
+            child: Icon(icon, color: AppTheme.accentBlue, size: iconSize),
           ),
         ),
         SizedBox(width: screenSize.width * 0.03),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // Take only needed space
             children: [
               Text(
                 title,
@@ -529,7 +575,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   fontSize: subtitleSize,
                   color: AppTheme.textSecondary,
                 ),
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, // Handle text overflow
               ),
             ],
           ),
@@ -547,13 +593,14 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-  
+
   Widget _buildInterestChip(String interest) {
     final Size screenSize = MediaQuery.of(context).size;
     final double fontSize = screenSize.width * 0.035;
     final double iconSize = screenSize.width * 0.04;
-    
+
     return Container(
+      margin: EdgeInsets.only(bottom: 4), // Add margin to prevent overflow
       padding: EdgeInsets.symmetric(
         horizontal: screenSize.width * 0.03,
         vertical: screenSize.height * 0.006,
@@ -567,22 +614,15 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             interest,
-            style: TextStyle(
-              fontSize: fontSize,
-              color: AppTheme.textPrimary,
-            ),
+            style: TextStyle(fontSize: fontSize, color: AppTheme.textPrimary),
           ),
           SizedBox(width: screenSize.width * 0.01),
-          Icon(
-            Icons.close,
-            color: AppTheme.textSecondary,
-            size: iconSize,
-          ),
+          Icon(Icons.close, color: AppTheme.textSecondary, size: iconSize),
         ],
       ),
     );
   }
-  
+
   Widget _buildAccountActionsSection() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
@@ -593,13 +633,13 @@ class _ProfilePageState extends State<ProfilePage> {
     final double actionButtonHeight = screenSize.height * 0.05;
     final double iconSize = screenSize.width * 0.045;
     final double buttonTextSize = screenSize.width * 0.04;
-    
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(top: spacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, // Take only required space
         children: [
           // Account actions header
           Container(
@@ -621,9 +661,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          
+
           SizedBox(height: spacing),
-          
+
           // Account actions
           Row(
             children: [
@@ -652,9 +692,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          
+
           SizedBox(height: spacing),
-          
+
           // App info & socials
           Container(
             width: double.infinity,
@@ -663,6 +703,7 @@ class _ProfilePageState extends State<ProfilePage> {
               borderRadius: BorderRadius.circular(screenSize.width * 0.03),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min, // Take only required space
               children: [
                 Text(
                   'IR Cell App v1.0.0',
@@ -672,26 +713,59 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 SizedBox(height: smallSpacing),
-                Text(
-                  'About Us',
-                  style: TextStyle(
-                    fontSize: screenSize.width * 0.035,
-                    color: AppTheme.accentBlue,
-                    decoration: TextDecoration.underline,
+                InkWell(
+                  onTap: () {
+                    final Uri url = Uri.parse(
+                      'https://www.pccoepune.com/ir/ir-coordinators.php',
+                    );
+                    launchUrl(url);
+                  },
+                  child: Text(
+                    'About Us',
+                    style: TextStyle(
+                      fontSize: screenSize.width * 0.035,
+                      color: AppTheme.accentBlue,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
                 SizedBox(height: smallSpacing),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildSocialIcon(Icons.language, 'College Website', screenSize),
-                    SizedBox(width: buttonSpacing),
-                    _buildSocialIcon(Icons.abc, 'LinkedIn', screenSize),
-                    SizedBox(width: buttonSpacing),
-                    _buildSocialIcon(Icons.facebook, 'Facebook', screenSize),
-                    SizedBox(width: buttonSpacing),
-                    _buildSocialIcon(Icons.camera_alt, 'Instagram', screenSize),
-                  ],
+                // Make the social icons row scrollable on small screens
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildSocialIcon(
+                        Icons.language,
+                        'College Website',
+                        screenSize,
+                        'https://www.pccoepune.com/ir/ir-coordinators.php',
+                      ),
+                      SizedBox(width: buttonSpacing),
+                      _buildSocialIcon(
+                        FontAwesomeIcons.linkedin,
+                        'LinkedIn',
+                        screenSize,
+                        'https://www.linkedin.com/company/pccoe-ir-cell/',
+                      ),
+                      SizedBox(width: buttonSpacing),
+                      _buildSocialIcon(
+                        Icons.facebook,
+                        'Facebook',
+                        screenSize,
+                        'https://www.facebook.com/share/1BPXjQ81E7/',
+                      ),
+                      SizedBox(width: buttonSpacing),
+                      _buildSocialIcon(
+                        FontAwesomeIcons.instagram,
+                        'Instagram',
+                        screenSize,
+                        'https://www.instagram.com/pccoe_ircell?igsh=MWVybGVyZTE2aXVtbQ==',
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -700,65 +774,124 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  
+
   Widget _buildAccountActionItem(
-    String text, 
-    IconData icon, 
-    Color bgColor, 
-    Color iconColor, 
+    String text,
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
     double height,
     double iconSize,
     double textSize,
   ) {
     final Size screenSize = MediaQuery.of(context).size;
-    
-    return Container(
-      height: height,
-      padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(screenSize.width * 0.03),
+
+    return TextButton(
+      onPressed: () async {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: Text(text),
+                content: Text('Are you sure you want to $text?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('No'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Yes'),
+                  ),
+                ],
+              ),
+        );
+
+        if (confirmed == true && text == 'Sign Out') {
+          try {
+            await Auth().signOut();
+            // Use context.mounted to check if the widget is still in the tree
+            if (context.mounted) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const SplashScreen()),
+                (route) => false,
+              );
+            }
+          } on FirebaseAuthException catch (e) {
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder:
+                    (_) => AlertDialog(
+                      title: const Text('Error'),
+                      content: Text(e.message ?? 'An error occurred'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Got it!'),
+                        ),
+                      ],
+                    ),
+              );
+            }
+          }
+        }
+      },
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero, // Remove padding from TextButton
+        minimumSize: Size.zero, // Remove minimum size constraint
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: iconColor,
-            size: iconSize,
-          ),
-          SizedBox(width: screenSize.width * 0.02),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: textSize,
-              color: iconColor,
-              fontWeight: FontWeight.bold,
+      child: Container(
+        height: height,
+        padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(screenSize.width * 0.03),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: iconColor, size: iconSize),
+            SizedBox(width: screenSize.width * 0.02),
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: textSize,
+                color: iconColor,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-  
-  Widget _buildSocialIcon(IconData icon, String tooltip, Size screenSize) {
+
+  Widget _buildSocialIcon(
+    IconData icon,
+    String tooltip,
+    Size screenSize,
+    String redirectLink,
+  ) {
     final double iconContainerSize = screenSize.width * 0.09;
     final double iconSize = screenSize.width * 0.045;
-    
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: iconContainerSize,
-        height: iconContainerSize,
-        decoration: BoxDecoration(
-          color: AppTheme.accentBlue.withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: Icon(
-            icon,
-            color: AppTheme.accentBlue,
-            size: iconSize,
+
+    return InkWell(
+      onTap: () {
+        final Uri url = Uri.parse(redirectLink);
+        launchUrl(url);
+      },
+      child: Tooltip(
+        message: tooltip,
+        child: Container(
+          width: iconContainerSize,
+          height: iconContainerSize,
+          decoration: BoxDecoration(
+            color: AppTheme.accentBlue.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Icon(icon, color: AppTheme.accentBlue, size: iconSize),
           ),
         ),
       ),

@@ -97,6 +97,7 @@ class _EventFormState extends State<EventForm> {
                           'time': _timeController.text,
                           'date': _dateController.text,
                           'description': _descriptionController.text,
+                          'attendanceList': [],
                         })
                         .then((value) {
                           ScaffoldMessenger.of(context).showSnackBar(
