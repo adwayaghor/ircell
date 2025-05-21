@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
+import 'package:ircell/providers/internship_provider.dart';
 import 'package:ircell/screens/events/generate_ticket.dart';
+import 'package:ircell/screens/internships/outbound_detail_page.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/info.dart';
@@ -28,27 +30,42 @@ class _Page3State extends State<Page3> {
     try {
       if (user?.uid == null) return;
 
-      final docRef = FirebaseFirestore.instance
-          .collection('pccoe_students')
-          .doc(user!.uid);
+      final uid = user!.uid;
+      final collections = [
+        'pccoe_students',
+        'external_college_students',
+        'international_students',
+        'alumni',
+      ];
 
-      final snapshot = await docRef.get();
+      DocumentSnapshot<Map<String, dynamic>>? foundSnapshot;
 
-      if (snapshot.exists) {
-        final data = snapshot.data();
-        final attending = List<String>.from(data?['attending'] ?? []);
+      for (final collection in collections) {
+        final docRef = FirebaseFirestore.instance
+            .collection(collection)
+            .doc(uid);
+        final snapshot = await docRef.get();
 
-        attending.sort((a, b) => b.compareTo(a)); // sort by latest
-
-        await EventCache.cacheEvents(user!.uid, attending);
-
-
-        setState(() {
-          eventTitles = attending;
-        });
-      } else {
-        throw Exception('User document not found');
+        if (snapshot.exists) {
+          foundSnapshot = snapshot;
+          break;
+        }
       }
+
+      if (foundSnapshot == null) {
+        throw Exception('User document not found in any collection');
+      }
+
+      final data = foundSnapshot.data();
+      final attending = List<String>.from(data?['attending'] ?? []);
+
+      attending.sort((a, b) => b.compareTo(a)); // sort by latest
+
+      await EventCache.cacheEvents(uid, attending);
+
+      setState(() {
+        eventTitles = attending;
+      });
     } catch (e) {
       print('Error loading events: $e');
       // If offline or error, load from cache
@@ -78,8 +95,11 @@ class _Page3State extends State<Page3> {
             Container(
               decoration: AppTheme.glassDecoration,
               child: IconButton(
-                icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
-                onPressed: () => PageInfo.showInfoDialog(context, 'Page3'), 
+                icon: const Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary,
+                ),
+                onPressed: () => PageInfo.showInfoDialog(context, 'Page3'),
               ),
             ),
             Row(
@@ -88,7 +108,11 @@ class _Page3State extends State<Page3> {
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
                     icon: const Icon(Icons.notifications),
-                    onPressed: () => PageNotification.showNotificationDialog(context, 'Page3'),
+                    onPressed:
+                        () => PageNotification.showNotificationDialog(
+                          context,
+                          'Page3',
+                        ),
                     // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
@@ -126,32 +150,39 @@ class _Page3State extends State<Page3> {
       backgroundColor: AppTheme.backgroundColor,
       body: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header section with IR image and "Book a ticket" text
-                _buildHeaderSection(),
+          // Using SingleChildScrollView to prevent overflow
+          SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header section with IR image and "Book a ticket" text
+                  _buildHeaderSection(),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Currently Booked & Past Tickets tabs
-                _buildTabSelector(),
+                  // Currently Booked & Past Tickets tabs
+                  _buildTabSelector(),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // Main content area based on selected tab
-                Expanded(
-                  child:
-                      _selectedTab == 0
-                          ? _buildCurrentlyBookedContent()
-                          : _buildPastTicketsContent(),
-                ),
+                  // Main content area based on selected tab - Fixed height container
+                  Container(
+                    height: 180, // Consistent with _buildCurrentlyBookedContent
+                    child:
+                        _selectedTab == 0
+                            ? _buildCurrentlyBookedContent()
+                            : _buildPastTicketsContent(),
+                  ),
 
-                // Internships section at bottom
-                _buildInternshipsSection(),
-              ],
+                  // Internships section at bottom
+                  _buildInternshipsSection(),
+
+                  // Add bottom padding to prevent content from being hidden by ChatbotIcon
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
 
@@ -278,13 +309,29 @@ class _Page3State extends State<Page3> {
   }
 
   Widget _buildCurrentlyBookedContent() {
-  return SizedBox(
-    height: 180,
-    child: ListView.builder(
+    return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: eventTitles.length,
+      itemCount: eventTitles.isEmpty ? 1 : eventTitles.length,
       itemBuilder: (context, index) {
+        if (eventTitles.isEmpty) {
+          return Container(
+            width:
+                MediaQuery.of(context).size.width - 64, // Account for padding
+            decoration: AppTheme.glassDecoration.copyWith(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text(
+                'No booked events yet',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary),
+              ),
+            ),
+          );
+        }
+
         final event = eventTitles[index];
 
         return GestureDetector(
@@ -334,15 +381,18 @@ class _Page3State extends State<Page3> {
                 ),
                 const SizedBox(height: 12),
 
-                // Event Title
-                Text(
-                  event,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                // Event Title - Fixed height with ellipsis to prevent overflow
+                Container(
+                  height: 50, // Fixed height for title area
+                  child: Text(
+                    event,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
 
                 const Spacer(),
@@ -351,7 +401,10 @@ class _Page3State extends State<Page3> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.event_available_outlined, color: AppTheme.textSecondary),
+                    Icon(
+                      Icons.event_available_outlined,
+                      color: AppTheme.textSecondary,
+                    ),
                     Text(
                       'Valid Ticket',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -365,10 +418,8 @@ class _Page3State extends State<Page3> {
           ),
         );
       },
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildPastTicketsContent() {
     return Container(
@@ -395,6 +446,172 @@ class _Page3State extends State<Page3> {
   }
 
   Widget _buildInternshipsSection() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return _buildPlaceholder();
+
+    return FutureBuilder<List<OutboundInternship>>(
+      future: _loadUserOutboundInternships(uid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 120,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildPlaceholder();
+        }
+
+        final userInternships = snapshot.data!;
+
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.textSecondary.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  'Registered Internships',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+
+              SizedBox(
+                height: 175,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 8,
+                  ),
+                  itemCount: userInternships.length,
+                  itemBuilder: (context, index) {
+                    final internship = userInternships[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => OutboundDetailPage(
+                                    internship: internship,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 280,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                internship.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                internship.university,
+                                style: const TextStyle(fontSize: 14),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                internship.country,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const Spacer(),
+                              Text(
+                                "Duration: ${internship.duration}",
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper to load user outbound internships with full data
+  Future<List<OutboundInternship>> _loadUserOutboundInternships(
+    String uid,
+  ) async {
+    // Step 1: get user document from possible collections
+    DocumentSnapshot? userDoc;
+
+    final collections = [
+      'pccoe_students',
+      'external_college_students',
+      'international_students',
+      'alumni',
+    ];
+
+    for (var coll in collections) {
+      final doc =
+          await FirebaseFirestore.instance.collection(coll).doc(uid).get();
+      if (doc.exists) {
+        userDoc = doc;
+        break;
+      }
+    }
+
+    if (userDoc == null) return [];
+
+    // Step 2: get outbound titles list from user doc
+    final data = userDoc.data() as Map<String, dynamic>?;
+
+    final outboundTitles =
+        (data?['outbound'] as List<dynamic>?)?.cast<String>() ?? [];
+
+    if (outboundTitles.isEmpty) return [];
+
+    // Step 3: fetch all outbound internships (full list)
+    final allInternships = await fetchAllOutboundInternships();
+
+    // Step 4: filter only internships whose title is in user's outbound list
+    return allInternships
+        .where((i) => outboundTitles.contains(i.title))
+        .toList();
+  }
+
+  Widget _buildPlaceholder() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 20),

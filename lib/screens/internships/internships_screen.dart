@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ircell/models/outbound_details.dart';
+import 'package:ircell/screens/internships/outbound_details.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InternshipsScreen extends StatefulWidget {

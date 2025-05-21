@@ -3,7 +3,7 @@ import 'package:ircell/app_theme.dart';
 import 'package:ircell/models/dashed_line_painter.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/events_screen.dart';
-import 'package:ircell/screens/activities/internships_screen.dart';
+import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
 import 'package:ircell/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
