@@ -7,6 +7,8 @@ import 'package:ircell/login/auth.dart';
 import 'package:ircell/screens/events/generate_ticket.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
+import 'package:ircell/screens/info.dart';
+import 'package:ircell/screens/notification.dart';
 
 class Page3 extends StatefulWidget {
   const Page3({super.key});
@@ -76,28 +78,8 @@ class _Page3State extends State<Page3> {
             Container(
               decoration: AppTheme.glassDecoration,
               child: IconButton(
-                icon: const Icon(
-                  Icons.info_outline,
-                  color: AppTheme.textPrimary,
-                ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: const Text("Information"),
-                          content: const Text(
-                            "This is the International Relations Cell app.",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                  );
-                },
+                icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+                onPressed: () => PageInfo.showInfoDialog(context, 'Page3'), 
               ),
             ),
             Row(
@@ -105,11 +87,9 @@ class _Page3State extends State<Page3> {
                 Container(
                   decoration: AppTheme.glassDecoration,
                   child: IconButton(
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppTheme.textPrimary,
-                    ),
-                    onPressed: () {},
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () => PageNotification.showNotificationDialog(context, 'Page3'),
+                    // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
                 const SizedBox(width: 8),
