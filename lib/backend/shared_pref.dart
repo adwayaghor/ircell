@@ -53,4 +53,9 @@ class EventCache {
     }
     return null;
   }
+
+  static Future<void> clearCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key); // 🔥 clears event data
+  }
 }

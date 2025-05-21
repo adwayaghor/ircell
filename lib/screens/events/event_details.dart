@@ -55,171 +55,204 @@ class EventDetailScreen extends StatelessWidget {
                   Text(event.description, style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 16),
                   ElevatedButton(
+                    // ...existing code...
                     onPressed: () async {
                       final User? user = Auth().currentUser;
-                      final userDocRef = FirebaseFirestore.instance
-                          .collection('pccoe_students')
-                          .doc(user?.uid); // Use actual universalId
+                      final String uid = user?.uid ?? "";
+
+                      if (uid.isEmpty) return;
+
+                      final List<String> collections = [
+                        'pccoe_students',
+                        'external_college_students',
+                        'international_students',
+                        'alumni',
+                      ];
 
                       final eventDocRef = FirebaseFirestore.instance
                           .collection('events')
                           .doc(event.id);
 
-                      try {
-                        final userSnapshot = await userDocRef.get();
-                        final List<dynamic> attending = List.from(
-                          userSnapshot.data()?['attending'] ?? [],
-                        );
+                      DocumentSnapshot? userSnapshot;
+                      DocumentReference? userDocRef;
 
-                        // ✅ If already registered, show alert directly
-                        if (attending.contains(event.title)) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Already Registered"),
-                                  content: const Text(
-                                    "You have already registered for this event.",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          return;
+                      // 🔍 Search for user document in all collections
+                      for (final collection in collections) {
+                        final docRef = FirebaseFirestore.instance
+                            .collection(collection)
+                            .doc(uid);
+                        final snapshot = await docRef.get();
+                        if (snapshot.exists) {
+                          userSnapshot = snapshot;
+                          userDocRef = docRef;
+                          break;
                         }
+                      }
 
-                        // ✅ Show confirmation dialog only if not already registered
+                      if (userSnapshot == null || userDocRef == null) {
                         showDialog(
                           context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("User Not Found"),
+                                content: const Text(
+                                  "You are not registered in any user category.",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Do you wish to register for "${event.title}"?',
-                                      style:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        TextButton(
-                                          onPressed:
-                                              () => Navigator.of(context).pop(),
-                                          child: const Text('No'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            try {
-                                              await FirebaseFirestore.instance
-                                                  .runTransaction((
-                                                    transaction,
-                                                  ) async {
-                                                    final eventSnapshot =
-                                                        await transaction.get(
-                                                          eventDocRef,
-                                                        );
+                        );
+                        return;
+                      }
 
-                                                    final currentAttendees =
-                                                        eventSnapshot
-                                                            .data()?['attendees'] ??
-                                                        0;
-                                                    final List<String>
-                                                    attendanceList = List<
-                                                      String
-                                                    >.from(
-                                                      eventSnapshot
-                                                              .data()?['attendanceList'] ??
-                                                          [],
-                                                    );
+                      final List<dynamic> attending = List.from(
+                        (userSnapshot.data()
+                                as Map<String, dynamic>?)?['attending'] ??
+                            [],
+                      );
 
-                                                    if (!attendanceList
-                                                        .contains(user?.uid)) {
-                                                      attendanceList.add(
-                                                        user?.uid ?? '',
+                      // ✅ Already registered check
+                      if (attending.contains(event.title)) {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("Already Registered"),
+                                content: const Text(
+                                  "You have already registered for this event.",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                        );
+                        return;
+                      }
+
+                      // ✅ Show confirmation dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Do you wish to register for "${event.title}"?',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton(
+                                        onPressed:
+                                            () => Navigator.of(context).pop(),
+                                        child: const Text('No'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          try {
+                                            await FirebaseFirestore.instance
+                                                .runTransaction((
+                                                  transaction,
+                                                ) async {
+                                                  final eventSnapshot =
+                                                      await transaction.get(
+                                                        eventDocRef,
                                                       );
 
-                                                      transaction.update(
-                                                        eventDocRef,
-                                                        {
+                                                  final currentAttendees =
+                                                      eventSnapshot
+                                                          .data()?['attendees'] ??
+                                                      0;
+                                                  final List<String>
+                                                  attendanceList = List<
+                                                    String
+                                                  >.from(
+                                                    eventSnapshot
+                                                            .data()?['attendanceList'] ??
+                                                        [],
+                                                  );
+
+                                                  if (!attendanceList.contains(
+                                                    uid,
+                                                  )) {
+                                                    attendanceList.add(uid);
+
+                                                    transaction
+                                                        .update(eventDocRef, {
                                                           'attendees':
                                                               currentAttendees +
                                                               1,
                                                           'attendanceList':
                                                               attendanceList,
-                                                        },
-                                                      );
-                                                    }
+                                                        });
+                                                  }
 
-                                                    attending.add(event.title);
-                                                    transaction.set(
-                                                      userDocRef,
-                                                      {'attending': attending},
-                                                      SetOptions(merge: true),
-                                                    );
-                                                  });
+                                                  attending.add(event.title);
+                                                  transaction.set(
+                                                    userDocRef!,
+                                                    {'attending': attending},
+                                                    SetOptions(merge: true),
+                                                  );
+                                                });
 
-                                              Navigator.of(
-                                                context,
-                                              ).pop(); // Close dialog
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Successfully registered!',
-                                                  ),
+                                            Navigator.of(
+                                              context,
+                                            ).pop(); // Close dialog
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Successfully registered!',
                                                 ),
-                                              );
-                                            } catch (e) {
-                                              Navigator.of(
-                                                context,
-                                              ).pop(); // Close dialog
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'Failed to register: $e',
-                                                  ),
+                                              ),
+                                            );
+                                          } catch (e) {
+                                            Navigator.of(
+                                              context,
+                                            ).pop(); // Close dialog
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Failed to register: $e',
                                                 ),
-                                              );
-                                            }
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error checking registration: $e'),
-                          ),
-                        );
-                      }
+                            ),
+                          );
+                        },
+                      );
                     },
 
                     child: const Text('RSVP'),

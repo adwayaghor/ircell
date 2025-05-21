@@ -14,7 +14,6 @@ class ViewEvents extends StatefulWidget {
 
 class _ViewEventsState extends State<ViewEvents> {
   late Future<List<Event>> _eventsFuture;
-
   late String function;
 
   @override
@@ -27,7 +26,11 @@ class _ViewEventsState extends State<ViewEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Events')),
+      appBar: AppBar(
+        title: const Text('Events'),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
+      ),
       body: FutureBuilder<List<Event>>(
         future: _eventsFuture,
         builder: (context, snapshot) {
@@ -40,11 +43,11 @@ class _ViewEventsState extends State<ViewEvents> {
           } else {
             final events = snapshot.data!;
             return ListView.builder(
+              padding: const EdgeInsets.all(12),
               itemCount: events.length,
               itemBuilder: (context, index) {
                 final event = events[index];
-                return ListTile(
-                  title: Text(event.title),
+                return GestureDetector(
                   onTap: () {
                     if (function == 'publish') {
                       Navigator.push(
@@ -62,6 +65,24 @@ class _ViewEventsState extends State<ViewEvents> {
                       );
                     }
                   },
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.event, color: Colors.indigo),
+                      title: Text(
+                        event.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    ),
+                  ),
                 );
               },
             );

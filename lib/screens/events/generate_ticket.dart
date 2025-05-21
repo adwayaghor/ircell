@@ -14,7 +14,7 @@ class GenerateTicket extends StatelessWidget {
   Widget build(BuildContext context) {
     double qrsize = 240;
     return Scaffold(
-      appBar: AppBar(title: Text('Generate Ticket')),
+      appBar: AppBar(title: Text('Your Ticket')),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),

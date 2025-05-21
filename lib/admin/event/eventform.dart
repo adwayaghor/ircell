@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EventForm extends StatefulWidget {
+  const EventForm({super.key});
+
   @override
   _EventFormState createState() => _EventFormState();
 }
@@ -19,117 +21,130 @@ class _EventFormState extends State<EventForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Event')),
+      appBar: AppBar(
+        title: const Text('Create Event'),
+        backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              _buildInputField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Enter title' : null,
+                label: 'Title',
+                icon: Icons.title,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _imageURLController,
-                decoration: InputDecoration(labelText: 'Image URL'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter image URL'
-                            : null,
+                label: 'Image URL',
+                icon: Icons.image,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _speakerController,
-                decoration: InputDecoration(labelText: 'Speaker'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Enter speaker' : null,
+                label: 'Speaker',
+                icon: Icons.person,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: 'Location'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter location'
-                            : null,
+                label: 'Location',
+                icon: Icons.location_on,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _timeController,
-                decoration: InputDecoration(labelText: 'Time'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Enter time' : null,
+                label: 'Time',
+                icon: Icons.access_time,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _dateController,
-                decoration: InputDecoration(labelText: 'Date'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Enter date' : null,
+                label: 'Date',
+                icon: Icons.calendar_today,
               ),
-              TextFormField(
+              _buildInputField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                label: 'Description',
+                icon: Icons.description,
                 maxLines: 3,
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? 'Enter description'
-                            : null,
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    FirebaseFirestore.instance
-                        .collection('events')
-                        .doc(_titleController.text)
-                        .set({
-                          'title': _titleController.text,
-                          'imageURL': _imageURLController.text,
-                          'speaker': _speakerController.text,
-                          'location': _locationController.text,
-                          'time': _timeController.text,
-                          'date': _dateController.text,
-                          'description': _descriptionController.text,
-                          'attendanceList': [],
-                        })
-                        .then((value) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Event added successfully!'),
-                            ),
-                          );
-                          _formKey.currentState!.reset();
-                          _titleController.clear();
-                          _imageURLController.clear();
-                          _speakerController.clear();
-                          _locationController.clear();
-                          _timeController.clear();
-                          _dateController.clear();
-                          _descriptionController.clear();
-                        })
-                        .catchError((error) {
-                          print('error');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Failed to add event: $error'),
-                            ),
-                          );
-                        });
-                  }
-                },
-                child: Text('Submit'),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _submitForm,
+                icon: const Icon(Icons.send),
+                label: const Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        maxLines: maxLines,
+        validator: (value) =>
+            value == null || value.isEmpty ? 'Enter $label' : null,
+      ),
+    );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      FirebaseFirestore.instance
+          .collection('events')
+          .doc(_titleController.text)
+          .set({
+        'title': _titleController.text,
+        'imageURL': _imageURLController.text,
+        'speaker': _speakerController.text,
+        'location': _locationController.text,
+        'time': _timeController.text,
+        'date': _dateController.text,
+        'description': _descriptionController.text,
+        'attendanceList': [],
+      }).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event added successfully!')),
+        );
+        _formKey.currentState!.reset();
+        _clearFields();
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add event: $error')),
+        );
+      });
+    }
+  }
+
+  void _clearFields() {
+    _titleController.clear();
+    _imageURLController.clear();
+    _speakerController.clear();
+    _locationController.clear();
+    _timeController.clear();
+    _dateController.clear();
+    _descriptionController.clear();
   }
 }

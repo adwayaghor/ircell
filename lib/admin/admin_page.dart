@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/event_upload.dart';
 import 'package:ircell/admin/event/view_event.dart';
+import 'package:ircell/admin/student_mobilty/student_mobility.dart';
 
 class AdminPage extends StatelessWidget {
   const AdminPage({super.key});
@@ -8,51 +9,90 @@ class AdminPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Page')),
-      body: Center(
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(
+            _AdminOptionCard(
+              title: 'Events',
+              icon: Icons.event,
               onTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (ctx) => EventUpload()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (ctx) => EventUpload()),
+                );
               },
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Events'),
-                ),
-              ),
             ),
-            InkWell(
+            const SizedBox(height: 20),
+            _AdminOptionCard(
+              title: 'Attendance Scanner',
+              icon: Icons.qr_code_scanner,
               onTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (ctx) => ViewEvents(function: 'publish',)));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => ViewEvents(function: 'publish'),
+                  ),
+                );
               },
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Attendance Scanner'),
-                ),
-              ),
             ),
-            InkWell(
+            const SizedBox(height: 20),
+            _AdminOptionCard(
+              title: 'Student Mobility',
+              icon: Icons.group,
               onTap: () {
-                // Navigator.of(
-                //   context,
-                // ).push(MaterialPageRoute(builder: (ctx) => EventUpload()));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (ctx) => StudentMobilityAdmin(),
+                  ),
+                );
               },
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Users'),
-                ),
-              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminOptionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _AdminOptionCard({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          child: Row(
+            children: [
+              Icon(icon, size: 28, color: Colors.deepPurple),
+              const SizedBox(width: 20),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

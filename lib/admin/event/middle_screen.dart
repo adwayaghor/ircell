@@ -9,17 +9,45 @@ class MiddleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Mark Attendance')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AttendanceScannerScreen(eventId: eventId),
+      appBar: AppBar(
+        title: const Text('Mark Attendance'),
+        backgroundColor: Colors.indigo,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Proceed ahead to mark attendance',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                backgroundColor: Colors.indigo,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            );
-          },
-          child: Text('Mark Attendance for $eventId', style: TextStyle(fontSize: 20),),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AttendanceScannerScreen(eventId: eventId),
+                  ),
+                );
+              },
+              child: Text(
+                'Mark Attendance for $eventId',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+            ),
+            const SizedBox(height: 200),
+          ],
         ),
       ),
     );

@@ -99,7 +99,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           decoration: AppTheme.glassDecoration,
           child: IconButton(
             icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
-            onPressed: () => PageInfo.showInfoDialog(context, 'Page4'), 
+            onPressed: () => PageInfo.showInfoDialog(context, 'Page4'),
           ),
         ),
         title: const Text('IR Community'),
@@ -113,7 +113,11 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                     decoration: AppTheme.glassDecoration,
                     child: IconButton(
                       icon: const Icon(Icons.notifications),
-                      onPressed: () => PageNotification.showNotificationDialog(context, 'Page4'),
+                      onPressed:
+                          () => PageNotification.showNotificationDialog(
+                            context,
+                            'Page4',
+                          ),
                       // onPressed: () => PageNotification.showSameNotification(context);
                     ),
                   ),
@@ -182,11 +186,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
             ],
           ),
           // Chatbot icon positioned in the bottom right corner
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: ChatbotIcon(),
-          ),
+          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
         ],
       ),
     );
@@ -202,9 +202,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Japan Facilitation Centre',
-            ),
+            const Text('Japan Facilitation Centre'),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -229,9 +227,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
 
             const SizedBox(height: 32),
 
-            const Text(
-              'Higher Studies Archive',
-            ),
+            const Text('Higher Studies Archive'),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -280,9 +276,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Alumni Blogs',
-            ),
+            const Text('Alumni Blogs'),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -478,8 +472,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 Text(
                   '2:45 • May ${10 + index}, 2025',
                   style: const TextStyle(
-                    fontSize: 12, 
-                    color: AppTheme.textSecondary
+                    fontSize: 12,
+                    color: AppTheme.textSecondary,
                   ),
                 ),
               ],
@@ -505,9 +499,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-              ),
+              Text(title),
               const SizedBox(height: 8),
               Text(
                 description,
