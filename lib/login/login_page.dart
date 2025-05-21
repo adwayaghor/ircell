@@ -208,10 +208,12 @@ class _LoginPageState extends State<LoginPage> {
                     controller: emailController,
                     validator: validateEmail,
                     keyboardType: TextInputType.emailAddress,
+                    cursorColor: accentBlue,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       hintText: 'example@email.com',
                       prefixIcon: const Icon(Icons.email_outlined),
+                      floatingLabelStyle: TextStyle(color: accentBlue),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -229,9 +231,11 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     validator: validatePassword,
                     obscureText: !showPassword,
+                    cursorColor: accentBlue,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       prefixIcon: const Icon(Icons.lock_outlined),
+                      floatingLabelStyle: TextStyle(color: accentBlue),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -264,9 +268,11 @@ class _LoginPageState extends State<LoginPage> {
                       controller: confirmPasswordController,
                       validator: validateConfirmPassword,
                       obscureText: !showConfirmPassword,
+                      cursorColor: accentBlue,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
                         prefixIcon: const Icon(Icons.lock_outlined),
+                        floatingLabelStyle: TextStyle(color: accentBlue),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -361,6 +367,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: accentBlue),
+                        foregroundColor: accentBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
