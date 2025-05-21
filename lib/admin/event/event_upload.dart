@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ircell/admin/event/eventform.dart';
+import 'package:ircell/admin/event/view_event.dart';
 
 class EventUpload extends StatelessWidget {
   const EventUpload({super.key});
@@ -26,6 +27,19 @@ class EventUpload extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: const Text('Upload New Event'),
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (ctx) => ViewEvents()));
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Text('View All Events'),
                 ),
               ),
             ),

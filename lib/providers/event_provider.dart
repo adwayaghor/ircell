@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Event {
+  final String id;
   final String title;
   final String date;
   final String time;
@@ -11,6 +12,7 @@ class Event {
   final List<String> attendanceList;
 
   Event({
+    required this.id,
     required this.title,
     required this.date,
     required this.time,
@@ -21,16 +23,20 @@ class Event {
     required this.attendanceList,
   });
 
-  factory Event.fromMap(Map<String, dynamic> data) {
+  factory Event.fromMap(Map<String, dynamic> data, String id) {
     return Event(
-      title: data['title'] ?? '',
-      date: data['date'] ?? '',
-      time: data['time'] ?? '',
-      location: data['location'] ?? '',
-      speaker: data['speaker'] ?? '',
-      description: data['description'] ?? '',
-      imageURL: data['imageURL'] ?? '',
-      attendanceList: data['attendanceList'] ?? [ ],
+      id: id,
+      title: data['title']?.toString() ?? '',
+      date: data['date']?.toString() ?? '',
+      time: data['time']?.toString() ?? '',
+      location: data['location']?.toString() ?? '',
+      speaker: data['speaker']?.toString() ?? '',
+      description: data['description']?.toString() ?? '',
+      imageURL: data['imageURL']?.toString() ?? '',
+      attendanceList: (data['attendanceList'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }
@@ -41,10 +47,11 @@ Future<List<Event>> fetchAllEvents() async {
         await FirebaseFirestore.instance.collection('events').get();
 
     return querySnapshot.docs
-        .map((doc) => Event.fromMap(doc.data() as Map<String, dynamic>))
+        .map((doc) => Event.fromMap(doc.data() as Map<String, dynamic>, doc.id))
         .toList();
   } catch (e) {
     print('Error fetching events: $e');
     return [];
   }
 }
+
