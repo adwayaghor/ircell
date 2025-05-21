@@ -21,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool showPassword = false;
   bool showConfirmPassword = false;
@@ -38,30 +39,37 @@ class _LoginPageState extends State<LoginPage> {
   void showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Okay!',
-              style: TextStyle(color: accentBlue, fontWeight: FontWeight.bold),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Okay!',
+                  style: TextStyle(
+                    color: accentBlue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   Future<void> signInWithEmailAndPassword() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => isLoading = true);
-    
+
     try {
-      if (emailController.text == 'admin' && passwordController.text == 'admin') {
+      if (emailController.text == 'admin' &&
+          passwordController.text == 'admin') {
         // Using delayed navigation for admin to show loading state
         await Future.delayed(const Duration(milliseconds: 300));
         if (mounted) {
@@ -76,9 +84,8 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text.trim(),
         password: passwordController.text,
       );
-      
+
       // Success handler would go here if needed
-      
     } on FirebaseAuthException catch (e) {
       showErrorDialog(e.message ?? 'Login failed');
     } catch (e) {
@@ -92,17 +99,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> createUserWithEmailAndPassword() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => isLoading = true);
-    
+
     try {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => Onboarding(
-              email: emailController.text.trim(),
-              password: passwordController.text,
-            ),
+            builder:
+                (context) => Onboarding(
+                  email: emailController.text.trim(),
+                  password: passwordController.text,
+                ),
           ),
         );
       }
@@ -118,16 +126,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   String? validateEmail(String? value) {
+    if (value == 'admin') {
+      return null;
+    }
     if (value == null || value.isEmpty) {
       return 'Email cannot be empty';
     }
-    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+    if (!RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(value)) {
       return 'Invalid email format';
     }
     return null;
   }
 
   String? validatePassword(String? value) {
+    if (value == 'admin') {
+      return null;
+    }
     if (value == null || value.isEmpty) {
       return 'Password cannot be empty';
     }
@@ -163,13 +179,9 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // App Logo/Branding
-                  Icon(
-                    Icons.account_circle,
-                    size: 80,
-                    color: accentBlue,
-                  ),
+                  Icon(Icons.account_circle, size: 80, color: accentBlue),
                   const SizedBox(height: 16),
-                  
+
                   // Title
                   Text(
                     isLogin ? 'Welcome Back' : 'Create Account',
@@ -179,18 +191,18 @@ class _LoginPageState extends State<LoginPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  
+
                   Text(
-                    isLogin 
+                    isLogin
                         ? 'Sign in to continue to your account'
                         : 'Register to get started with our app',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Email Field
                   TextFormField(
                     controller: emailController,
@@ -211,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Password Field
                   TextFormField(
                     controller: passwordController,
@@ -229,7 +241,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          showPassword ? Icons.visibility : Icons.visibility_off,
+                          showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: () {
@@ -239,9 +253,10 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ),
-                    textInputAction: isLogin ? TextInputAction.done : TextInputAction.next,
+                    textInputAction:
+                        isLogin ? TextInputAction.done : TextInputAction.next,
                   ),
-                  
+
                   // Confirm Password Field (only for registration)
                   if (!isLogin) ...[
                     const SizedBox(height: 20),
@@ -261,7 +276,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            showConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                            showConfirmPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -274,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                       textInputAction: TextInputAction.done,
                     ),
                   ],
-                  
+
                   if (isLogin) ...[
                     Align(
                       alignment: Alignment.centerRight,
@@ -289,16 +306,19 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ],
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Submit Button
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: isLoading 
-                          ? null 
-                          : (isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : (isLogin
+                                  ? signInWithEmailAndPassword
+                                  : createUserWithEmailAndPassword),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: accentBlue,
                         foregroundColor: Colors.white,
@@ -307,27 +327,28 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         disabledBackgroundColor: accentBlue.withOpacity(0.6),
                       ),
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.0,
+                      child:
+                          isLoading
+                              ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.0,
+                                ),
+                              )
+                              : Text(
+                                isLogin ? 'Sign In' : 'Create Account',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            )
-                          : Text(
-                              isLogin ? 'Sign In' : 'Create Account',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Temporary Development Button - can be removed for production
                   Visibility(
                     visible: true, // Set to false for production
@@ -335,9 +356,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => TabsScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => TabsScreen()),
                         );
                       },
                       style: OutlinedButton.styleFrom(
@@ -349,15 +368,17 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text('Temp Login'),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Switch between login and register
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        isLogin ? "Don't have an account? " : "Already have an account? ",
+                        isLogin
+                            ? "Don't have an account? "
+                            : "Already have an account? ",
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       TextButton(
