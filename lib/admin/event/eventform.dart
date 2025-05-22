@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ircell/backend/email_sending.dart';
 
 class EventForm extends StatefulWidget {
   const EventForm({super.key});
@@ -112,10 +113,7 @@ class _EventFormState extends State<EventForm> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      FirebaseFirestore.instance
-          .collection('events')
-          .doc(_titleController.text)
-          .set({
+      final eventDetails = {
         'title': _titleController.text,
         'imageURL': _imageURLController.text,
         'speaker': _speakerController.text,
@@ -124,12 +122,21 @@ class _EventFormState extends State<EventForm> {
         'date': _dateController.text,
         'description': _descriptionController.text,
         'attendanceList': [],
-      }).then((_) {
+      };
+
+      FirebaseFirestore.instance
+          .collection('events')
+          .doc(_titleController.text)
+          .set(eventDetails)
+          .then((_) async {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Event added successfully!')),
         );
         _formKey.currentState!.reset();
         _clearFields();
+
+        // ✅ After success: Fetch users and send email
+        await sendEmailsToAllUsers(eventDetails);
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to add event: $error')),
