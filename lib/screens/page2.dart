@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/models/dashed_line_painter.dart';
+import 'package:ircell/screens/activities/alumni.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/events_screen.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/user.dart';
-import 'package:ircell/activities/about_us.dart';
+import 'package:ircell/screens/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
@@ -236,6 +237,12 @@ class _HomeScreenState extends State<Page2> {
                                         "International Alumni",
                                         'assets/images/international_alumini.png',
                                         90,
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const AlumniScreen(),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
