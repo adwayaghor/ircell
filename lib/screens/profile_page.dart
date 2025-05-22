@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/backend/fetch_user_data.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -14,7 +16,28 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
   int _selectedTab = 0;
+
+  Map<String, dynamic>? userDetails; // Make it a class-level variable
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserDetails(); // Call the async function
+  }
+
+  void loadUserDetails() async {
+    final details = await fetchUserDetails();
+
+    if (details == null) {
+      print('User not found');
+    } else {
+      setState(() {
+        userDetails = details;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +144,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           child: Center(
-            child: Text(
-              'A',
+            child: userDetails == null ? buildShimmer(width: 80, height: profilePicSize * 0.5)
+          : Text(
+              createEmailShortForm(userDetails?['email']),
               style: TextStyle(
                 fontSize: profilePicSize * 0.5,
                 fontWeight: FontWeight.bold,
@@ -140,18 +164,20 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min, // Only take necessary space
             children: [
-              Text(
-                'John Doe',
+            userDetails == null ? buildShimmer(width: 160, height: fontSize + 8)
+            : Text(
+                '${userDetails?['first_name'] ?? ''} ${userDetails?['last_name'] ?? ''}',
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.textPrimary,
                 ),
-                overflow: TextOverflow.ellipsis, // Handle text overflow
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: spacing / 2),
-              Text(
-                'john.doe@example.com',
+              userDetails == null ? buildShimmer(width: 160, height: fontSize + 8)
+              : Text(
+                userDetails?['email'] ?? '',
                 style: TextStyle(
                   fontSize: smallFontSize,
                   color: AppTheme.textSecondary,
@@ -198,6 +224,19 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
+
+  Widget buildShimmer({double width = 150, double height = 16}) {
+  return Shimmer.fromColors(
+    baseColor: Colors.black12,
+    highlightColor: Colors.grey,
+    child: Container(
+      width: width,
+      height: height,
+      color: Colors.white,
+    ),
+  );
+}
+
 
   Widget _buildTabSelector() {
     final Size screenSize = MediaQuery.of(context).size;
@@ -283,6 +322,11 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  String createEmailShortForm(String? email) {
+    if (email == null || email.length < 7) return '-';
+    return '${email[0].toUpperCase()}${email[6].toUpperCase()}';
+  }
+
   Widget _buildPersonalInfoContent() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
@@ -314,13 +358,13 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(height: spacing),
 
           // Personal info fields
-          _buildInfoItem('Email', 'john.doe@example.com', Icons.email),
+          _buildInfoItem('Email', userDetails?['email'] ?? '', Icons.email),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Phone', '+1 123 456 7890', Icons.phone),
+          _buildInfoItem('Phone', '+91 ${userDetails?['contact'] ?? ''}', Icons.phone),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Department', 'Computer Science', Icons.school),
+          _buildInfoItem('Department', userDetails?['department'] ?? '', Icons.school),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Year', '3rd Year', Icons.calendar_today),
+          _buildInfoItem('Year', userDetails?['year'] ?? '', Icons.calendar_today),
 
           SizedBox(height: spacing * 1.5),
 
@@ -396,6 +440,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: AppTheme.textSecondary,
                 ),
               ),
+              userDetails == null ? buildShimmer(width: 160, height: valueSize + 8) : 
               Text(
                 value,
                 style: TextStyle(
@@ -479,13 +524,9 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Wrap(
               spacing: chipSpacing,
               runSpacing: chipSpacing,
-              children: [
-                _buildInterestChip('Technology'),
-                _buildInterestChip('Economics'),
-                _buildInterestChip('International Affairs'),
-                _buildInterestChip('Management'),
-                _buildInterestChip('Diplomacy'),
-              ],
+              children: userDetails == null ? buildShimmer(width: 160, height: chipSpacing + 8) : (userDetails!['interests'])
+                  .map<Widget>((interest) => _buildInterestChip(interest))
+                  .toList(),
             ),
           ),
 

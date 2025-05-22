@@ -135,13 +135,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     },
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
-                      child: const Text(
-                        'A',
-                        style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      // child: const Text(
+                      //   'A',
+                      //   style: TextStyle(
+                      //     color: AppTheme.textPrimary,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
+                      child: Icon(Icons.person_4_outlined, color: Colors.white,),
                     ),
                   ),
                 ),
