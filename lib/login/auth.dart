@@ -19,6 +19,10 @@ class Auth {
         email: email,
         password: password,
       );
+      final uid = _firebaseAuth.currentUser?.uid;
+      if (uid != null) {
+        await LocalStorage.saveUID(uid);
+      }
     } on FirebaseAuthException catch (e) {
       throw e;
     }
