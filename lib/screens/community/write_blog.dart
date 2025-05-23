@@ -22,7 +22,7 @@ class _WriteBlogScreenState extends State<WriteBlogScreen> {
   }
 
   Future<void> _submitBlog() async {
-    final title = _titleController.text.trim();
+     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
     if (title.isEmpty || content.isEmpty) {
