@@ -2,7 +2,7 @@
 <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="ircell"
+        android:label="IR Cell"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
