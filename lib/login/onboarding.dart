@@ -864,6 +864,7 @@ class _OnboardState extends State<Onboarding> {
         'country': countryNameController.text,
         'linkedin': linkedinController.text,
         'question_response': questionController.text,
+        'isVerified' : false,
       };
       await firestoreService.addAlumni(uid, data);
     } else if (userType == 'external') {

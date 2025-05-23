@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ircell/admin/alumni/verify_alumni_list.dart';
 
 class AlumniOptions extends StatelessWidget {
   const AlumniOptions({super.key});
@@ -14,15 +15,24 @@ class AlumniOptions extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          children: const [
+          children: [
             _OptionCard(
               title: 'Verify Alumni',
               icon: Icons.verified_user,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => VerifyAlumniListPage()),
+                );
+              },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _OptionCard(
               title: 'Verify Alumni Blog',
               icon: Icons.edit_document,
+              onTap: () {
+                // Handle tap
+              },
             ),
           ],
         ),
@@ -34,31 +44,36 @@ class AlumniOptions extends StatelessWidget {
 class _OptionCard extends StatelessWidget {
   final String title;
   final IconData icon;
+  final VoidCallback? onTap;
 
   const _OptionCard({
     required this.title,
     required this.icon,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-        child: Row(
-          children: [
-            Icon(icon, size: 28, color: Colors.deepPurple),
-            const SizedBox(width: 20),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          child: Row(
+            children: [
+              Icon(icon, size: 28, color: Colors.deepPurple),
+              const SizedBox(width: 20),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
