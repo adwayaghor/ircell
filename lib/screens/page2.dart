@@ -491,7 +491,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
-                                                'assets/images/international_alumini3.jpg',
+                                                'assets/images/international_alumini3.png',
                                                 0.16, // This will be overridden by Expanded
                                                 screenSize,
                                                 onTap:
@@ -517,7 +517,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
-                                                'assets/images/international_students3.jpg',
+                                                'assets/images/international_students3.png',
                                                 0.16, // This will be overridden by Expanded
                                                 screenSize,
                                               ),
