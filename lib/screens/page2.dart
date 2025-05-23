@@ -47,16 +47,17 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     Color accentColor,
     Size screenSize,
   ) {
-    double buttonHeight = screenSize.height * 0.12;
-    double iconSize = screenSize.width * 0.055;
-    double fontSize = screenSize.width * 0.028;
-    double padding = screenSize.width * 0.03;
+    double buttonHeight = screenSize.height * 0.15;
+    double iconSize = screenSize.width * 0.08;
+    double fontSize = screenSize.width * 0.035;
+    double padding = screenSize.width * 0.04;
+    double iconPadding = screenSize.width * 0.035;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: buttonHeight.clamp(80.0, 120.0),
-        padding: EdgeInsets.all(padding.clamp(12.0, 20.0)),
+        height: buttonHeight.clamp(100.0, 140.0),
+        padding: EdgeInsets.all(padding.clamp(16.0, 24.0)),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -79,7 +80,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(screenSize.width * 0.025),
+              padding: EdgeInsets.all(iconPadding.clamp(12.0, 18.0)),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
@@ -87,17 +88,17 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
               child: Icon(
                 icon,
                 color: Colors.white,
-                size: iconSize.clamp(18.0, 28.0),
+                size: iconSize.clamp(28.0, 36.0),
               ),
             ),
-            SizedBox(height: screenSize.height * 0.008),
+            SizedBox(height: screenSize.height * 0.012),
             Flexible(
               child: Text(
                 title,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: fontSize.clamp(10.0, 14.0),
+                  fontSize: fontSize.clamp(13.0, 18.0),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -186,6 +187,8 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     );
   }
 
+  // First, update your _buildFeatureCard method to handle flexible heights:
+
   Widget _buildFeatureCard(
     String title,
     String subtitle,
@@ -194,6 +197,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     Size screenSize, {
     VoidCallback? onTap,
     bool isLarge = false,
+    bool useFlexibleHeight = false, // Add this parameter
   }) {
     double cardHeight = screenSize.height * heightRatio;
     double titleFontSize =
@@ -203,6 +207,86 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     double borderRadius = screenSize.width * 0.04;
     double bottomPadding = screenSize.width * 0.04;
 
+    Widget cardContent = Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+      ),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.2)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: bottomPadding.clamp(12.0, 20.0),
+              left: bottomPadding.clamp(12.0, 20.0),
+              right: bottomPadding.clamp(12.0, 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: titleFontSize.clamp(14.0, 20.0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (subtitle.isNotEmpty) ...[
+                    SizedBox(height: screenSize.height * 0.005),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: subtitleFontSize.clamp(11.0, 16.0),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // If using flexible height (inside Expanded), don't set a fixed height
+    if (useFlexibleHeight) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: cardContent,
+      );
+    }
+
+    // Use fixed height for non-flexible cards
     return Container(
       height: cardHeight.clamp(100.0, 200.0),
       decoration: BoxDecoration(
@@ -215,67 +299,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
           ),
         ],
       ),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-        elevation: 0,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Stack(
-            children: [
-              Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: bottomPadding.clamp(12.0, 20.0),
-                left: bottomPadding.clamp(12.0, 20.0),
-                right: bottomPadding.clamp(12.0, 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: titleFontSize.clamp(14.0, 20.0),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (subtitle.isNotEmpty) ...[
-                      SizedBox(height: screenSize.height * 0.005),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: subtitleFontSize.clamp(11.0, 16.0),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      child: cardContent,
     );
   }
 
@@ -286,7 +310,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     final double headerPadding = screenSize.height * 0.02;
     final double titleFontSize =
         isSmallScreen ? screenSize.width * 0.05 : screenSize.width * 0.055;
-    final double sectionTitleFontSize = screenSize.width * 0.045;
     final double cardSpacing = screenSize.width * 0.03;
     final double sectionPadding = screenSize.width * 0.04;
 
@@ -372,8 +395,8 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          AppTheme.cardColor,
-                          AppTheme.cardColor.withOpacity(0.8),
+                          AppTheme.accentBlue,
+                          AppTheme.accentBlue.withOpacity(0.8),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -396,16 +419,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: screenSize.height * 0.005),
-                              // Text(
-                              //   "Connecting Minds, Building Futures",
-                              //   style: TextStyle(
-                              //     color: Colors.white.withOpacity(0.9),
-                              //     fontSize: subtitleFontSize.clamp(12.0, 16.0),
-                              //     fontStyle: FontStyle.italic,
-                              //   ),
-                              //   textAlign: TextAlign.center,
-                              // ),
                             ],
                           ),
                         ),
@@ -434,7 +447,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                             ),
                           ),
 
-                          // _buildStatsSection(screenSize),
+                          // Replace this section in your build method (around line 400-450):
 
                           // Feature cards section
                           Padding(
@@ -444,107 +457,86 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Explore Opportunities',
-                                  style: TextStyle(
-                                    fontSize: sectionTitleFontSize.clamp(
-                                      16.0,
-                                      20.0,
-                                    ),
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.textPrimary,
-                                  ),
-                                ),
-                                SizedBox(height: screenSize.height * 0.02),
-                                // First row - Two equal columns
-                                _buildFeatureCard(
-                                  "Higher Studies",
-                                  "Explore global education opportunities",
-                                  'assets/images/higher_studies2.png',
-                                  0.18,
-                                  screenSize,
-                                  // isLarge: true,
-                                  onTap:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => const AboutUsPage(),
+                                // Main row with Higher Studies on left and stacked cards on right
+                                IntrinsicHeight(
+                                  // This ensures both sides have the same height
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .stretch, // Stretch to fill available height
+                                    children: [
+                                      // Left side - Higher Studies (larger card)
+                                      Expanded(
+                                        flex: 1, // Changed from 3 to 1
+                                        child: _buildFeatureCard(
+                                          "",
+                                          "",
+                                          'assets/images/higher_studies3.png',
+                                          0.35, // This height will be overridden by IntrinsicHeight
+                                          screenSize,
+                                          isLarge: true,
                                         ),
                                       ),
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildFeatureCard(
-                                        "Higher Studies",
-                                        "Explore global education opportunities",
-                                        'assets/images/higher_studies2.png',
-                                        0.2,
-                                        screenSize,
-                                        isLarge: true,
+                                      SizedBox(
+                                        width: cardSpacing.clamp(1.0, 2.0),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: cardSpacing.clamp(8.0, 16.0),
-                                    ),
-                                    Expanded(
-                                      child: _buildFeatureCard(
-                                        "Student Mobility",
-                                        "Semester abroad programs",
-                                        'assets/images/student_mobility3.png',
-                                        0.2,
-                                        screenSize,
-                                        isLarge: true,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: cardSpacing.clamp(8.0, 16.0)),
-                                // Second row - Two equal columns
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildFeatureCard(
-                                        "Alumni Network",
-                                        "Connect with global alumni",
-                                        'assets/images/international_alumini2.png',
-                                        0.18,
-                                        screenSize,
-                                        onTap:
-                                            () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (context) =>
-                                                        const AlumniScreen(),
+                                      // Right side - Stacked cards
+                                      Expanded(
+                                        flex: 1, // Changed from 2 to 1
+                                        child: Column(
+                                          children: [
+                                            // Alumni Network
+                                            Expanded(
+                                              // Use Expanded to fill available space
+                                              child: _buildFeatureCard(
+                                                "",
+                                                "",
+                                                'assets/images/international_alumini3.jpg',
+                                                0.16, // This will be overridden by Expanded
+                                                screenSize,
+                                                onTap:
+                                                    () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                                const AlumniScreen(),
+                                                      ),
+                                                    ),
                                               ),
                                             ),
+                                            SizedBox(
+                                              height: cardSpacing.clamp(
+                                                0.5,
+                                                1.0,
+                                              ),
+                                            ),
+                                            // International Community
+                                            Expanded(
+                                              // Use Expanded to fill available space
+                                              child: _buildFeatureCard(
+                                                "",
+                                                "",
+                                                'assets/images/international_students3.jpg',
+                                                0.16, // This will be overridden by Expanded
+                                                screenSize,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: cardSpacing.clamp(8.0, 16.0),
-                                    ),
-                                    Expanded(
-                                      child: _buildFeatureCard(
-                                        "International Community",
-                                        "Support for international students",
-                                        'assets/images/international_students2.png',
-                                        0.18,
-                                        screenSize,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                SizedBox(height: cardSpacing.clamp(8.0, 16.0)),
-                                // Third row - Single full-width card
+                                SizedBox(height: cardSpacing.clamp(1.0, 2.0)),
+                                // Bottom row - About Us (full width)
                                 _buildFeatureCard(
-                                  "About International Relations Cell",
-                                  "Learn about our mission, vision and impact on global education",
-                                  'assets/images/about_us2.png',
-                                  0.18,
+                                  "",
+                                  "",
+                                  'assets/images/about_us3.png',
+                                  0.2,
                                   screenSize,
-                                  // isLarge: true,
+                                  isLarge: true,
                                   onTap:
                                       () => Navigator.push(
                                         context,
@@ -570,7 +562,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             Positioned(
               bottom: screenSize.height * 0.025,
               right: screenSize.width * 0.05,
-              child: FloatingButtonsStack(),
+              child: ChatbotIcon(),
             ),
           ],
         ),
