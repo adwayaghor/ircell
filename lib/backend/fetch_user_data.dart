@@ -68,3 +68,21 @@ Future<Map<String, dynamic>?> fetchUserDetailsForEditing() async {
   return null;
 }
 
+Future<Map<String, dynamic>?> fetchUserInfo(String coll, String uid) async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance.collection(coll).doc(uid).get();
+
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data()!;
+      return {
+        'first_name': data['first_name'] ?? '',
+        'last_name': data['last_name'] ?? '',
+        'email': data['email'] ?? '',
+      };
+    }
+    return null; // user document does not exist
+  } catch (e) {
+    print('Error fetching user info: $e');
+    return null;
+  }
+}

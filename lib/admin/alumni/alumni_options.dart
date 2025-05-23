@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ircell/admin/alumni/verify_alumni_blog_list.dart';
 import 'package:ircell/admin/alumni/verify_alumni_list.dart';
 
 class AlumniOptions extends StatelessWidget {
@@ -31,7 +32,10 @@ class AlumniOptions extends StatelessWidget {
               title: 'Verify Alumni Blog',
               icon: Icons.edit_document,
               onTap: () {
-                // Handle tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => VerifyAlumniBlogListPage()),
+                );
               },
             ),
           ],

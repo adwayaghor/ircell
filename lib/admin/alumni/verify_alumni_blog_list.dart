@@ -1,40 +1,30 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ircell/admin/alumni/alumni_details.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ircell/admin/alumni/blog_details.dart';
 
-class VerifyAlumniListPage extends StatelessWidget {
-  const VerifyAlumniListPage({super.key});
-
+class VerifyAlumniBlogListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: const Color(0xFFF4F5FA), // Light background similar to AlumniOptions
       appBar: AppBar(
-        title: const Text('Unverified Alumni'),
-        centerTitle: true,
+        title: Text('Unverified Alumni Blogs'),
         backgroundColor: Colors.deepPurple,
-        elevation: 2,
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('alumni')
+            .collection('alumni_blogs')
             .where('isVerified', isEqualTo: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text(
-                'No unverified alumni found.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            );
+          final docs = snapshot.data?.docs ?? [];
+          if (docs.isEmpty) {
+            return Center(child: Text('No unverified blogs found.'));
           }
-
-          final docs = snapshot.data!.docs;
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -51,7 +41,7 @@ class VerifyAlumniListPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => VerifyAlumniDetailPage(data: data, docId: docId),
+                      builder: (_) => VerifyAlumniBlogDetailPage(data: data, docId: docId),
                     ),
                   );
                 },
