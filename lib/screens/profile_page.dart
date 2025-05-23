@@ -88,6 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 EditProfilePage(userDetails: userDetails),
                       ),
                     );
+                    loadUserDetails();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('User details not found')),

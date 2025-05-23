@@ -20,6 +20,7 @@ class Page4 extends StatefulWidget {
 }
 
 class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
+  List<AlumniBlog> recentBlogs = [];
   late TabController _tabController;
 
   final User? user = Auth().currentUser;
