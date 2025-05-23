@@ -51,9 +51,9 @@ class _EventsScreenState extends State<EventsScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+                icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary(context)),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -61,11 +61,11 @@ class _EventsScreenState extends State<EventsScreen>
             Row(
               children: [
                 Container(
-                  decoration: AppTheme.glassDecoration,
+                  decoration: AppTheme.glassDecoration(context),
                   child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.filter_list,
-                      color: AppTheme.textPrimary,
+                      color: AppTheme.textPrimary(context),
                     ),
                     onPressed: () {},
                   ),
@@ -86,10 +86,10 @@ class _EventsScreenState extends State<EventsScreen>
                     },
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
-                      child: const Text(
+                      child: Text(
                         'A',
                         style: TextStyle(
-                          color: AppTheme.textPrimary,
+                          color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -101,7 +101,7 @@ class _EventsScreenState extends State<EventsScreen>
           ],
         ),
       ),
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -206,16 +206,16 @@ class _EventsScreenState extends State<EventsScreen>
 
   Widget _buildSearchBar() {
     return Container(
-      decoration: AppTheme.glassDecoration.copyWith(
+      decoration: AppTheme.glassDecoration(context).copyWith(
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: AppTheme.textPrimary),
+        style: TextStyle(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           hintText: 'Search events...',
-          hintStyle: const TextStyle(color: AppTheme.textSecondary),
-          prefixIcon: const Icon(Icons.search, color: AppTheme.textSecondary),
+          hintStyle: TextStyle(color: AppTheme.textSecondary(context)),
+          prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary(context)),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
@@ -231,7 +231,7 @@ class _EventsScreenState extends State<EventsScreen>
   Widget _buildTabSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardColor.withOpacity(0.5),
+        color: AppTheme.cardColor(context).withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -262,8 +262,8 @@ class _EventsScreenState extends State<EventsScreen>
                       size: 16,
                       color:
                           _selectedTabIndex == 0
-                              ? AppTheme.textPrimary
-                              : AppTheme.textSecondary,
+                              ? AppTheme.textPrimary(context)
+                              : AppTheme.textSecondary(context),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -272,8 +272,8 @@ class _EventsScreenState extends State<EventsScreen>
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color:
                             _selectedTabIndex == 0
-                                ? AppTheme.textPrimary
-                                : AppTheme.textSecondary,
+                                ? AppTheme.textPrimary(context)
+                                : AppTheme.textSecondary(context),
                         fontWeight:
                             _selectedTabIndex == 0
                                 ? FontWeight.bold
@@ -299,7 +299,7 @@ class _EventsScreenState extends State<EventsScreen>
                           color:
                               _selectedTabIndex == 0
                                   ? AppTheme.primaryDarkBlue
-                                  : AppTheme.textSecondary,
+                                  : AppTheme.textSecondary(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -337,8 +337,8 @@ class _EventsScreenState extends State<EventsScreen>
                       size: 16,
                       color:
                           _selectedTabIndex == 1
-                              ? AppTheme.textPrimary
-                              : AppTheme.textSecondary,
+                              ? AppTheme.textPrimary(context)
+                              : AppTheme.textSecondary(context),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -347,8 +347,8 @@ class _EventsScreenState extends State<EventsScreen>
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color:
                             _selectedTabIndex == 1
-                                ? AppTheme.textPrimary
-                                : AppTheme.textSecondary,
+                                ? AppTheme.textPrimary(context)
+                                : AppTheme.textSecondary(context),
                         fontWeight:
                             _selectedTabIndex == 1
                                 ? FontWeight.bold
@@ -374,7 +374,7 @@ class _EventsScreenState extends State<EventsScreen>
                           color:
                               _selectedTabIndex == 1
                                   ? AppTheme.primaryDarkBlue
-                                  : AppTheme.textSecondary,
+                                  : AppTheme.textSecondary(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

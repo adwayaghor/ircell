@@ -57,7 +57,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   }
 
   void _handlePageChange() {
-    if (!_pageController.hasClients || !_pageController.position.haveDimensions) return;
+    if (!_pageController.hasClients || !_pageController.position.haveDimensions)
+      return;
 
     final double page = _pageController.page ?? 0;
 
@@ -90,7 +91,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
@@ -99,19 +100,26 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: IconButton(
-                icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
-                onPressed: () => PageInfo.showInfoDialog(context, 'Page1'), 
+                icon: Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary(context),
+                ),
+                onPressed: () => PageInfo.showInfoDialog(context, 'Page1'),
               ),
             ),
             Row(
               children: [
                 Container(
-                  decoration: AppTheme.glassDecoration,
+                  decoration: AppTheme.glassDecoration(context),
                   child: IconButton(
                     icon: const Icon(Icons.notifications),
-                    onPressed: () => PageNotification.showNotificationDialog(context, 'Page1'),
+                    onPressed:
+                        () => PageNotification.showNotificationDialog(
+                          context,
+                          'Page1',
+                        ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -140,11 +148,29 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [Tab(text: 'Featured'), Tab(text: 'Liked')],
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
+          tabs: const [
+            Tab(
+              child: Text(
+                'Featured',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Tab(
+              child: Text(
+                'Liked',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+          labelColor: AppTheme.textPrimary(
+            context,
+          ), // Changed from hardcoded white
+          unselectedLabelColor: AppTheme.textPrimary(
+            context,
+          ).withOpacity(0.7), // Changed
+          indicatorColor:
+              AppTheme.accentBlue, // Changed from white to accent color
+          indicatorWeight: 4,
         ),
       ),
       body: Stack(
@@ -153,12 +179,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             controller: _tabController,
             children: [_buildFeaturedSuggestions(), _buildLikedEvents()],
           ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: FloatingButtonsStack(),
-          ),
-        ]
+          Positioned(bottom: 20, right: 20, child: FloatingButtonsStack()),
+        ],
       ),
     );
   }
@@ -181,7 +203,10 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         final double featureCardHeight = screenHeight * 0.35;
         final double maxHeight = screenHeight * 0.45;
         final double minHeight = screenHeight * 0.25;
-        final double adaptiveHeight = featureCardHeight.clamp(minHeight, maxHeight);
+        final double adaptiveHeight = featureCardHeight.clamp(
+          minHeight,
+          maxHeight,
+        );
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -200,7 +225,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                           itemBuilder: (context, index, realIndex) {
                             final event = events[index];
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
                               child: _buildFeatureCard(
                                 event,
                                 constraints.maxWidth * 0.8,
@@ -213,7 +240,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             enlargeCenterPage: true,
                             autoPlay: events.length >= 3,
                             autoPlayInterval: const Duration(seconds: 6),
-                            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                            autoPlayAnimationDuration: const Duration(
+                              milliseconds: 800,
+                            ),
                             autoPlayCurve: Curves.easeInOut,
                             enableInfiniteScroll: events.length >= 3,
                             viewportFraction: 0.8,
@@ -226,14 +255,16 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                         screenSize: screenSize,
                         title: 'Internships available',
                         items: events,
-                        itemBuilder: (event) => _buildInternshipCard(event, screenSize),
+                        itemBuilder:
+                            (event) => _buildInternshipCard(event, screenSize),
                       ),
                       SizedBox(height: screenHeight * 0.04),
                       _buildSection(
                         screenSize: screenSize,
                         title: 'Check out past events!',
                         items: events,
-                        itemBuilder: (event) => _buildPastEventCard(event, screenSize),
+                        itemBuilder:
+                            (event) => _buildPastEventCard(event, screenSize),
                       ),
                       SizedBox(height: screenHeight * 0.15),
                     ],
@@ -251,6 +282,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     final double imageHeight = cardHeight * 0.65;
 
     return InkWell(
+      borderRadius: BorderRadius.circular(
+        16,
+      ), // 1. Add rounded corners to InkWell
       onTap: () {
         Navigator.push(
           context,
@@ -262,7 +296,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       child: Container(
         width: cardWidth,
         height: cardHeight,
-        decoration: AppTheme.cardDecoration,
+        decoration: AppTheme.cardDecoration(context).copyWith(
+          borderRadius: BorderRadius.circular(16),
+        ), // 2. Ensure consistent rounding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -282,10 +318,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
+                  ),
                   gradient: LinearGradient(
                     colors: [
-                      AppTheme.primaryDarkBlue.withOpacity(0.7),
-                      AppTheme.accentBlue.withOpacity(0.7),
+                      AppTheme.accentBlue.withOpacity(0.3),
+                      AppTheme.accentBlue.withOpacity(0.3),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -295,13 +335,18 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min, // Added to prevent overflow
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible( // Wrapped in Flexible to prevent overflow
+                      Flexible(
                         child: Text(
                           event.title,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary(
+                              context,
+                            ), // 3. Fix light theme
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -310,16 +355,24 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.calendar_today,
-                            color: AppTheme.textSecondary,
+                            color: AppTheme.textPrimary(
+                              context,
+                            ), // 3. Fix light theme
                             size: 14,
                           ),
                           const SizedBox(width: 4),
-                          Flexible( // Wrapped in Flexible to prevent overflow
+                          Flexible(
                             child: Text(
                               event.date,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
+                                color: AppTheme.textPrimary(
+                                  context,
+                                ), // 3. Fix light theme
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -342,7 +395,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.favorite_border, color: AppTheme.textSecondary, size: 64),
+          Icon(
+            Icons.favorite_border,
+            color: AppTheme.textSecondary(context),
+            size: 64,
+          ),
           const SizedBox(height: 16),
           Text(
             'No liked events yet',
@@ -367,7 +424,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final cardHeight = screenHeight * 0.32;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -401,9 +458,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   Widget _buildInternshipCard(Event event, Size screenSize) {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
-    
+
     return Container(
-      decoration: AppTheme.cardDecoration.copyWith(
+      decoration: AppTheme.cardDecoration(context).copyWith(
         gradient: LinearGradient(
           colors: [
             AppTheme.accentBlue.withOpacity(0.1),
@@ -448,8 +505,10 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
-            Expanded( // Added Expanded to constrain the description
-              child: SingleChildScrollView( // Added SingleChildScrollView for long descriptions
+            Expanded(
+              // Added Expanded to constrain the description
+              child: SingleChildScrollView(
+                // Added SingleChildScrollView for long descriptions
                 child: Text(
                   event.description,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -465,7 +524,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               children: [
                 Icon(
                   Icons.schedule,
-                  color: AppTheme.textSecondary,
+                  color: AppTheme.textSecondary(context),
                   size: screenWidth * 0.04,
                 ),
                 SizedBox(width: screenWidth * 0.01),
@@ -473,7 +532,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                   child: Text(
                     event.date,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondary,
+                      color: AppTheme.textSecondary(context),
                       fontSize: screenWidth * 0.028,
                     ),
                   ),
@@ -490,7 +549,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accentBlue,
-                    foregroundColor: AppTheme.textPrimary,
+                    foregroundColor: AppTheme.textPrimary(context),
                     padding: EdgeInsets.symmetric(
                       horizontal: screenWidth * 0.04,
                       vertical: screenHeight * 0.01,
@@ -513,14 +572,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   Widget _buildPastEventCard(Event event, Size screenSize) {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
-    
+
     return Container(
-      decoration: AppTheme.cardDecoration.copyWith(
+      decoration: AppTheme.cardDecoration(context).copyWith(
         gradient: LinearGradient(
-          colors: [
-            Colors.grey.withOpacity(0.1),
-            Colors.grey.withOpacity(0.05),
-          ],
+          colors: [Colors.grey.withOpacity(0.1), Colors.grey.withOpacity(0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -583,12 +639,13 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min, // Added to prevent overflow
                 children: [
-                  Flexible( // Wrapped in Flexible to prevent overflow
+                  Flexible(
+                    // Wrapped in Flexible to prevent overflow
                     child: Text(
                       event.title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.textSecondary(context),
                         fontSize: screenWidth * 0.035,
                       ),
                       maxLines: 1,
@@ -600,15 +657,17 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     children: [
                       Icon(
                         Icons.history,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.textSecondary(context),
                         size: screenWidth * 0.035,
                       ),
                       SizedBox(width: screenWidth * 0.01),
                       Expanded(
                         child: Text(
                           event.date,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textSecondary,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.textSecondary(context),
                             fontSize: screenWidth * 0.028,
                           ),
                           maxLines: 1,
@@ -620,12 +679,15 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EventDetailScreen(event: event),
+                              builder:
+                                  (context) => EventDetailScreen(event: event),
                             ),
                           );
                         },
                         style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.02,
+                          ),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),

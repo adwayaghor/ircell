@@ -45,26 +45,36 @@ class _TabsScreenState extends State<TabsScreen> {
       child: SafeArea(
         child: Scaffold(
           body: Container(
-            decoration: AppTheme.gradientBackground,
+            decoration: AppTheme.gradientBackground(context),
             child: activePage,
           ),
           bottomNavigationBar: BottomNavigationBar(
             onTap: _selectPage,
             currentIndex: _selectedPageIndex,
             selectedItemColor: AppTheme.accentBlue,
-            unselectedItemColor: AppTheme.textSecondary,
-            backgroundColor: AppTheme.cardColor,
+            unselectedItemColor:
+                Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             type: BottomNavigationBarType.fixed,
             elevation: 8,
             showSelectedLabels: true,
             showUnselectedLabels: true,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Featured'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                label: 'Featured',
+              ),
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'Tickets'),
-              BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Community'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.qr_code),
+                label: 'Tickets',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people_alt_outlined),
+                label: 'Community',
+              ),
             ],
-          ),  
+          ),
         ),
       ),
     );

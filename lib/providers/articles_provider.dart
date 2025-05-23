@@ -54,7 +54,7 @@ Widget buildArticlesList(BuildContext context, {int? limit, String? searchQuery}
             child: Container(
               margin: const EdgeInsets.only(bottom: 12.0),
               padding: const EdgeInsets.all(16.0),
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: Row(
                 children: [
                   Container(
@@ -70,16 +70,16 @@ Widget buildArticlesList(BuildContext context, {int? limit, String? searchQuery}
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: AppTheme.textPrimary(context),
                       ),
                     ),
                   ),
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_ios,
-                    color: AppTheme.textSecondary,
+                    color: AppTheme.textSecondary(context),
                     size: 16,
                   ),
                 ],

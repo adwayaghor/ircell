@@ -93,11 +93,11 @@ class _Page3State extends State<Page3> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.info_outline,
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.textPrimary(context),
                 ),
                 onPressed: () => PageInfo.showInfoDialog(context, 'Page3'),
               ),
@@ -105,7 +105,7 @@ class _Page3State extends State<Page3> {
             Row(
               children: [
                 Container(
-                  decoration: AppTheme.glassDecoration,
+                  decoration: AppTheme.glassDecoration(context),
                   child: IconButton(
                     icon: const Icon(Icons.notifications),
                     onPressed:
@@ -132,10 +132,10 @@ class _Page3State extends State<Page3> {
                     },
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
-                      child: const Text(
+                      child: Text(
                         'A',
                         style: TextStyle(
-                          color: AppTheme.textPrimary,
+                          color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -147,7 +147,7 @@ class _Page3State extends State<Page3> {
           ],
         ),
       ),
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       body: Stack(
         children: [
           // Using SingleChildScrollView to prevent overflow
@@ -200,7 +200,7 @@ class _Page3State extends State<Page3> {
         Container(
           width: 80,
           height: 80,
-          decoration: AppTheme.glassDecoration.copyWith(
+          decoration: AppTheme.glassDecoration(context).copyWith(
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(
@@ -233,7 +233,7 @@ class _Page3State extends State<Page3> {
   Widget _buildTabSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardColor.withOpacity(0.5),
+        color: AppTheme.cardColor(context).withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -261,8 +261,8 @@ class _Page3State extends State<Page3> {
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color:
                         _selectedTab == 0
-                            ? AppTheme.textPrimary
-                            : AppTheme.textSecondary,
+                            ? AppTheme.textPrimary(context)
+                            : AppTheme.textSecondary(context),
                     fontWeight:
                         _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -294,8 +294,8 @@ class _Page3State extends State<Page3> {
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color:
                         _selectedTab == 1
-                            ? AppTheme.textPrimary
-                            : AppTheme.textSecondary,
+                            ? AppTheme.textPrimary(context)
+                            : AppTheme.textSecondary(context),
                     fontWeight:
                         _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -318,7 +318,7 @@ class _Page3State extends State<Page3> {
           return Container(
             width:
                 MediaQuery.of(context).size.width - 64, // Account for padding
-            decoration: AppTheme.glassDecoration.copyWith(
+            decoration: AppTheme.glassDecoration(context).copyWith(
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -326,7 +326,7 @@ class _Page3State extends State<Page3> {
                 'No booked events yet',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary(context)),
               ),
             ),
           );
@@ -376,7 +376,7 @@ class _Page3State extends State<Page3> {
                         color: AppTheme.accentBlue,
                       ),
                     ),
-                    Icon(Icons.qr_code_2_rounded, color: AppTheme.textPrimary),
+                    Icon(Icons.qr_code_2_rounded, color: AppTheme.textPrimary(context)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -388,7 +388,7 @@ class _Page3State extends State<Page3> {
                     event,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: AppTheme.textPrimary(context),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -403,12 +403,12 @@ class _Page3State extends State<Page3> {
                   children: [
                     Icon(
                       Icons.event_available_outlined,
-                      color: AppTheme.textSecondary,
+                      color: AppTheme.textSecondary(context),
                     ),
                     Text(
                       'Valid Ticket',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.textSecondary(context),
                       ),
                     ),
                   ],
@@ -424,20 +424,20 @@ class _Page3State extends State<Page3> {
   Widget _buildPastTicketsContent() {
     return Container(
       width: double.infinity,
-      decoration: AppTheme.glassDecoration.copyWith(
+      decoration: AppTheme.glassDecoration(context).copyWith(
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history, color: AppTheme.textSecondary, size: 48),
+          Icon(Icons.history, color: AppTheme.textSecondary(context), size: 48),
           const SizedBox(height: 16),
           Text(
             'Past event tickets will appear here',
             style: Theme.of(
               context,
-            ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary),
+            ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary(context)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -476,7 +476,7 @@ class _Page3State extends State<Page3> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: AppTheme.textSecondary.withOpacity(0.3),
+                      color: AppTheme.textSecondary(context).withOpacity(0.3),
                       width: 1,
                     ),
                   ),
@@ -624,7 +624,7 @@ class _Page3State extends State<Page3> {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: AppTheme.textSecondary(context).withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -640,7 +640,7 @@ class _Page3State extends State<Page3> {
             height: 80,
             width: double.infinity,
             margin: const EdgeInsets.only(top: 12),
-            decoration: AppTheme.glassDecoration.copyWith(
+            decoration: AppTheme.glassDecoration(context).copyWith(
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -648,7 +648,7 @@ class _Page3State extends State<Page3> {
                 'Internship opportunities will appear here',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
+                ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary(context)),
               ),
             ),
           ),

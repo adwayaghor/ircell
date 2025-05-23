@@ -22,7 +22,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IR CELL',
-      theme: AppTheme.theme,
+      theme: AppTheme.themeData(context), 
+      darkTheme: AppTheme.buildTheme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const SplashScreen(),
     );
   }

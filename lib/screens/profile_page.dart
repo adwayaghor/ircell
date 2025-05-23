@@ -19,7 +19,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   int _selectedTab = 0;
 
   Map<String, dynamic>? userDetails; // Make it a class-level variable
@@ -60,27 +59,33 @@ class _ProfilePageState extends State<ProfilePage> {
             Text(
               'Profile',
               style: TextStyle(
-                color: AppTheme.textPrimary,
+                color:
+                    Theme.of(
+                      context,
+                    ).colorScheme.onSurface, // For primary text color,
                 fontWeight: FontWeight.bold,
                 fontSize: screenSize.width * 0.05,
               ),
             ),
             Container(
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: IconButton(
                 icon: Icon(
                   Icons.edit,
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: iconSize,
                 ),
                 onPressed: () async {
-                  final userDetails = await fetchUserDetailsForEditing(); // The function you already have
+                  final userDetails =
+                      await fetchUserDetailsForEditing(); // The function you already have
 
                   if (userDetails != null) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditProfilePage(userDetails: userDetails),
+                        builder:
+                            (context) =>
+                                EditProfilePage(userDetails: userDetails),
                       ),
                     );
                   } else {
@@ -88,13 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       SnackBar(content: Text('User details not found')),
                     );
                   }
-                }
+                },
               ),
             ),
           ],
         ),
       ),
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       // Wrap the main body in a SafeArea to avoid system intrusions
       body: SafeArea(
         child: Padding(
@@ -107,21 +112,21 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 // Profile header section
                 _buildProfileHeader(),
-        
+
                 SizedBox(height: verticalPadding * 1.5),
-        
+
                 // Personal Info & Preferences tabs
                 _buildTabSelector(),
-        
+
                 SizedBox(height: verticalPadding),
-        
+
                 // Main content area based on selected tab
                 _selectedTab == 0
                     ? _buildPersonalInfoContent()
                     : _buildPreferencesContent(),
-        
+
                 SizedBox(height: verticalPadding),
-        
+
                 // Account actions section at bottom
                 _buildAccountActionsSection(),
               ],
@@ -160,15 +165,17 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           child: Center(
-            child: userDetails == null ? buildShimmer(width: 80, height: profilePicSize * 0.5)
-          : Text(
-              createEmailShortForm(userDetails?['email']),
-              style: TextStyle(
-                fontSize: profilePicSize * 0.5,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
-            ),
+            child:
+                userDetails == null
+                    ? buildShimmer(width: 80, height: profilePicSize * 0.5)
+                    : Text(
+                      createEmailShortForm(userDetails?['email']),
+                      style: TextStyle(
+                        fontSize: profilePicSize * 0.5,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
           ),
         ),
 
@@ -180,26 +187,28 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min, // Only take necessary space
             children: [
-            userDetails == null ? buildShimmer(width: 160, height: fontSize + 8)
-            : Text(
-                '${userDetails?['first_name'] ?? ''} ${userDetails?['last_name'] ?? ''}',
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
+              userDetails == null
+                  ? buildShimmer(width: 160, height: fontSize + 8)
+                  : Text(
+                    '${userDetails?['first_name'] ?? ''} ${userDetails?['last_name'] ?? ''}',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
               SizedBox(height: spacing / 2),
-              userDetails == null ? buildShimmer(width: 160, height: fontSize + 8)
-              : Text(
-                userDetails?['email'] ?? '',
-                style: TextStyle(
-                  fontSize: smallFontSize,
-                  color: AppTheme.textSecondary,
-                ),
-                overflow: TextOverflow.ellipsis, // Handle text overflow
-              ),
+              userDetails == null
+                  ? buildShimmer(width: 160, height: fontSize + 8)
+                  : Text(
+                    userDetails?['email'] ?? '',
+                    style: TextStyle(
+                      fontSize: smallFontSize,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis, // Handle text overflow
+                  ),
               SizedBox(height: spacing),
               InkWell(
                 onTap: () {
@@ -212,7 +221,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   decoration: BoxDecoration(
                     color: AppTheme.accentBlue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(screenSize.width * 0.05),
+                    borderRadius: BorderRadius.circular(
+                      screenSize.width * 0.05,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min, // Only take necessary space
@@ -242,17 +253,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget buildShimmer({double width = 150, double height = 16}) {
-  return Shimmer.fromColors(
-    baseColor: Colors.black12,
-    highlightColor: Colors.grey,
-    child: Container(
-      width: width,
-      height: height,
-      color: Colors.white,
-    ),
-  );
-}
-
+    return Shimmer.fromColors(
+      baseColor: Colors.black12,
+      highlightColor: Colors.grey,
+      child: Container(width: width, height: height, color: Colors.white),
+    );
+  }
 
   Widget _buildTabSelector() {
     final Size screenSize = MediaQuery.of(context).size;
@@ -261,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.cardColor.withOpacity(0.5),
+        color: AppTheme.cardColor(context).withOpacity(0.5),
         borderRadius: BorderRadius.circular(screenSize.width * 0.03),
       ),
       child: Row(
@@ -290,8 +296,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontSize: fontSize,
                     color:
                         _selectedTab == 0
-                            ? AppTheme.textPrimary
-                            : AppTheme.textSecondary,
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).textTheme.bodyMedium?.color,
                     fontWeight:
                         _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -324,8 +330,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontSize: fontSize,
                     color:
                         _selectedTab == 1
-                            ? AppTheme.textPrimary
-                            : AppTheme.textSecondary,
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).textTheme.bodyMedium?.color,
                     fontWeight:
                         _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -339,14 +345,17 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> deleteUserData() async {
-    await FirebaseFirestore.instance.collection(userDetails?['source_collection'] ?? '').doc(userDetails?['uid'] ?? "").delete();
+    await FirebaseFirestore.instance
+        .collection(userDetails?['source_collection'] ?? '')
+        .doc(userDetails?['uid'] ?? "")
+        .delete();
   }
 
   Future<void> deleteUserAuth() async {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      await user.delete();  // This deletes from Firebase Authentication
+      await user.delete(); // This deletes from Firebase Authentication
     }
   }
 
@@ -365,7 +374,7 @@ class _ProfilePageState extends State<ProfilePage> {
         await LocalStorage.clearUID();
 
         // Navigate to login or landing screen
-        if(context.mounted){
+        if (context.mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const SplashScreen()),
             (route) => false,
@@ -375,18 +384,16 @@ class _ProfilePageState extends State<ProfilePage> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         // Show message to re-login
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please re-login to delete your account."),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please re-login to delete your account.")),
+        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Error: ${e.message}"),
-        ));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error: ${e.message}")));
       }
     }
   }
-
-
 
   String createEmailShortForm(String? email) {
     if (email == null || email.length < 7) return '-';
@@ -403,9 +410,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Container(
       width: double.infinity,
-      decoration: AppTheme.glassDecoration.copyWith(
-        borderRadius: BorderRadius.circular(screenSize.width * 0.04),
-      ),
+      decoration: AppTheme.glassDecoration(
+        context,
+      ).copyWith(borderRadius: BorderRadius.circular(screenSize.width * 0.04)),
       padding: EdgeInsets.all(padding),
       // Fixed height constraint removed to prevent overflow
       child: Column(
@@ -417,7 +424,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -426,11 +433,23 @@ class _ProfilePageState extends State<ProfilePage> {
           // Personal info fields
           _buildInfoItem('Email', userDetails?['email'] ?? '', Icons.email),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Phone', '+91 ${userDetails?['contact'] ?? ''}', Icons.phone),
+          _buildInfoItem(
+            'Phone',
+            '+91 ${userDetails?['contact'] ?? ''}',
+            Icons.phone,
+          ),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Department', userDetails?['department'] ?? '', Icons.school),
+          _buildInfoItem(
+            'Department',
+            userDetails?['department'] ?? '',
+            Icons.school,
+          ),
           SizedBox(height: spacing * 0.8),
-          _buildInfoItem('Year', userDetails?['year'] ?? '', Icons.calendar_today),
+          _buildInfoItem(
+            'Year',
+            userDetails?['year'] ?? '',
+            Icons.calendar_today,
+          ),
 
           SizedBox(height: spacing * 1.5),
 
@@ -503,18 +522,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 label,
                 style: TextStyle(
                   fontSize: labelSize,
-                  color: AppTheme.textSecondary,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
-              userDetails == null ? buildShimmer(width: 160, height: valueSize + 8) : 
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: valueSize,
-                  color: AppTheme.textPrimary,
-                ),
-                overflow: TextOverflow.ellipsis, // Handle text overflow
-              ),
+              userDetails == null
+                  ? buildShimmer(width: 160, height: valueSize + 8)
+                  : Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: valueSize,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis, // Handle text overflow
+                  ),
             ],
           ),
         ),
@@ -531,7 +551,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Container(
       width: double.infinity,
-      decoration: AppTheme.glassDecoration.copyWith(
+      decoration: AppTheme.glassDecoration(context).copyWith(
         borderRadius: BorderRadius.circular(screenSize.width * 0.04),
       ),
       padding: EdgeInsets.all(padding),
@@ -545,7 +565,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -576,7 +596,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppTheme.textPrimary(context),
             ),
           ),
 
@@ -590,9 +610,14 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Wrap(
               spacing: chipSpacing,
               runSpacing: chipSpacing,
-              children: userDetails == null ? buildShimmer(width: 160, height: chipSpacing + 8) : (userDetails!['interests'])
-                  .map<Widget>((interest) => _buildInterestChip(interest))
-                  .toList(),
+              children:
+                  userDetails == null
+                      ? buildShimmer(width: 160, height: chipSpacing + 8)
+                      : (userDetails!['interests'])
+                          .map<Widget>(
+                            (interest) => _buildInterestChip(interest),
+                          )
+                          .toList(),
             ),
           ),
 
@@ -673,14 +698,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 title,
                 style: TextStyle(
                   fontSize: titleSize,
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.textPrimary(context),
                 ),
               ),
               Text(
                 subtitle,
                 style: TextStyle(
                   fontSize: subtitleSize,
-                  color: AppTheme.textSecondary,
+                  color: AppTheme.textSecondary(context),
                 ),
                 overflow: TextOverflow.ellipsis, // Handle text overflow
               ),
@@ -721,10 +746,10 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             interest,
-            style: TextStyle(fontSize: fontSize, color: AppTheme.textPrimary),
+            style: TextStyle(fontSize: fontSize, color: AppTheme.textPrimary(context)),
           ),
           SizedBox(width: screenSize.width * 0.01),
-          Icon(Icons.close, color: AppTheme.textSecondary, size: iconSize),
+          Icon(Icons.close, color: AppTheme.textSecondary(context), size: iconSize),
         ],
       ),
     );
@@ -754,7 +779,7 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: AppTheme.textSecondary(context).withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -764,7 +789,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(
                 fontSize: titleSize,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppTheme.textPrimary(context),
               ),
             ),
           ),
@@ -806,7 +831,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(padding),
-            decoration: AppTheme.glassDecoration.copyWith(
+            decoration: AppTheme.glassDecoration(context).copyWith(
               borderRadius: BorderRadius.circular(screenSize.width * 0.03),
             ),
             child: Column(
@@ -816,7 +841,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   'IR Cell App v1.0.0',
                   style: TextStyle(
                     fontSize: screenSize.width * 0.035,
-                    color: AppTheme.textSecondary,
+                    color: AppTheme.textSecondary(context),
                   ),
                 ),
                 SizedBox(height: smallSpacing),
@@ -915,7 +940,7 @@ class _ProfilePageState extends State<ProfilePage> {
         );
 
         if (confirmed == true) {
-          if(text == 'Sign Out'){
+          if (text == 'Sign Out') {
             try {
               await Auth().signOut();
               // Use context.mounted to check if the widget is still in the tree
@@ -943,8 +968,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               }
             }
-          }
-          else{
+          } else {
             deleteAccount(context);
           }
         }

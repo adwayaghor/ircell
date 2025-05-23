@@ -130,7 +130,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             style: TextStyle(
               fontSize: titleFontSize.clamp(16.0, 20.0),
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppTheme.textPrimary(context),
             ),
           ),
           SizedBox(height: screenSize.height * 0.015),
@@ -314,7 +314,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     final double sectionPadding = screenSize.width * 0.04;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundColor(context),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
@@ -323,11 +323,11 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              decoration: AppTheme.glassDecoration,
+              decoration: AppTheme.glassDecoration(context),
               child: IconButton(
                 icon: Icon(
                   Icons.info_outline,
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.textPrimary(context),
                   size: screenSize.width * 0.06,
                 ),
                 onPressed: () => PageInfo.showInfoDialog(context, 'Page2'),
@@ -336,7 +336,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             Row(
               children: [
                 Container(
-                  decoration: AppTheme.glassDecoration,
+                  decoration: AppTheme.glassDecoration(context),
                   child: IconButton(
                     icon: Icon(
                       Icons.notifications,
@@ -369,7 +369,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       child: Text(
                         'A',
                         style: TextStyle(
-                          color: AppTheme.textPrimary,
+                          color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,
                           fontSize: screenSize.width * 0.04,
                         ),

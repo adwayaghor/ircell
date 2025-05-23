@@ -144,21 +144,21 @@ class _OnboardState extends State<Onboarding> {
   Widget _buildUserTypePage() {
     return ListView(
       children: [
-        const Text(
+        Text(
           "Tell us about yourself",
           style: TextStyle(
             fontSize: 22, 
-            color: AppTheme.textPrimary,
+            color: AppTheme.textPrimary(context),
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
         const SizedBox(height: 15),
-        const Text(
+        Text(
           "Who are you?",
           style: TextStyle(
             fontSize: 18, 
-            color: AppTheme.textSecondary,
+            color: AppTheme.textSecondary(context),
             fontWeight: FontWeight.w500,
             fontFamily: 'Roboto',
           ),
@@ -257,7 +257,7 @@ class _OnboardState extends State<Onboarding> {
         width: 2,
       ),
     ),
-    color: AppTheme.cardColor, // Set card background to theme's dark color
+    color: AppTheme.cardColor(context), // Set card background to theme's dark color
     child: ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       title: Text(
@@ -265,12 +265,12 @@ class _OnboardState extends State<Onboarding> {
         style: TextStyle(
           fontSize: 15,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? AppTheme.textPrimary : AppTheme.textSecondary, // Explicit text colors
+          color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), // Explicit text colors
         ),
       ),
       leading: Icon(
         icon,
-        color: isSelected ? AppTheme.accentBlue : AppTheme.textSecondary,
+        color: isSelected ? AppTheme.accentBlue : AppTheme.textSecondary(context),
         size: 26,
       ),
       tileColor: isSelected ? AppTheme.accentBlue.withOpacity(0.1) : null, // Subtle selection highlight
@@ -608,21 +608,21 @@ class _OnboardState extends State<Onboarding> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Select Your Interests",
           style: TextStyle(
             fontSize: 22, 
-            color: AppTheme.textPrimary,
+            color: AppTheme.textPrimary(context),
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
           ),
         ),
         const SizedBox(height: 5),
-        const Text(
+        Text(
           "Choose topics that interest you most",
           style: TextStyle(
             fontSize: 18,
-            color: AppTheme.textSecondary,
+            color: AppTheme.textSecondary(context),
           ),
         ),
         const SizedBox(height: 15),
@@ -665,7 +665,7 @@ class _OnboardState extends State<Onboarding> {
                       interest,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isSelected ? Colors.white : AppTheme.textSecondary,
+                        color: isSelected ? Colors.white : AppTheme.textSecondary(context),
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -751,7 +751,7 @@ class _OnboardState extends State<Onboarding> {
         borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
       ),
       filled: true,
-      fillColor: AppTheme.backgroundColor,
+      fillColor: AppTheme.backgroundColor(context),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
@@ -787,7 +787,7 @@ class _OnboardState extends State<Onboarding> {
         ],
       ),
       body: Container(
-        color: AppTheme.backgroundColor,
+        color: AppTheme.backgroundColor(context),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

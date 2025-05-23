@@ -100,9 +100,9 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Container(
-          decoration: AppTheme.glassDecoration,
+          decoration: AppTheme.glassDecoration(context),
           child: IconButton(
-            icon: const Icon(Icons.info_outline, color: AppTheme.textPrimary),
+            icon: Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onSurface,),
             onPressed: () => PageInfo.showInfoDialog(context, 'Page4'),
           ),
         ),
@@ -114,7 +114,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               Row(
                 children: [
                   Container(
-                    decoration: AppTheme.glassDecoration,
+                    decoration: AppTheme.glassDecoration(context),
                     child: IconButton(
                       icon: const Icon(Icons.notifications),
                       onPressed:
@@ -141,10 +141,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                       },
                       child: CircleAvatar(
                         backgroundColor: AppTheme.accentBlue,
-                        child: const Text(
+                        child: Text(
                           'A',
                           style: TextStyle(
-                            color: AppTheme.textPrimary,
+                            color: AppTheme.textPrimary(context),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -206,10 +206,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Japan Facilitation Centre',
               style: TextStyle(
-                color: AppTheme.textPrimary,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -242,9 +242,9 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                       ),
                       const SizedBox(height: 12),
                       
-                      const Text(
+                      Text(
                         'Get support for your study and career in Japan.',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(color: AppTheme.textSecondary(context)),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -370,7 +370,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 24),
-            Divider(color: AppTheme.textSecondary, thickness: 1),
+            Divider(color: AppTheme.textSecondary(context), thickness: 1),
             const SizedBox(height: 16),
             InkWell(
               onTap: () {
@@ -408,10 +408,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Featured Videos',
               style: TextStyle(
-                color: AppTheme.textPrimary,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -439,7 +439,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
 
   Widget _buildVideoCard(int index) {
     return Container(
-      decoration: AppTheme.cardDecoration,
+      decoration: AppTheme.cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -461,11 +461,11 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Icons.play_circle_outline,
                     size: 40,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
               ),
@@ -478,10 +478,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               children: [
                 Text(
                   'Video Title ${index + 1}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.textPrimary(context),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -489,9 +489,9 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 const SizedBox(height: 4),
                 Text(
                   '2:45 • May ${10 + index}, 2025',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppTheme.textSecondary,
+                    color: AppTheme.textSecondary(context),
                   ),
                 ),
               ],
@@ -528,28 +528,28 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'By $author • $date',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppTheme.textSecondary,
+                    color: AppTheme.textSecondary(context),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.circle,
                       size: 8,
-                      color: AppTheme.textSecondary,
+                      color: AppTheme.textSecondary(context),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -580,10 +580,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppTheme.textPrimary(context),
             ),
           ),
         ],
