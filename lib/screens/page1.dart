@@ -170,7 +170,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           ).withOpacity(0.7), // Changed
           indicatorColor:
               AppTheme.accentBlue, // Changed from white to accent color
-          indicatorWeight: 4,
+          indicatorWeight: 4,          
         ),
       ),
       body: Stack(
@@ -324,12 +324,13 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                   ),
                   gradient: LinearGradient(
                     colors: [
-                      AppTheme.accentBlue.withOpacity(0.3),
-                      AppTheme.accentBlue.withOpacity(0.3),
+                      AppTheme.primaryDarkBlue.withOpacity(0.7),
+                      AppTheme.accentBlue.withOpacity(0.7),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
+                  
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),

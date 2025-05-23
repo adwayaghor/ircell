@@ -102,7 +102,10 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         leading: Container(
           decoration: AppTheme.glassDecoration(context),
           child: IconButton(
-            icon: Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onSurface,),
+            icon: Icon(
+              Icons.info_outline,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: () => PageInfo.showInfoDialog(context, 'Page4'),
           ),
         ),
@@ -169,11 +172,15 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                   Tab(text: 'Articles'),
                   Tab(text: 'Videos'),
                 ],
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white70,
-                indicatorColor: Colors.white,
-                indicatorWeight: 3,
-                labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                labelColor: AppTheme.textPrimary(
+                  context,
+                ), // Changed from hardcoded white
+                unselectedLabelColor: AppTheme.textPrimary(
+                  context,
+                ).withOpacity(0.7), // Changed
+                indicatorColor:
+                    AppTheme.accentBlue, // Changed from white to accent color
+                indicatorWeight: 4,
               ),
             ),
           ),
@@ -241,10 +248,12 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       Text(
                         'Get support for your study and career in Japan.',
-                        style: TextStyle(color: AppTheme.textSecondary(context)),
+                        style: TextStyle(
+                          color: AppTheme.textSecondary(context),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -329,7 +338,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               child: Row(
                 children: [
                   const Text('Alumni Blogs', style: TextStyle(fontSize: 16)),
-
                   const SizedBox(width: 8),
                   const Icon(Icons.arrow_forward_ios, size: 16),
                 ],
@@ -507,64 +515,78 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
     required String author,
     required String date,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.person, size: 30, color: Colors.grey),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary(context),
-                  ),
+    return Card(
+      child: InkWell(
+        onTap: () {
+          
+        },
+        child: Padding(
+          
+          // decoration: BoxDecoration(
+          //   border: Border.all(color: AppTheme.textPrimary(context), width: 0.5),
+          //   borderRadius: BorderRadius.circular(12.0),
+          // ),
+          padding: const EdgeInsets.all(16),
+          // child: Card(
+          // child: InkWell(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'By $author • $date',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.textSecondary(context),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: const Icon(Icons.person, size: 30, color: Colors.grey),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.circle,
-                      size: 8,
-                      color: AppTheme.textSecondary(context),
-                    ),
-                    const SizedBox(width: 4),
                     Text(
-                      'Read more',
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary(context),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'By $author • $date',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textSecondary(context),
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 8,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Read more',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -98,7 +98,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
-                  fontSize: fontSize.clamp(13.0, 18.0),
+                  fontSize: fontSize.clamp(15.0, 20.0),
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       builder: (context) => const InternshipsScreen(),
                     ),
                   ),
-                  Colors.deepOrange,
+                  Colors.green,
                   screenSize,
                 ),
               ),
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       builder: (context) => const ProfilePage(),
                     ),
                   ),
-                  Colors.green,
+                  Colors.deepOrange,
                   screenSize,
                 ),
               ),
@@ -207,11 +207,28 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     double borderRadius = screenSize.width * 0.04;
     double bottomPadding = screenSize.width * 0.04;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+  
+  // Determine image path based on theme
+  String getImagePath(String imageName) {
+    return isDark 
+      ? 'assets/images/dark/$imageName' 
+      : 'assets/images/light/$imageName';
+  }
+
+  if (imagePath.contains('higher_studies')) {
+    imagePath = getImagePath('higher_studies.png');
+  } else if (imagePath.contains('international_alumni')) {
+    imagePath = getImagePath('international_alumni.png');
+  } else if (imagePath.contains('international_students')) {
+    imagePath = getImagePath('international_students.png');
+  } else if (imagePath.contains('about_us')) {
+    imagePath = getImagePath('about_us.png');
+  } else {
+    imagePath = imagePath; // fallback to original path
+  }
+
     Widget cardContent = Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
-      ),
-      elevation: 0,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -226,9 +243,9 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.2)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, AppTheme.accentBlue.withOpacity(0.3)],
+                  begin: Alignment.bottomRight,
+                  end: Alignment.bottomRight,
                 ),
               ),
             ),
@@ -274,13 +291,13 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.black.withOpacity(0.1),
+          //     blurRadius: 8,
+          //     offset: const Offset(0, 2),
+          //   ),
+          // ],
         ),
         child: cardContent,
       );
@@ -291,13 +308,13 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
       height: cardHeight.clamp(100.0, 200.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black.withOpacity(0.1),
+        //     blurRadius: 8,
+        //     offset: const Offset(0, 2),
+        //   ),
+        // ],
       ),
       child: cardContent,
     );
@@ -471,7 +488,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                         child: _buildFeatureCard(
                                           "",
                                           "",
-                                          'assets/images/higher_studies3.png',
+                                          'higher_studies',
                                           0.35, // This height will be overridden by IntrinsicHeight
                                           screenSize,
                                           isLarge: true,
@@ -491,7 +508,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
-                                                'assets/images/international_alumini3.png',
+                                                'international_alumni',
                                                 0.16, // This will be overridden by Expanded
                                                 screenSize,
                                                 onTap:
@@ -517,7 +534,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
-                                                'assets/images/international_students3.png',
+                                                'international_students',
                                                 0.16, // This will be overridden by Expanded
                                                 screenSize,
                                               ),
@@ -533,8 +550,8 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                 _buildFeatureCard(
                                   "",
                                   "",
-                                  'assets/images/about_us3.png',
-                                  0.2,
+                                  'about_us',
+                                  0.15,
                                   screenSize,
                                   isLarge: true,
                                   onTap:

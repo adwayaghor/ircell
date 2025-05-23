@@ -84,6 +84,8 @@ flutter:
   assets:
     - assets/images/ircircle2.png
     - assets/images/
+    - assets/images/light/
+    - assets/images/dark/
     - assets/images/splash.gif
     - assets/images/jfc.jpg
   #   - images/a_dot_ham.jpeg
