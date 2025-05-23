@@ -318,11 +318,11 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           children: [
             InkWell(
               onTap: () {
-                // Navigate to Alumni Blogs page
+                // Navigate to new dynamic Alumni Blog List page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AlumniBlogsPage(),
+                    builder: (context) => const AlumniBlogListPage(), // ✅ NEW PAGE
                   ),
                 );
               },
