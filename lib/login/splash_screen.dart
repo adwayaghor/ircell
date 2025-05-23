@@ -14,7 +14,6 @@ class _SplashScreenWidgetState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Navigate after 3 seconds
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds: 4));
       if (mounted) {
@@ -28,18 +27,14 @@ class _SplashScreenWidgetState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            flex: 9, // Adjust this to control how much space the GIF takes
-            child: Image.asset(
-              'assets/images/splash.gif',
-              fit: BoxFit.cover,
-              width: double.infinity,
-            ),
-          ),
-          const SizedBox(height: 40),
-        ],
+      backgroundColor: Colors.black, 
+      body: Center(
+        child: Image.asset(
+          'assets/images/splash.gif',
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        ),
       ),
     );
   }
