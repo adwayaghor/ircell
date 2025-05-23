@@ -26,6 +26,7 @@ Future<Map<String, dynamic>?> fetchUserDetails() async {
       final data = docSnapshot.data();
 
       return {
+        'uid' : uid,
         'first_name': data?['first_name'],
         'last_name': data?['last_name'],
         'email': data?['email'],
@@ -41,3 +42,29 @@ Future<Map<String, dynamic>?> fetchUserDetails() async {
   print('User not found in any collection');
   return null;
 }
+
+Future<Map<String, dynamic>?> fetchUserDetailsForEditing() async {
+  final uid = await LocalStorage.getUID();
+  if (uid == null) return null;
+
+  final collections = [
+    'pccoe_students',
+    'international_students',
+    'external_students',
+    'alumni'
+  ];
+
+  for (final collection in collections) {
+    final doc = await FirebaseFirestore.instance.collection(collection).doc(uid).get();
+    if (doc.exists) {
+      return {
+        'uid': uid,
+        'collection': collection,
+        'data': doc.data(), // All fields for that user
+      };
+    }
+  }
+
+  return null;
+}
+

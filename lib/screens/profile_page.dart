@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/backend/fetch_user_data.dart';
+import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
+import 'package:ircell/screens/edit_profile_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -70,9 +73,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: AppTheme.textPrimary,
                   size: iconSize,
                 ),
-                onPressed: () {
-                  // Edit profile action
-                },
+                onPressed: () async {
+                  final userDetails = await fetchUserDetailsForEditing(); // The function you already have
+
+                  if (userDetails != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfilePage(userDetails: userDetails),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('User details not found')),
+                    );
+                  }
+                }
               ),
             ),
           ],
@@ -321,6 +337,56 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+  Future<void> deleteUserData() async {
+    await FirebaseFirestore.instance.collection(userDetails?['source_collection'] ?? '').doc(userDetails?['uid'] ?? "").delete();
+  }
+
+  Future<void> deleteUserAuth() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.delete();  // This deletes from Firebase Authentication
+    }
+  }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    try {
+      if (uid != null) {
+        // First, delete from Firestore
+        await deleteUserData();
+
+        // Then, delete from Firebase Auth
+        await deleteUserAuth();
+
+        // Optional: Clear SharedPreferences
+        await LocalStorage.clearUID();
+
+        // Navigate to login or landing screen
+        if(context.mounted){
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const SplashScreen()),
+            (route) => false,
+          );
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        // Show message to re-login
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please re-login to delete your account."),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Error: ${e.message}"),
+        ));
+      }
+    }
+  }
+
+
 
   String createEmailShortForm(String? email) {
     if (email == null || email.length < 7) return '-';
@@ -848,33 +914,38 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
         );
 
-        if (confirmed == true && text == 'Sign Out') {
-          try {
-            await Auth().signOut();
-            // Use context.mounted to check if the widget is still in the tree
-            if (context.mounted) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const SplashScreen()),
-                (route) => false,
-              );
+        if (confirmed == true) {
+          if(text == 'Sign Out'){
+            try {
+              await Auth().signOut();
+              // Use context.mounted to check if the widget is still in the tree
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const SplashScreen()),
+                  (route) => false,
+                );
+              }
+            } on FirebaseAuthException catch (e) {
+              if (context.mounted) {
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text('Error'),
+                        content: Text(e.message ?? 'An error occurred'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Got it!'),
+                          ),
+                        ],
+                      ),
+                );
+              }
             }
-          } on FirebaseAuthException catch (e) {
-            if (context.mounted) {
-              showDialog(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
-                      title: const Text('Error'),
-                      content: Text(e.message ?? 'An error occurred'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Got it!'),
-                        ),
-                      ],
-                    ),
-              );
-            }
+          }
+          else{
+            deleteAccount(context);
           }
         }
       },
