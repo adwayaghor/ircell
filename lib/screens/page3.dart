@@ -187,7 +187,7 @@ class _Page3State extends State<Page3> {
           ),
 
           // Chatbot icon positioned in the bottom right corner
-          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
+          Positioned(bottom: 20, right: 20, child: FloatingButtonsStack()),
         ],
       ),
     );

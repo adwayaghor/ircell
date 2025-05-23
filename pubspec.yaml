@@ -49,6 +49,8 @@ dependencies:
   mobile_scanner: ^7.0.0
   path_provider: ^2.1.5
   mailer: ^6.4.1
+  webview_flutter: ^4.13.0
+  webview_flutter_android: ^4.7.0
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +79,7 @@ flutter:
     - assets/images/ircircle2.png
     - assets/images/
     - assets/images/splash.gif
+    - assets/images/jfc.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -3,10 +3,14 @@ import 'package:ircell/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
+import 'package:ircell/screens/community/alumni_blogs.dart';
+import 'package:ircell/screens/community/articles_page.dart';
+import 'package:ircell/screens/community/japan_facilitation_centre/jfc.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
+import 'package:ircell/providers/articles_provider.dart';
 
 class Page4 extends StatefulWidget {
   const Page4({super.key});
@@ -186,7 +190,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
             ],
           ),
           // Chatbot icon positioned in the bottom right corner
-          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
+          Positioned(bottom: 20, right: 20, child: FloatingButtonsStack()),
         ],
       ),
     );
@@ -202,26 +206,62 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Japan Facilitation Centre'),
+            const Text(
+              'Japan Facilitation Centre',
+              style: TextStyle(
+                color: AppTheme.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildFacilitationCard(),
-                  const SizedBox(width: 16),
-                  _buildFacilitationCard(
-                    title: 'Job Placement in Japan',
-                    description:
-                        'Connect with top Japanese companies and get placed in your dream job.',
+            Card(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const JapanFacilitationCentre(),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Image from assets
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          'assets/images/jfc.jpg',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 150,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      const Text(
+                        'Get support for your study and career in Japan.',
+                        style: TextStyle(color: AppTheme.textSecondary),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => const JapanFacilitationCentre(),
+                            ),
+                          );
+                        },
+                        child: const Text('Learn More'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  _buildFacilitationCard(
-                    title: 'Language Training',
-                    description:
-                        'Intensive Japanese language courses for international students and professionals.',
-                  ),
-                ],
+                ),
               ),
             ),
 
@@ -276,7 +316,25 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Alumni Blogs'),
+            InkWell(
+              onTap: () {
+                // Navigate to Alumni Blogs page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AlumniBlogsPage(),
+                  ),
+                );
+              },
+              child: Row(
+                children: [
+                  const Text('Alumni Blogs', style: TextStyle(fontSize: 16)),
+
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_ios, size: 16),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -312,70 +370,30 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 24),
-            _buildArticlesList(),
+            Divider(color: AppTheme.textSecondary, thickness: 1),
+            const SizedBox(height: 16),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ArticlesPage()),
+                );
+              },
+              child: Row(
+                children: [
+                  const Text('Articles', style: TextStyle(fontSize: 16)),
+
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward_ios, size: 16),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Show only 3 articles here as preview
+            buildArticlesList(context, limit: 3),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildArticlesList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12.0),
-          padding: const EdgeInsets.all(16.0),
-          decoration: AppTheme.glassDecoration,
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.article, size: 30, color: Colors.grey),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Article Title ${index + 1}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Short description of article ${index + 1} with important information.',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_forward_ios,
-                  color: AppTheme.textSecondary,
-                  size: 16,
-                ),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -480,39 +498,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFacilitationCard({
-    String title = 'Japan Study & Career Support',
-    String description =
-        'Get guidance on studying and working in Japan with our specialized support services.',
-  }) {
-    return SizedBox(
-      width: 280,
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(onPressed: () {}, child: const Text('Learn More')),
-            ],
-          ),
-        ),
       ),
     );
   }

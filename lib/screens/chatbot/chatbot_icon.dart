@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/models/alumni_button.dart';
 import 'package:ircell/screens/chatbot/chatbot_screen.dart';
+import 'package:ircell/screens/community/write_blog.dart';
 
-/// A circular chat icon that by default pushes ChatbotScreen.
 class ChatbotIcon extends StatelessWidget {
   final VoidCallback? onPressed;
 
@@ -11,7 +12,8 @@ class ChatbotIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed ??
+      onTap:
+          onPressed ??
           () {
             Navigator.push(
               context,
@@ -38,6 +40,32 @@ class ChatbotIcon extends StatelessWidget {
           size: 28,
         ),
       ),
+    );
+  }
+}
+
+class FloatingButtonsStack extends StatelessWidget {
+  const FloatingButtonsStack({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        alumniFloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const WriteBlogScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.create_rounded),
+        ),
+        const SizedBox(height: 16),
+        const ChatbotIcon(),
+      ],
     );
   }
 }
