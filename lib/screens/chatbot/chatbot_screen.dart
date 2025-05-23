@@ -67,7 +67,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // <-- Prevent zooming/resize when keyboard appears
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Black background for status bar area
