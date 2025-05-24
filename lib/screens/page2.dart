@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
-import 'package:ircell/models/dashed_line_painter.dart';
 import 'package:ircell/screens/activities/alumni.dart';
 import 'package:ircell/screens/chatbot/chatbot_icon.dart';
 import 'package:ircell/screens/events/events_screen.dart';
@@ -40,152 +39,102 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Widget _buildQuickAccessButton(
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-    Color accentColor,
-    Size screenSize,
-  ) {
-    double buttonHeight = screenSize.height * 0.15;
-    double iconSize = screenSize.width * 0.08;
-    double fontSize = screenSize.width * 0.035;
-    double padding = screenSize.width * 0.04;
-    double iconPadding = screenSize.width * 0.035;
+  
+  Widget _buildSection1(BuildContext context, Size screenSize) {
+  double horizontalPadding = screenSize.width * 0.04;
+  double verticalPadding = screenSize.height * 0.01;
+  double buttonSpacing = screenSize.width * 0.03;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: buttonHeight.clamp(100.0, 140.0),
-        padding: EdgeInsets.all(padding.clamp(16.0, 24.0)),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              accentColor.withOpacity(0.8),
-              accentColor.withOpacity(0.6),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(screenSize.width * 0.04),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(iconPadding.clamp(12.0, 18.0)),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: iconSize.clamp(28.0, 36.0),
-              ),
-            ),
-            SizedBox(height: screenSize.height * 0.012),
-            Flexible(
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: fontSize.clamp(15.0, 20.0),
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  // Increased from 0.18 to 0.24 to enlarge buttons
+  double imageSize = screenSize.width * 0.24;
+
+  // Increased from 0.035 to 0.045 to enlarge labels
+  double textFontSize = screenSize.width * 0.045;
+
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  String getImagePath(String imageName) {
+    return isDark
+        ? 'assets/images/dark/$imageName'
+        : 'assets/images/light/$imageName';
   }
 
-  Widget _buildQuickAccessSection(Size screenSize) {
-    double horizontalPadding = screenSize.width * 0.04;
-    double verticalPadding = screenSize.height * 0.01;
-    double titleFontSize = screenSize.width * 0.045;
-    double buttonSpacing = screenSize.width * 0.03;
-
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: horizontalPadding.clamp(12.0, 20.0),
-        vertical: verticalPadding.clamp(6.0, 12.0),
-      ),
+  Widget buildImageButton({
+    required String label,
+    required String imageName,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Quick Access',
-            style: TextStyle(
-              fontSize: titleFontSize.clamp(16.0, 20.0),
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary(context),
+          GestureDetector(
+            onTap: onTap,
+            child: CircleAvatar(
+              radius: imageSize / 2,
+              backgroundImage: AssetImage(getImagePath('$imageName.png')),
+              backgroundColor: Colors.transparent,
             ),
           ),
-          SizedBox(height: screenSize.height * 0.015),
-          Row(
-            children: [
-              Expanded(
-                child: _buildQuickAccessButton(
-                  'Events',
-                  Icons.event,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EventsScreen(),
-                    ),
-                  ),
-                  AppTheme.accentBlue,
-                  screenSize,
-                ),
-              ),
-              SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
-              Expanded(
-                child: _buildQuickAccessButton(
-                  'Internships',
-                  Icons.work_outline,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const InternshipsScreen(),
-                    ),
-                  ),
-                  Colors.green,
-                  screenSize,
-                ),
-              ),
-              SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
-              Expanded(
-                child: _buildQuickAccessButton(
-                  'My Profile',
-                  Icons.person_outline,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfilePage(),
-                    ),
-                  ),
-                  Colors.deepOrange,
-                  screenSize,
-                ),
-              ),
-            ],
+          SizedBox(height: screenSize.height * 0.01), // slightly increased spacing
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: textFontSize.clamp(14.0, 18.0),
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
         ],
       ),
     );
   }
+
+  return Container(
+    margin: EdgeInsets.symmetric(
+      horizontal: horizontalPadding.clamp(12.0, 20.0),
+      vertical: verticalPadding.clamp(6.0, 12.0),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: screenSize.height * 0.015),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            buildImageButton(
+              label: 'Events',
+              imageName: 'event',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EventsScreen()),
+              ),
+            ),
+            SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
+            buildImageButton(
+              label: 'Internships',
+              imageName: 'intern',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const InternshipsScreen()),
+              ),
+            ),
+            SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
+            buildImageButton(
+              label: 'My Activity',
+              imageName: 'activity',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   // First, update your _buildFeatureCard method to handle flexible heights:
 
@@ -328,7 +277,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     final double titleFontSize =
         isSmallScreen ? screenSize.width * 0.05 : screenSize.width * 0.055;
     final double cardSpacing = screenSize.width * 0.03;
-    final double sectionPadding = screenSize.width * 0.04;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
@@ -449,28 +397,14 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       child: Column(
                         children: [
                           SizedBox(height: screenSize.height * 0.02),
-                          _buildQuickAccessSection(screenSize),
+                          _buildSection1(context, screenSize,),
 
-                          // Separator
-                          Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: screenSize.height * 0.025,
-                              ),
-                              child: CustomPaint(
-                                size: Size(screenSize.width * 0.8, 1),
-                                painter: DashedLinePainter(),
-                              ),
-                            ),
-                          ),
-
-                          // Replace this section in your build method (around line 400-450):
-
+                          const SizedBox(height: 15,),
+                          Divider(),
+                          const SizedBox(height: 15,),
                           // Feature cards section
                           Padding(
-                            padding: EdgeInsets.all(
-                              sectionPadding.clamp(12.0, 20.0),
-                            ),
+                            padding: EdgeInsets.fromLTRB(12, 0, 12, 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

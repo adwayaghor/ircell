@@ -67,6 +67,12 @@ class AppTheme {
           color: isDark ? darkTextPrimary : lightTextPrimary,
         ),
       ),
+      dividerTheme: DividerThemeData(
+        color: isDark ? Colors.white.withOpacity(0.2) : Colors.black,
+        thickness: 1,
+        space: 1,
+      ),
+
       textTheme: TextTheme(
         displayLarge: TextStyle(
           color: isDark ? darkTextPrimary : lightTextPrimary,
@@ -182,9 +188,9 @@ class AppTheme {
   }
 
   static Color backgroundColor(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  return isDark ? darkBackground : lightBackground;
-}
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? darkBackground : lightBackground;
+  }
 
   // Glassmorphism effect decoration
   static BoxDecoration glassDecoration(BuildContext context) {
