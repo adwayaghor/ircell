@@ -20,26 +20,26 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int _selectedTab = 0;
-
   Map<String, dynamic>? userDetails; // Make it a class-level variable
 
   @override
-  void initState() {
-    super.initState();
-    loadUserDetails(); // Call the async function
-  }
+void initState() {
+  super.initState();
+  _loadUserDetails();
+}
 
-  void loadUserDetails() async {
-    final details = await fetchUserDetails();
-
-    if (details == null) {
-      print('User not found');
-    } else {
+void _loadUserDetails() async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  final collection = await getUserCollectionForStream();
+  if (uid != null && collection != null) {
+    final snapshot = await FirebaseFirestore.instance.collection(collection).doc(uid).get();
+    if (snapshot.exists) {
       setState(() {
-        userDetails = details;
+        userDetails = snapshot.data()!;
       });
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -76,25 +76,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   size: iconSize,
                 ),
                 onPressed: () async {
-                  final userDetails =
-                      await fetchUserDetailsForEditing(); // The function you already have
+                  final userDetails = await fetchUserDetailsForEditing();
 
                   if (userDetails != null) {
-                    Navigator.push(
+                    // Wait for the user to come back from edit page
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                EditProfilePage(userDetails: userDetails),
+                        builder: (context) => EditProfilePage(userDetails: userDetails),
                       ),
                     );
-                    loadUserDetails();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('User details not found')),
                     );
                   }
-                },
+                }
               ),
             ),
           ],
@@ -112,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Profile header section
-                _buildProfileHeader(),
+                _buildProfileHeader(context),
 
                 SizedBox(height: verticalPadding * 1.5),
 
@@ -138,120 +135,157 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader() {
-    final Size screenSize = MediaQuery.of(context).size;
-    final double profilePicSize = screenSize.width * 0.22;
-    final double fontSize = screenSize.width * 0.045;
-    final double smallFontSize = screenSize.width * 0.035;
-    final double spacing = screenSize.height * 0.01;
-    final double iconSize = screenSize.width * 0.04;
+  Widget _buildProfileHeader(BuildContext context) {
+  final Size screenSize = MediaQuery.of(context).size;
+  final double profilePicSize = screenSize.width * 0.22;
+  final double fontSize = screenSize.width * 0.045;
+  final double smallFontSize = screenSize.width * 0.035;
+  final double spacing = screenSize.height * 0.01;
+  final double iconSize = screenSize.width * 0.04;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center, // Align items properly
-      children: [
-        // Profile Picture with glass decoration
-        Container(
-          width: profilePicSize,
-          height: profilePicSize,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Center(
-            child:
-                userDetails == null
-                    ? buildShimmer(width: 80, height: profilePicSize * 0.5)
-                    : Text(
-                      createEmailShortForm(userDetails?['email']),
-                      style: TextStyle(
-                        fontSize: profilePicSize * 0.5,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-          ),
-        ),
+  final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-        SizedBox(width: screenSize.width * 0.04),
+  return FutureBuilder<String?>(
+    future: getUserCollectionForStream(),
+    builder: (context, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return buildShimmerRow(profilePicSize, fontSize, smallFontSize, spacing, screenSize);
+      }
 
-        // Profile name and info
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, // Only take necessary space
+      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+        return Text("User not found in any collection", style: TextStyle(color: Colors.red));
+      }
+
+      final collection = futureSnapshot.data!;
+
+      return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null || !snapshot.data!.exists) {
+            return buildShimmerRow(profilePicSize, fontSize, smallFontSize, spacing, screenSize);
+          }
+
+          final userDetails = snapshot.data!.data() as Map<String, dynamic>;
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              userDetails == null
-                  ? buildShimmer(width: 160, height: fontSize + 8)
-                  : Text(
-                    '${userDetails?['first_name'] ?? ''} ${userDetails?['last_name'] ?? ''}',
+              Container(
+                width: profilePicSize,
+                height: profilePicSize,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    createEmailShortForm(userDetails['email']),
                     style: TextStyle(
-                      fontSize: fontSize,
+                      fontSize: profilePicSize * 0.5,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-              SizedBox(height: spacing / 2),
-              userDetails == null
-                  ? buildShimmer(width: 160, height: fontSize + 8)
-                  : Text(
-                    userDetails?['email'] ?? '',
-                    style: TextStyle(
-                      fontSize: smallFontSize,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    overflow: TextOverflow.ellipsis, // Handle text overflow
-                  ),
-              SizedBox(height: spacing),
-              InkWell(
-                onTap: () {
-                  // QR Code action
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenSize.width * 0.03,
-                    vertical: screenSize.height * 0.006,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentBlue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(
-                      screenSize.width * 0.05,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min, // Only take necessary space
-                    children: [
-                      Icon(
-                        Icons.qr_code,
-                        color: AppTheme.accentBlue,
-                        size: iconSize,
-                      ),
-                      SizedBox(width: screenSize.width * 0.01),
-                      Text(
-                        'View QR Code',
-                        style: TextStyle(
-                          fontSize: smallFontSize,
-                          color: AppTheme.accentBlue,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
+              SizedBox(width: screenSize.width * 0.04),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${userDetails['first_name'] ?? ''} ${userDetails['last_name'] ?? ''}',
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: spacing / 2),
+                    Text(
+                      userDetails['email'] ?? '',
+                      style: TextStyle(
+                        fontSize: smallFontSize,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: spacing),
+                    InkWell(
+                      onTap: () {
+                        // QR Code action
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenSize.width * 0.03,
+                          vertical: screenSize.height * 0.006,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentBlue.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(
+                            screenSize.width * 0.05,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.qr_code,
+                              color: AppTheme.accentBlue,
+                              size: iconSize,
+                            ),
+                            SizedBox(width: screenSize.width * 0.01),
+                            Text(
+                              'View QR Code',
+                              style: TextStyle(
+                                fontSize: smallFontSize,
+                                color: AppTheme.accentBlue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
-          ),
+          );
+        },
+      );
+    },
+  );
+}
+
+Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontSize, double spacing, Size screenSize) {
+  return Row(
+    children: [
+      buildShimmer(width: profilePicSize, height: profilePicSize),
+      SizedBox(width: screenSize.width * 0.04),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildShimmer(width: 160, height: fontSize + 8),
+            SizedBox(height: spacing / 2),
+            buildShimmer(width: 160, height: smallFontSize + 4),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   Widget buildShimmer({double width = 150, double height = 16}) {
     return Shimmer.fromColors(
@@ -401,6 +435,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return '${email[0].toUpperCase()}${email[6].toUpperCase()}';
   }
 
+
   Widget _buildPersonalInfoContent() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
@@ -408,89 +443,117 @@ class _ProfilePageState extends State<ProfilePage> {
     final double titleSize = screenSize.width * 0.05;
     final double buttonHeight = screenSize.height * 0.06;
     final double iconSize = screenSize.width * 0.05;
+    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-    return Container(
-      width: double.infinity,
-      decoration: AppTheme.glassDecoration(
-        context,
-      ).copyWith(borderRadius: BorderRadius.circular(screenSize.width * 0.04)),
-      padding: EdgeInsets.all(padding),
-      // Fixed height constraint removed to prevent overflow
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Take only needed space
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Personal Information',
-            style: TextStyle(
-              fontSize: titleSize,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
+  return FutureBuilder<String?>(
+    future: getUserCollectionForStream(),
+    builder: (context, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      }
 
-          SizedBox(height: spacing),
+      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+        return Text("User collection not found.");
+      }
 
-          // Personal info fields
-          _buildInfoItem('Email', userDetails?['email'] ?? '', Icons.email),
-          SizedBox(height: spacing * 0.8),
-          _buildInfoItem(
-            'Phone',
-            '+91 ${userDetails?['contact'] ?? ''}',
-            Icons.phone,
-          ),
-          SizedBox(height: spacing * 0.8),
-          _buildInfoItem(
-            'Department',
-            userDetails?['department'] ?? '',
-            Icons.school,
-          ),
-          SizedBox(height: spacing * 0.8),
-          _buildInfoItem(
-            'Year',
-            userDetails?['year'] ?? '',
-            Icons.calendar_today,
-          ),
+      final collection = futureSnapshot.data!;
 
-          SizedBox(height: spacing * 1.5),
+      return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Text("User data not found.");
+          }
 
-          // Change password button
-          InkWell(
-            onTap: () {
-              // Change password action
-            },
-            child: Container(
-              width: double.infinity,
-              height: buttonHeight,
-              decoration: BoxDecoration(
-                color: AppTheme.accentBlue.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.lock_outline,
-                    color: AppTheme.accentBlue,
-                    size: iconSize,
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+
+          return Container(
+            width: double.infinity,
+            decoration: AppTheme.glassDecoration(
+              context,
+            ).copyWith(borderRadius: BorderRadius.circular(screenSize.width * 0.04)),
+            padding: EdgeInsets.all(padding),
+            // Fixed height constraint removed to prevent overflow
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Take only needed space
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Personal Information',
+                  style: TextStyle(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  SizedBox(width: screenSize.width * 0.02),
-                  Text(
-                    'Change Password',
-                    style: TextStyle(
-                      fontSize: screenSize.width * 0.04,
-                      color: AppTheme.accentBlue,
-                      fontWeight: FontWeight.bold,
+                ),
+
+                SizedBox(height: spacing),
+
+                // Personal info fields
+                _buildInfoItem('Email', data['email'] ?? '', Icons.email),
+                SizedBox(height: spacing * 0.8),
+                _buildInfoItem(
+                  'Phone',
+                  '+91 ${data['contact'] ?? ''}',
+                  Icons.phone,
+                ),
+                SizedBox(height: spacing * 0.8),
+                _buildInfoItem(
+                  'Department',
+                  data['department'] ?? '',
+                  Icons.school,
+                ),
+                SizedBox(height: spacing * 0.8),
+                _buildInfoItem(
+                  'Year',
+                  data['year'] ?? '',
+                  Icons.calendar_today,
+                ),
+
+                SizedBox(height: spacing * 1.5),
+
+                // Change password button
+                InkWell(
+                  onTap: () {
+                    // Change password action
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: buttonHeight,
+                    decoration: BoxDecoration(
+                      color: AppTheme.accentBlue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(screenSize.width * 0.03),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          color: AppTheme.accentBlue,
+                          size: iconSize,
+                        ),
+                        SizedBox(width: screenSize.width * 0.02),
+                        Text(
+                          'Change Password',
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.04,
+                            color: AppTheme.accentBlue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          );
+        },
+      );
+    },
+  );
+}
+
 
   Widget _buildInfoItem(String label, String value, IconData icon) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -544,124 +607,145 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildPreferencesContent() {
-    final Size screenSize = MediaQuery.of(context).size;
-    final double padding = screenSize.width * 0.04;
-    final double spacing = screenSize.height * 0.015;
-    final double titleSize = screenSize.width * 0.05;
-    final double chipSpacing = screenSize.width * 0.02;
+  final Size screenSize = MediaQuery.of(context).size;
+  final double padding = screenSize.width * 0.04;
+  final double spacing = screenSize.height * 0.015;
+  final double titleSize = screenSize.width * 0.05;
+  final double chipSpacing = screenSize.width * 0.02;
+  final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-    return Container(
-      width: double.infinity,
-      decoration: AppTheme.glassDecoration(context).copyWith(
-        borderRadius: BorderRadius.circular(screenSize.width * 0.04),
-      ),
-      padding: EdgeInsets.all(padding),
-      // Fixed height constraint removed to prevent overflow
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Take only needed space
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Preferences',
-            style: TextStyle(
-              fontSize: titleSize,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
+  return FutureBuilder(
+    future: getUserCollectionForStream(), // Replace with your actual async function
+    builder: (context, futureSnapshot) {
+      if (futureSnapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+        return Text("User collection not found.");
+      }
+
+      final collection = futureSnapshot.data!;
+
+      return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Text("User data not found.");
+          }
+
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+
+          List interests = [];
+
+          if (data['interests'] is List) {
+            interests = data['interests'];
+          } else if (data['interests'] is String) {
+            try {
+              interests = (data['interests']);
+            } catch (_) {
+              interests = [];
+            }
+          }
+          return Container(
+            width: double.infinity,
+            decoration: AppTheme.glassDecoration(context).copyWith(
+              borderRadius: BorderRadius.circular(screenSize.width * 0.04),
             ),
-          ),
-
-          SizedBox(height: spacing),
-
-          // Notification preferences
-          _buildSettingItem(
-            'Notifications',
-            'Receive app notifications',
-            Icons.notifications_none,
-            true,
-          ),
-
-          SizedBox(height: spacing * 0.8),
-
-          // Email preferences
-          _buildSettingItem(
-            'Email updates',
-            'Receive updates via email',
-            Icons.mark_email_unread_outlined,
-            true,
-          ),
-
-          SizedBox(height: spacing),
-
-          Text(
-            'Interests',
-            style: TextStyle(
-              fontSize: titleSize,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary(context),
-            ),
-          ),
-
-          SizedBox(height: spacing * 0.8),
-
-          // Interests chips - wrap in a ConstrainedBox to ensure it wraps properly
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: screenSize.width - (2 * padding),
-            ),
-            child: Wrap(
-              spacing: chipSpacing,
-              runSpacing: chipSpacing,
-              children:
-                  userDetails == null
-                      ? buildShimmer(width: 160, height: chipSpacing + 8)
-                      : (userDetails!['interests'])
-                          .map<Widget>(
-                            (interest) => _buildInterestChip(interest),
-                          )
-                          .toList(),
-            ),
-          ),
-
-          SizedBox(height: spacing),
-
-          // Add interest button
-          InkWell(
-            onTap: () {
-              // Add interest action
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: screenSize.height * 0.008,
-                horizontal: screenSize.width * 0.03,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.accentBlue.withOpacity(0.5)),
-                borderRadius: BorderRadius.circular(screenSize.width * 0.05),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.add,
-                    color: AppTheme.accentBlue,
-                    size: screenSize.width * 0.04,
+            padding: EdgeInsets.all(padding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Preferences',
+                  style: TextStyle(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  SizedBox(width: screenSize.width * 0.01),
-                  Text(
-                    'Add Interest',
-                    style: TextStyle(
-                      fontSize: screenSize.width * 0.035,
-                      color: AppTheme.accentBlue,
+                ),
+                SizedBox(height: spacing),
+                _buildSettingItem(
+                  'Notifications',
+                  'Receive app notifications',
+                  Icons.notifications_none,
+                  true,
+                ),
+                SizedBox(height: spacing * 0.8),
+                _buildSettingItem(
+                  'Email updates',
+                  'Receive updates via email',
+                  Icons.mark_email_unread_outlined,
+                  true,
+                ),
+                SizedBox(height: spacing),
+                Text(
+                  'Interests',
+                  style: TextStyle(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                SizedBox(height: spacing * 0.8),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: screenSize.width - (2 * padding),
+                  ),
+                  child: Wrap(
+                    spacing: chipSpacing,
+                    runSpacing: chipSpacing,
+                    children: interests.isEmpty
+                        ? [Text("No interests found")]
+                        : interests.map<Widget>(
+                            (interest) => _buildInterestChip(interest),
+                          ).toList(),
+                  ),
+                ),
+                SizedBox(height: spacing),
+                InkWell(
+                  onTap: () {
+                    // Add interest action
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenSize.height * 0.008,
+                      horizontal: screenSize.width * 0.03,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppTheme.accentBlue.withOpacity(0.5)),
+                      borderRadius: BorderRadius.circular(screenSize.width * 0.05),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: AppTheme.accentBlue,
+                          size: screenSize.width * 0.04,
+                        ),
+                        SizedBox(width: screenSize.width * 0.01),
+                        Text(
+                          'Add Interest',
+                          style: TextStyle(
+                            fontSize: screenSize.width * 0.035,
+                            color: AppTheme.accentBlue,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          );
+        },
+      );
+    }
+  );
+}
+
 
   Widget _buildSettingItem(
     String title,
