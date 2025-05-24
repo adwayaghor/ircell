@@ -4,6 +4,7 @@ import 'package:ircell/screens/activities.dart';
 import 'package:ircell/screens/activities/alumni.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/events_screen.dart';
+import 'package:ircell/screens/higher_studies.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
@@ -427,6 +428,11 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                           0.35, // This height will be overridden by IntrinsicHeight
                                           screenSize,
                                           isLarge: true,
+                                          onTap: () {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                              return HigherStudiesPage();
+                                            },));
+                                          },
                                         ),
                                       ),
                                       SizedBox(
