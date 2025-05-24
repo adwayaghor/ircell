@@ -86,3 +86,24 @@ Future<Map<String, dynamic>?> fetchUserInfo(String coll, String uid) async {
     return null;
   }
 }
+
+Future<String?> getUserCollectionForStream() async {
+  final uid = await LocalStorage.getUID();
+  if (uid == null) return null;
+
+  final collections = [
+    'pccoe_students',
+    'international_students',
+    'external_students',
+    'alumni'
+  ];
+
+  for (final collection in collections) {
+    final doc = await FirebaseFirestore.instance.collection(collection).doc(uid).get();
+    if (doc.exists) {
+      return collection;
+    }
+  }
+
+  return null;
+}

@@ -11,7 +11,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final List<String> excludedFields = ['timestamp'];
+  final List<String> excludedFields = ['timestamp', 'interests'];
   late Map<String, TextEditingController> controllers = {};
   late String collection;
   late String uid;
