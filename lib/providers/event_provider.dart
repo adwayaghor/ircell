@@ -55,3 +55,16 @@ Future<List<Event>> fetchAllEvents() async {
   }
 }
 
+Future<List<Event>> fetchPastEvents() async {
+  try {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('past_events').get();
+
+    return querySnapshot.docs
+        .map((doc) => Event.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+        .toList();
+  } catch (e) {
+    print('Error fetching past events: $e');
+    return [];
+  }
+}

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:ui';
+
+import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 
 class AboutUsPage extends StatelessWidget {
@@ -7,16 +8,34 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('About Us'),
+        title: Text(
+          'About Us',
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: AppTheme.primaryDarkBlue.withOpacity(0.9),
+        backgroundColor: isDark 
+            ? AppTheme.primaryDarkBlue.withOpacity(0.9)
+            : AppTheme.accentBlue.withOpacity(0.9),
         elevation: 0,
+        iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
       ),
       body: Container(
-        color: AppTheme.primaryDarkBlue,  // Changed to solid primaryDarkBlue color
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? AppTheme.blueGradient(context)
+              : LinearGradient(
+                  colors: [Colors.blue.shade50, Colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+        ),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(top: 100, bottom: 40),
@@ -25,7 +44,7 @@ class AboutUsPage extends StatelessWidget {
               children: [
                 _buildSectionTitle('Our Team', context),
                 const SizedBox(height: 20),
-                _buildDevelopersGrid(),  // Changed for grid layout instead of horizontal scroll
+                _buildDevelopersGrid(context),
                 const SizedBox(height: 20),
                 _buildSectionTitle('About IR', context),
                 const SizedBox(height: 20),
@@ -67,29 +86,13 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  // Changed developers section to a 2-column Grid instead of horizontal ListView
-  Widget _buildDevelopersGrid() {
+  Widget _buildDevelopersGrid(BuildContext context) {
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
     const developers = [
-      {
-        'name': 'Alex Johnson',
-        'role': 'Flutter Developer',
-        'image': 'assets/dev1.jpg',
-      },
-      {
-        'name': 'Maria Garcia',
-        'role': 'UI/UX Designer',
-        'image': 'assets/dev2.jpg',
-      },
-      {
-        'name': 'James Smith',
-        'role': 'Backend Developer',
-        'image': 'assets/dev3.jpg',
-      },
-      {
-        'name': 'Sarah Williams',
-        'role': 'Project Manager',
-        'image': 'assets/dev4.jpg',
-      },
+      {'name': 'Alex Johnson', 'role': 'Flutter Developer', 'image': 'assets/dev1.jpg'},
+      {'name': 'Maria Garcia', 'role': 'UI/UX Designer', 'image': 'assets/dev2.jpg'},
+      {'name': 'James Smith', 'role': 'Backend Developer', 'image': 'assets/dev3.jpg'},
+      {'name': 'Sarah Williams', 'role': 'Project Manager', 'image': 'assets/dev4.jpg'},
     ];
 
     return Padding(
@@ -99,10 +102,10 @@ class AboutUsPage extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: developers.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,  // 2 cards per row
+          crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 3 / 4, // Adjust height/width ratio
+          childAspectRatio: 3 / 4,
         ),
         itemBuilder: (context, index) {
           final dev = developers[index];
@@ -149,7 +152,7 @@ class AboutUsPage extends StatelessWidget {
       child: _buildGlassCard(
         context: context,
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Text(
             'IR (Investor Relations) integrates finance, communication, marketing, and legal compliance to foster effective communication between companies and investors, enabling fair market valuation.',
             style: TextStyle(
@@ -272,11 +275,17 @@ class AboutUsPage extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       children: [
-                        Icon(Icons.business, size: 20, color: AppTheme.textSecondary(context)),
+                        Icon(
+                          Icons.business,
+                          size: 20,
+                          color: AppTheme.textSecondary(context),
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           partner,
-                          style: TextStyle(color: AppTheme.textPrimary(context)),
+                          style: TextStyle(
+                            color: AppTheme.textPrimary(context),
+                          ),
                         ),
                       ],
                     ),
@@ -308,14 +317,25 @@ class AboutUsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildContactItem(Icons.email, 'Email', 'contact@irplatform.com', context),
+              _buildContactItem(
+                Icons.email,
+                'Email',
+                'contact@irplatform.com',
+                context,
+              ),
               const SizedBox(height: 12),
-              _buildContactItem(Icons.phone, 'Phone', '+1 (555) 123-4567', context),
+              _buildContactItem(
+                Icons.phone,
+                'Phone',
+                '+1 (555) 123-4567',
+                context,
+              ),
               const SizedBox(height: 12),
               _buildContactItem(
                 Icons.location_on,
                 'Address',
-                '123 Financial District,\nNew York, NY 10005', context,  // Inserted \n for line break
+                '123 Financial District,\nNew York, NY 10005',
+                context,
               ),
               const SizedBox(height: 16),
               Text(
@@ -344,26 +364,39 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactItem(IconData icon, String label, String value, BuildContext context) {
+  Widget _buildContactItem(
+    IconData icon,
+    String label,
+    String value,
+    BuildContext context,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: AppTheme.textSecondary(context)),
+        Icon(
+          icon,
+          size: 20,
+          color: AppTheme.textSecondary(context),
+        ),
         const SizedBox(width: 12),
-        Expanded( // Add Expanded to prevent overflow horizontally
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
+              Text(
+                label,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppTheme.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 4),
-              Text(value,
-                style: TextStyle(color: AppTheme.textSecondary(context)),
-                softWrap: true,  // allow wrapping text
+              Text(
+                value,
+                style: TextStyle(
+                  color: AppTheme.textSecondary(context),
+                ),
+                softWrap: true,
               ),
             ],
           ),
@@ -377,18 +410,43 @@ class AboutUsPage extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: AppTheme.cardColor(context).withOpacity(0.3),
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: AppTheme.textPrimary(context)),
+      child: Icon(
+        icon,
+        color: AppTheme.textPrimary(context),
+      ),
     );
   }
 
-  Widget _buildGlassCard({required Widget child, required BuildContext context}) {
+  Widget _buildGlassCard({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        decoration: AppTheme.glassDecoration(context),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withOpacity(0.1)
+              : Colors.white.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.2)
+                : Colors.blue.withOpacity(0.2),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.1 : 0.05),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: child,

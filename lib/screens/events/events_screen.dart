@@ -13,15 +13,19 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int _selectedTabIndex = 0;
+   late TabController _tabController;
   late TextEditingController _searchController;
   String _searchQuery = '';
+  int _selectedTabIndex = 0;
+
+  late Future<List<Event>> upcomingEventsFuture;
+  late Future<List<Event>> pastEventsFuture;
 
   @override
   void initState() {
     super.initState();
-    eventsFuture = fetchAllEvents(); 
+    upcomingEventsFuture = fetchAllEvents();
+    pastEventsFuture = fetchPastEvents();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -38,10 +42,11 @@ class _EventsScreenState extends State<EventsScreen>
     super.dispose();
   }
 
-  late Future<List<Event>> eventsFuture;
-
   @override
   Widget build(BuildContext context) {
+    final currentFuture =
+        _selectedTabIndex == 0 ? upcomingEventsFuture : pastEventsFuture;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -52,12 +57,18 @@ class _EventsScreenState extends State<EventsScreen>
           children: [
             Container(
               decoration: AppTheme.glassDecoration(context),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary(context)),
-                onPressed: () => Navigator.pop(context),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary(context)),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Text('Events', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(width: 60),
+                ],
               ),
             ),
-            Text('Events', style: Theme.of(context).textTheme.titleLarge),
+            
             Row(
               children: [
                 Container(
@@ -114,7 +125,7 @@ class _EventsScreenState extends State<EventsScreen>
                 _buildTabSelector(),
                 const SizedBox(height: 16),
                 FutureBuilder<List<Event>>(
-                  future: eventsFuture,
+                  future: currentFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return _buildLoadingView();
@@ -123,17 +134,14 @@ class _EventsScreenState extends State<EventsScreen>
                       return const Center(child: Text("No events found."));
                     }
 
-                    final filteredEvents =
-                        snapshot.data!.where((event) {
-                          return event.title.toLowerCase().contains(
+                    final filteredEvents = snapshot.data!.where((event) {
+                      return event.title.toLowerCase().contains(
                             _searchQuery.toLowerCase(),
                           );
-                        }).toList();
+                    }).toList();
 
                     return SizedBox(
-                      height:
-                          MediaQuery.of(context).size.height *
-                          0.7, 
+                      height: MediaQuery.of(context).size.height * 0.7,
                       child: ListView.builder(
                         itemCount: filteredEvents.length,
                         itemBuilder: (context, index) {
@@ -143,8 +151,7 @@ class _EventsScreenState extends State<EventsScreen>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder:
-                                      (_) => EventDetailScreen(event: event),
+                                  builder: (_) => EventDetailScreen(event: event),
                                 ),
                               );
                             },
@@ -171,19 +178,11 @@ class _EventsScreenState extends State<EventsScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0,
-                                      vertical: 4,
-                                    ),
-                                    child: Text(
-                                      "${event.date} | ${event.time}",
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
+                                    child: Text("${event.date} | ${event.time}"),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
                                     child: Text("Location: ${event.location}"),
                                   ),
                                   const SizedBox(height: 12),
@@ -281,30 +280,7 @@ class _EventsScreenState extends State<EventsScreen>
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            _selectedTabIndex == 0
-                                ? AppTheme.lightTeal
-                                : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Hi',
-                        style: TextStyle(
-                          color:
-                              _selectedTabIndex == 0
-                                  ? AppTheme.primaryDarkBlue
-                                  : AppTheme.textSecondary(context),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),
@@ -342,7 +318,7 @@ class _EventsScreenState extends State<EventsScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Past',
+                      'Past Events',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color:
@@ -356,30 +332,7 @@ class _EventsScreenState extends State<EventsScreen>
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            _selectedTabIndex == 1
-                                ? AppTheme.lightTeal
-                                : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Hi',
-                        style: TextStyle(
-                          color:
-                              _selectedTabIndex == 1
-                                  ? AppTheme.primaryDarkBlue
-                                  : AppTheme.textSecondary(context),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),

@@ -61,7 +61,7 @@ class _TabsScreenState extends State<TabsScreen> {
             showUnselectedLabels: true,
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.search),
+                icon: Icon(Icons.star),
                 label: 'Featured',
               ),
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

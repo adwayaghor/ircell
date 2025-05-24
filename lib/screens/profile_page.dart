@@ -144,8 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final double fontSize = screenSize.width * 0.045;
     final double smallFontSize = screenSize.width * 0.035;
     final double spacing = screenSize.height * 0.01;
-    final double iconSize = screenSize.width * 0.04;
-
+    
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center, // Align items properly
       children: [
@@ -211,41 +210,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     overflow: TextOverflow.ellipsis, // Handle text overflow
                   ),
               SizedBox(height: spacing),
-              InkWell(
-                onTap: () {
-                  // QR Code action
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenSize.width * 0.03,
-                    vertical: screenSize.height * 0.006,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentBlue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(
-                      screenSize.width * 0.05,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min, // Only take necessary space
-                    children: [
-                      Icon(
-                        Icons.qr_code,
-                        color: AppTheme.accentBlue,
-                        size: iconSize,
-                      ),
-                      SizedBox(width: screenSize.width * 0.01),
-                      Text(
-                        'View QR Code',
-                        style: TextStyle(
-                          fontSize: smallFontSize,
-                          color: AppTheme.accentBlue,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -406,8 +370,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final double padding = screenSize.width * 0.04;
     final double spacing = screenSize.height * 0.015;
     final double titleSize = screenSize.width * 0.05;
-    final double buttonHeight = screenSize.height * 0.06;
-    final double iconSize = screenSize.width * 0.05;
 
     return Container(
       width: double.infinity,
@@ -451,42 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
             userDetails?['year'] ?? '',
             Icons.calendar_today,
           ),
-
           SizedBox(height: spacing * 1.5),
-
-          // Change password button
-          InkWell(
-            onTap: () {
-              // Change password action
-            },
-            child: Container(
-              width: double.infinity,
-              height: buttonHeight,
-              decoration: BoxDecoration(
-                color: AppTheme.accentBlue.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.lock_outline,
-                    color: AppTheme.accentBlue,
-                    size: iconSize,
-                  ),
-                  SizedBox(width: screenSize.width * 0.02),
-                  Text(
-                    'Change Password',
-                    style: TextStyle(
-                      fontSize: screenSize.width * 0.04,
-                      color: AppTheme.accentBlue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

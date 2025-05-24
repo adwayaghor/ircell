@@ -53,12 +53,14 @@ class _OnboardState extends State<Onboarding> {
   final TextEditingController nationalityController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
   final TextEditingController idDocumentController = TextEditingController();
-  final TextEditingController passportNumberController = TextEditingController();
+  final TextEditingController passportNumberController =
+      TextEditingController();
   final TextEditingController passportPhotoController = TextEditingController();
 
   // Alumni fields
   final TextEditingController passOutYearController = TextEditingController();
-  final TextEditingController highestQualificationController = TextEditingController();
+  final TextEditingController highestQualificationController =
+      TextEditingController();
   final TextEditingController pgNameController = TextEditingController();
   final TextEditingController industryNameController = TextEditingController();
   final TextEditingController designationController = TextEditingController();
@@ -71,12 +73,30 @@ class _OnboardState extends State<Onboarding> {
 
   // List of interest keywords
   final List<String> interestKeywords = [
-    'Higher Studies', 'IELTS', 'GRE', 'GMAT', 'Internships', 
-    'IR Events', 'Germany', 'Japan', 'USA', 'Singapore', 
-    'Language Study', 'German Language', 'Japanese Language',
-    'Career Guidance', 'Scholarships', 'Exchange Programs',
-    'Research', 'UK', 'Australia', 'Canada', 'Technical Skills',
-    'Cultural Exchange', 'Networking', 'Mentorship'
+    'Higher Studies',
+    'IELTS',
+    'GRE',
+    'GMAT',
+    'Internships',
+    'IR Events',
+    'Germany',
+    'Japan',
+    'USA',
+    'Singapore',
+    'Language Study',
+    'German Language',
+    'Japanese Language',
+    'Career Guidance',
+    'Scholarships',
+    'Exchange Programs',
+    'Research',
+    'UK',
+    'Australia',
+    'Canada',
+    'Technical Skills',
+    'Cultural Exchange',
+    'Networking',
+    'Mentorship',
   ];
 
   void _nextPage() {
@@ -91,7 +111,7 @@ class _OnboardState extends State<Onboarding> {
     }
   }
 
-   void _previousPage() {
+  void _previousPage() {
     if (currentPage > 0) {
       setState(() => currentPage--);
       _pageController.previousPage(
@@ -111,7 +131,9 @@ class _OnboardState extends State<Onboarding> {
         _showErrorDialog('Please select your institute.');
         return false;
       }
-      if (userType == 'external' && externalCollegeType == 'Other' && collegeNameController.text.isEmpty) {
+      if (userType == 'external' &&
+          externalCollegeType == 'Other' &&
+          collegeNameController.text.isEmpty) {
         _showErrorDialog('Please enter your college name.');
         return false;
       }
@@ -128,16 +150,17 @@ class _OnboardState extends State<Onboarding> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Input Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Input Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -147,7 +170,7 @@ class _OnboardState extends State<Onboarding> {
         Text(
           "Tell us about yourself",
           style: TextStyle(
-            fontSize: 22, 
+            fontSize: 22,
             color: AppTheme.textPrimary(context),
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
@@ -157,7 +180,7 @@ class _OnboardState extends State<Onboarding> {
         Text(
           "Who are you?",
           style: TextStyle(
-            fontSize: 18, 
+            fontSize: 18,
             color: AppTheme.textSecondary(context),
             fontWeight: FontWeight.w500,
             fontFamily: 'Roboto',
@@ -165,10 +188,22 @@ class _OnboardState extends State<Onboarding> {
         ),
         const SizedBox(height: 10),
         _buildSelectableListTile("PCCOE Student", 'pccoe', Icons.school),
-        _buildSelectableListTile("International Student", 'international', Icons.public),
-        _buildSelectableListTile("International Alumni", 'alumni', Icons.emoji_events),
-        _buildSelectableListTile("External College Student", 'external', Icons.account_balance),
-        
+        _buildSelectableListTile(
+          "International Student",
+          'international',
+          Icons.public,
+        ),
+        _buildSelectableListTile(
+          "International Alumni",
+          'alumni',
+          Icons.emoji_events,
+        ),
+        _buildSelectableListTile(
+          "External College Student",
+          'external',
+          Icons.account_balance,
+        ),
+
         if (userType == 'external') ...[
           const SizedBox(height: 12),
           const Text(
@@ -187,10 +222,15 @@ class _OnboardState extends State<Onboarding> {
               hint: const Text("Select Institute"),
               isExpanded: true,
               underline: Container(),
-              onChanged: (value) => setState(() => externalCollegeType = value!),
-              items: ['PCCOE-R', 'PCU', 'Other']
-                  .map((type) => DropdownMenuItem(value: type, child: Text(type)))
-                  .toList(),
+              onChanged:
+                  (value) => setState(() => externalCollegeType = value!),
+              items:
+                  ['PCCOE-R', 'PCU', 'Other']
+                      .map(
+                        (type) =>
+                            DropdownMenuItem(value: type, child: Text(type)),
+                      )
+                      .toList(),
             ),
           ),
           if (externalCollegeType == 'Other') ...[
@@ -213,28 +253,43 @@ class _OnboardState extends State<Onboarding> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => _previousPage,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                backgroundColor: Colors.grey.shade400,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 12,
+                ),
+                backgroundColor: AppTheme.textSecondary(
+                  context,
+                ).withOpacity(0.2),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: const Text("Back"),
+              child: Text(
+                "Back",
+                style: TextStyle(color: AppTheme.textPrimary(context)),
+              ),
             ),
             ElevatedButton(
               onPressed: _nextPage,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                backgroundColor: AppTheme.primaryDarkBlue,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 12,
+                ),
+                backgroundColor: AppTheme.accentBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Next",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -245,42 +300,51 @@ class _OnboardState extends State<Onboarding> {
   }
 
   Widget _buildSelectableListTile(String title, String value, IconData icon) {
-  final isSelected = userType == value;
-  
-  return Card(
-    elevation: isSelected ? 4 : 1,
-    margin: const EdgeInsets.symmetric(vertical: 4),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-      side: BorderSide(
-        color: isSelected ? AppTheme.accentBlue : Colors.transparent,
-        width: 2,
-      ),
-    ),
-    color: AppTheme.cardColor(context), // Set card background to theme's dark color
-    child: ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), // Explicit text colors
-        ),
-      ),
-      leading: Icon(
-        icon,
-        color: isSelected ? AppTheme.accentBlue : AppTheme.textSecondary(context),
-        size: 26,
-      ),
-      tileColor: isSelected ? AppTheme.accentBlue.withOpacity(0.1) : null, // Subtle selection highlight
+    final isSelected = userType == value;
+
+    return Card(
+      elevation: isSelected ? 4 : 1,
+      margin: const EdgeInsets.symmetric(vertical: 4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: isSelected ? AppTheme.accentBlue : Colors.transparent,
+          width: 2,
+        ),
       ),
-      onTap: () => setState(() => userType = value),
-    ),
-  );
-}
+      color: AppTheme.cardColor(
+        context,
+      ), // Set card background to theme's dark color
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color:
+                isSelected
+                    ? AppTheme.textPrimary(context)
+                    : AppTheme.textSecondary(context), // Explicit text colors
+          ),
+        ),
+        leading: Icon(
+          icon,
+          color:
+              isSelected
+                  ? AppTheme.accentBlue
+                  : AppTheme.textSecondary(context),
+          size: 26,
+        ),
+        tileColor:
+            isSelected
+                ? AppTheme.accentBlue.withOpacity(0.1)
+                : null, // Subtle selection highlight
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        onTap: () => setState(() => userType = value),
+      ),
+    );
+  }
 
   Widget _buildDetailsFormPage() {
     return Form(
@@ -290,7 +354,7 @@ class _OnboardState extends State<Onboarding> {
           const Text(
             "Personal Information",
             style: TextStyle(
-              fontSize: 22, 
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               fontFamily: 'Roboto',
             ),
@@ -316,7 +380,7 @@ class _OnboardState extends State<Onboarding> {
                   ),
                   const SizedBox(height: 15),
                   TextFormField(
-                    controller: firstNameController,                    
+                    controller: firstNameController,
                     cursorColor: Colors.blueAccent,
                     decoration: _buildInputDecoration('First Name'),
                     validator: (value) {
@@ -346,7 +410,9 @@ class _OnboardState extends State<Onboarding> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
-                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      } else if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email address';
                       }
                       return null;
@@ -370,7 +436,7 @@ class _OnboardState extends State<Onboarding> {
             ),
           ),
           const SizedBox(height: 20),
-          
+
           // Specific fields based on user type
           if (userType == 'pccoe' || userType == 'external') ...[
             Card(
@@ -393,7 +459,7 @@ class _OnboardState extends State<Onboarding> {
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
-                      controller: deptController, 
+                      controller: deptController,
                       cursorColor: Colors.blueAccent,
                       decoration: _buildInputDecoration('Department'),
                       validator: (value) {
@@ -405,7 +471,7 @@ class _OnboardState extends State<Onboarding> {
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
-                      controller: yearController, 
+                      controller: yearController,
                       cursorColor: Colors.blueAccent,
                       decoration: _buildInputDecoration('Year'),
                       keyboardType: TextInputType.number,
@@ -418,7 +484,7 @@ class _OnboardState extends State<Onboarding> {
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
-                      controller: rollController, 
+                      controller: rollController,
                       cursorColor: Colors.blueAccent,
                       decoration: _buildInputDecoration('PRN'),
                       validator: (value) {
@@ -452,19 +518,49 @@ class _OnboardState extends State<Onboarding> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: quotaController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Quota')),
+                    TextFormField(
+                      controller: quotaController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Quota'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: admittedYearController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Admitted Academic Year')),
+                    TextFormField(
+                      controller: admittedYearController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Admitted Academic Year',
+                      ),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: currentYearController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Current Year')),
+                    TextFormField(
+                      controller: currentYearController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Current Year'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: prnController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('PRN Number')),
+                    TextFormField(
+                      controller: prnController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('PRN Number'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: fullNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Full Name')),
+                    TextFormField(
+                      controller: fullNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Full Name'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: parentsNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Parents Name')),
+                    TextFormField(
+                      controller: parentsNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Parents Name'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: branchController, cursorColor: Colors.blueAccent,decoration: _buildInputDecoration('Branch')),
+                    TextFormField(
+                      controller: branchController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Branch'),
+                    ),
                   ],
                 ),
               ),
@@ -489,15 +585,41 @@ class _OnboardState extends State<Onboarding> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: nationalityController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Nationality')),
+                    TextFormField(
+                      controller: nationalityController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Nationality'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: genderController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Gender')),
+                    TextFormField(
+                      controller: genderController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Gender'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: idDocumentController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Identification Document')),
+                    TextFormField(
+                      controller: idDocumentController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Identification Document',
+                      ),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: passportNumberController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Passport/Citizenship No.')),
+                    TextFormField(
+                      controller: passportNumberController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Passport/Citizenship No.',
+                      ),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: passportPhotoController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Passport/Citizenship Photo URL')),
+                    TextFormField(
+                      controller: passportPhotoController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Passport/Citizenship Photo URL',
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -522,13 +644,31 @@ class _OnboardState extends State<Onboarding> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: passOutYearController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Pass Out Year')),
+                    TextFormField(
+                      controller: passOutYearController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Pass Out Year'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: branchController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Branch')),
+                    TextFormField(
+                      controller: branchController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Branch'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: highestQualificationController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Latest Highest Qualification')),
+                    TextFormField(
+                      controller: highestQualificationController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Latest Highest Qualification',
+                      ),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: pgNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('PG Name')),
+                    TextFormField(
+                      controller: pgNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('PG Name'),
+                    ),
                   ],
                 ),
               ),
@@ -553,23 +693,49 @@ class _OnboardState extends State<Onboarding> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: industryNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Industry Name')),
+                    TextFormField(
+                      controller: industryNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Industry Name'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: designationController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Designation')),
+                    TextFormField(
+                      controller: designationController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Designation'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: stateNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('State Name')),
+                    TextFormField(
+                      controller: stateNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('State Name'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: countryNameController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Country Name')),
+                    TextFormField(
+                      controller: countryNameController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('Country Name'),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: questionController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('Why do you want to connect?')),
+                    TextFormField(
+                      controller: questionController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration(
+                        'Why do you want to connect?',
+                      ),
+                    ),
                     const SizedBox(height: 15),
-                    TextFormField(controller: linkedinController, cursorColor: Colors.blueAccent, decoration: _buildInputDecoration('LinkedIn Profile')),
+                    TextFormField(
+                      controller: linkedinController,
+                      cursorColor: Colors.blueAccent,
+                      decoration: _buildInputDecoration('LinkedIn Profile'),
+                    ),
                   ],
                 ),
               ),
             ),
           ],
-          
+
           const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -577,7 +743,10 @@ class _OnboardState extends State<Onboarding> {
               ElevatedButton(
                 onPressed: _previousPage,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 12,
+                  ),
                   backgroundColor: Colors.grey.shade400,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -588,7 +757,10 @@ class _OnboardState extends State<Onboarding> {
               ElevatedButton(
                 onPressed: _nextPage,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 12,
+                  ),
                   backgroundColor: Colors.blue.shade700,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -611,7 +783,7 @@ class _OnboardState extends State<Onboarding> {
         Text(
           "Select Your Interests",
           style: TextStyle(
-            fontSize: 22, 
+            fontSize: 22,
             color: AppTheme.textPrimary(context),
             fontWeight: FontWeight.bold,
             fontFamily: 'Roboto',
@@ -631,47 +803,64 @@ class _OnboardState extends State<Onboarding> {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: interestKeywords.map((interest) {
-                final isSelected = selectedInterests.contains(interest);
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        selectedInterests.remove(interest);
-                      } else {
-                        selectedInterests.add(interest);
-                      }
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue.shade700 : AppTheme.primaryDarkBlue,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: isSelected ? Colors.blue.shade700 : Colors.grey.shade300,
+              children:
+                  interestKeywords.map((interest) {
+                    final isSelected = selectedInterests.contains(interest);
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            selectedInterests.remove(interest);
+                          } else {
+                            selectedInterests.add(interest);
+                          }
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? Colors.blue.shade700
+                                  : AppTheme.primaryDarkBlue,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? Colors.blue.shade700
+                                    : Colors.grey.shade300,
+                          ),
+                          boxShadow:
+                              isSelected
+                                  ? [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                  : null,
+                        ),
+                        child: Text(
+                          interest,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : AppTheme.textSecondary(context),
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                        ),
                       ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: Colors.blue.withOpacity(0.3),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              )
-                            ]
-                          : null,
-                    ),
-                    child: Text(
-                      interest,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isSelected ? Colors.white : AppTheme.textSecondary(context),
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
             ),
           ),
         ),
@@ -683,7 +872,10 @@ class _OnboardState extends State<Onboarding> {
               ElevatedButton(
                 onPressed: _previousPage,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 12,
+                  ),
                   backgroundColor: Colors.grey.shade400,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -712,14 +904,19 @@ class _OnboardState extends State<Onboarding> {
                     // Navigate after successful registration & Firestore write
                     // ignore: use_build_context_synchronously
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const TabsScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const TabsScreen(),
+                      ),
                     );
                   } catch (e) {
                     _showErrorDialog('Registration failed: ${e.toString()}');
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
                   backgroundColor: Colors.blue.shade700,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -760,30 +957,31 @@ class _OnboardState extends State<Onboarding> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Complete Your Profile',
-          style: TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: 18, color: AppTheme.textPrimary(context)),
         ),
-        backgroundColor: AppTheme.primaryDarkBlue,
+        backgroundColor: AppTheme.cardColor(context), // Use theme-aware color
+        iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
         actions: [
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.accentBlue.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
                 "${currentPage + 1} of 3",
                 style: TextStyle(
-                  color: Colors.blue.shade700,
+                  color: AppTheme.textPrimary(context),
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: Container(
@@ -807,81 +1005,82 @@ class _OnboardState extends State<Onboarding> {
   }
 
   void _submitForm() async {
-    
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  if (uid == null) {
-    _showErrorDialog("User ID not found. Please try again.");
-    return;
-  }
-
-  final firestoreService = FirestoreService();
-
-  // Collect common data
-  final commonData = {
-    'email': email,
-    'first_name': firstNameController.text,
-    'last_name': lastNameController.text,
-    'contact': contactController.text,
-    'interests': selectedInterests,
-    'timestamp': FieldValue.serverTimestamp(),
-  };
-
-  try {
-    if (userType == 'pccoe') {
-      final data = {
-        ...commonData,
-        'roll_number': rollController.text,
-        'department': deptController.text,
-        'year': yearController.text,
-      };
-      await firestoreService.addPccoeStudent(uid, data);
-    } else if (userType == 'international') {
-      final data = {
-        ...commonData,
-        'prn': prnController.text,
-        'quota': quotaController.text,
-        'branch': branchController.text,
-        'full_name': fullNameController.text,
-        'parents_name': parentsNameController.text,
-        'admitted_year': admittedYearController.text,
-        'current_year': currentYearController.text,
-        'gender': genderController.text,
-        'nationality': nationalityController.text,
-        'id_document': idDocumentController.text,
-        'passport_number': passportNumberController.text,
-        'passport_photo': passportPhotoController.text,
-      };
-      await firestoreService.addInternationalStudent(uid, data);
-    } else if (userType == 'alumni') {
-      final data = {
-        ...commonData,
-        'passout_year': passOutYearController.text,
-        'qualification': highestQualificationController.text,
-        'pg_name': pgNameController.text,
-        'industry': industryNameController.text,
-        'designation': designationController.text,
-        'state': stateNameController.text,
-        'country': countryNameController.text,
-        'linkedin': linkedinController.text,
-        'question_response': questionController.text,
-        'isVerified' : false,
-      };
-      await firestoreService.addAlumni(uid, data);
-    } else if (userType == 'external') {
-      final data = {
-        ...commonData,
-        'institute_type': externalCollegeType,
-        'college_name': collegeNameController.text,
-      };
-      await firestoreService.addExternalCollegeStudent(uid, data);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      _showErrorDialog("User ID not found. Please try again.");
+      return;
     }
 
-    // Navigate after successful submission
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (ctx) => const TabsScreen(),
-    ));
-  } catch (e) {
-    _showErrorDialog('Something went wrong while saving your data. Please try again.\n\n$e');
+    final firestoreService = FirestoreService();
+
+    // Collect common data
+    final commonData = {
+      'email': email,
+      'first_name': firstNameController.text,
+      'last_name': lastNameController.text,
+      'contact': contactController.text,
+      'interests': selectedInterests,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    try {
+      if (userType == 'pccoe') {
+        final data = {
+          ...commonData,
+          'roll_number': rollController.text,
+          'department': deptController.text,
+          'year': yearController.text,
+        };
+        await firestoreService.addPccoeStudent(uid, data);
+      } else if (userType == 'international') {
+        final data = {
+          ...commonData,
+          'prn': prnController.text,
+          'quota': quotaController.text,
+          'branch': branchController.text,
+          'full_name': fullNameController.text,
+          'parents_name': parentsNameController.text,
+          'admitted_year': admittedYearController.text,
+          'current_year': currentYearController.text,
+          'gender': genderController.text,
+          'nationality': nationalityController.text,
+          'id_document': idDocumentController.text,
+          'passport_number': passportNumberController.text,
+          'passport_photo': passportPhotoController.text,
+        };
+        await firestoreService.addInternationalStudent(uid, data);
+      } else if (userType == 'alumni') {
+        final data = {
+          ...commonData,
+          'passout_year': passOutYearController.text,
+          'qualification': highestQualificationController.text,
+          'pg_name': pgNameController.text,
+          'industry': industryNameController.text,
+          'designation': designationController.text,
+          'state': stateNameController.text,
+          'country': countryNameController.text,
+          'linkedin': linkedinController.text,
+          'question_response': questionController.text,
+          'isVerified': false,
+        };
+        await firestoreService.addAlumni(uid, data);
+      } else if (userType == 'external') {
+        final data = {
+          ...commonData,
+          'institute_type': externalCollegeType,
+          'college_name': collegeNameController.text,
+        };
+        await firestoreService.addExternalCollegeStudent(uid, data);
+      }
+
+      // Navigate after successful submission
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (ctx) => const TabsScreen()),
+      );
+    } catch (e) {
+      _showErrorDialog(
+        'Something went wrong while saving your data. Please try again.\n\n$e',
+      );
+    }
   }
-}
 }

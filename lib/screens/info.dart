@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ircell/app_theme.dart';
 
 class InfoDialog extends StatelessWidget {
   final String pageTitle;
@@ -18,80 +19,82 @@ class InfoDialog extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
-          maxHeight: MediaQuery.of(context).size.height * 0.7 , // +80 pixels
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Stack(
-            children: [
-              // 🔹 Background Image
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/screen.jpg',
-                  fit: BoxFit.cover,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor(context),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
-
-              // 🔹 Dark Overlay
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-              ),
-
-              // 🔹 Content Area
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Center(
-                      child: SingleChildScrollView(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: constraints.maxHeight - 70, // ensures vertical centering if content is small
-                          ),
-                          child: IntrinsicHeight(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  pageTitle,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+              ],
+            ),
+            child: Stack(
+              children: [
+                // 🔹 Content Area
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Center(
+                        child: SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight - 70,
+                            ),
+                            child: IntrinsicHeight(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    pageTitle,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.textPrimary(context),
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  pageDescription,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    pageDescription,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppTheme.textSecondary(context),
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              // 🔹 Close Button
-              Positioned(
-                top: 10,
-                right: 10,
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                  onPressed: () => Navigator.of(context).pop(),
+                // 🔹 Close Button
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: AppTheme.textPrimary(context),
+                      size: 28,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

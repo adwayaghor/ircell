@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
+import 'package:ircell/screens/activities.dart';
 import 'package:ircell/screens/activities/alumni.dart';
-import 'package:ircell/screens/chatbot/chatbot_icon.dart';
+import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/events_screen.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/about_us.dart';
@@ -43,13 +44,13 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
   Widget _buildSection1(BuildContext context, Size screenSize) {
   double horizontalPadding = screenSize.width * 0.04;
   double verticalPadding = screenSize.height * 0.01;
-  double buttonSpacing = screenSize.width * 0.03;
+  double buttonSpacing = screenSize.width * 0.001;
 
   // Increased from 0.18 to 0.24 to enlarge buttons
-  double imageSize = screenSize.width * 0.24;
+  double imageSize = screenSize.width * 0.19;
 
   // Increased from 0.035 to 0.045 to enlarge labels
-  double textFontSize = screenSize.width * 0.045;
+  double textFontSize = screenSize.width * 0.040;
 
   final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -109,7 +110,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                 MaterialPageRoute(builder: (context) => const EventsScreen()),
               ),
             ),
-            SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
+            SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
             buildImageButton(
               label: 'Internships',
               imageName: 'intern',
@@ -118,13 +119,13 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                 MaterialPageRoute(builder: (context) => const InternshipsScreen()),
               ),
             ),
-            SizedBox(width: buttonSpacing.clamp(8.0, 16.0)),
+            SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
             buildImageButton(
               label: 'My Activity',
               imageName: 'activity',
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ActivitiesPage()),
               ),
             ),
           ],
@@ -513,7 +514,7 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             Positioned(
               bottom: screenSize.height * 0.025,
               right: screenSize.width * 0.05,
-              child: ChatbotIcon(),
+              child: FloatingButtonsStack(),
             ),
           ],
         ),

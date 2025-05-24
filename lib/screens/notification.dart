@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ircell/app_theme.dart';
 
 class NotificationDialog extends StatelessWidget {
   final String pageTitle;
@@ -18,85 +19,85 @@ class NotificationDialog extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
-          maxHeight: MediaQuery.of(context).size.height * 0.5, // Adjustable
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Stack(
-            children: [
-              // Background Image
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/notif.jpg',
-                  fit: BoxFit.cover,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor(context),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
-
-              // Dark Overlay for readability
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
+              ],
+            ),
+            child: Stack(
+              children: [
+                // 🔹 Content Area
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Center(
+                        child: SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight - 70,
+                            ),
+                            child: IntrinsicHeight(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    pageTitle,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.textPrimary(context),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    notificationText,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppTheme.textSecondary(context),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              //  Notification Content
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-                child: _buildContent(),
-              ),
-
-              // Close Button
-              Positioned(
-                top: 10,
-                right: 10,
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                  onPressed: () => Navigator.of(context).pop(),
+                // 🔹 Close Button
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: AppTheme.textPrimary(context),
+                      size: 28,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildContent() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    pageTitle,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    notificationText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -133,16 +134,4 @@ class PageNotification {
       );
     }
   }
-
-  /* For common screen
-  static void showSameNotification(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const NotificationDialog(
-        pageTitle: 'General Notification',
-        notificationText: 'Here is a universal notification for all pages.',
-      ),
-    );
-  }
-  */
 }

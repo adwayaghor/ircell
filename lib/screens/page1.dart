@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/providers/event_provider.dart';
-import 'package:ircell/screens/chatbot/chatbot_icon.dart';
+import 'package:ircell/providers/internship_provider.dart';
+import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/event_details.dart';
+import 'package:ircell/screens/internships/outbound_detail_page.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
@@ -18,6 +20,8 @@ class Page1 extends StatefulWidget {
 
 class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   late Future<List<Event>> _eventsFuture;
+  late Future<List<OutboundInternship>> _internshipsFuture;
+  late Future<List<Event>> _pastEventsFuture;
   late TabController _tabController;
   late PageController _pageController;
   Timer? _autoScrollTimer;
@@ -43,6 +47,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     );
     _pageController.addListener(_handlePageChange);
     _eventsFuture = fetchAllEvents();
+    _internshipsFuture = fetchAllOutboundInternships();
+    _pastEventsFuture = fetchPastEvents();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoScroll();
     });
@@ -251,21 +257,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.04),
-                      _buildSection(
-                        screenSize: screenSize,
-                        title: 'Internships available',
-                        items: events,
-                        itemBuilder:
-                            (event) => _buildInternshipCard(event, screenSize),
-                      ),
+                      _buildInternshipSection(screenSize),
                       SizedBox(height: screenHeight * 0.04),
-                      _buildSection(
-                        screenSize: screenSize,
-                        title: 'Check out past events!',
-                        items: events,
-                        itemBuilder:
-                            (event) => _buildPastEventCard(event, screenSize),
-                      ),
+                      _buildPastEventsSection(screenSize),
                       SizedBox(height: screenHeight * 0.15),
                     ],
                   ),
@@ -275,6 +269,120 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           },
         );
       },
+    );
+  }
+
+  Widget _buildInternshipSection(Size screenSize) {
+    final screenHeight = screenSize.height;
+    final cardHeight = screenHeight * 0.32;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: screenHeight * 0.02),
+          child: Text(
+            'Internships available',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: screenSize.width * 0.05,
+            ),
+          ),
+        ),
+        FutureBuilder<List<OutboundInternship>>(
+          future: _internshipsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SizedBox(
+                height: cardHeight,
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return SizedBox(
+                height: cardHeight,
+                child: Center(child: Text('Error loading internships: ${snapshot.error}')),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return SizedBox(
+                height: cardHeight,
+                child: const Center(child: Text('No internships available.')),
+              );
+            }
+
+            final internships = snapshot.data!;
+            return SizedBox(
+              height: cardHeight,
+              child: PageView.builder(
+                itemCount: internships.length,
+                controller: PageController(viewportFraction: 0.85),
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: screenSize.width * 0.04),
+                    child: buildInternshipCard(internships[index], screenSize, context),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPastEventsSection(Size screenSize) {
+    final screenHeight = screenSize.height;
+    final cardHeight = screenHeight * 0.32;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: screenHeight * 0.02),
+          child: Text(
+            'Check out past events!',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: screenSize.width * 0.05,
+            ),
+          ),
+        ),
+        FutureBuilder<List<Event>>(
+          future: _pastEventsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SizedBox(
+                height: cardHeight,
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return SizedBox(
+                height: cardHeight,
+                child: Center(child: Text('Error loading past events: ${snapshot.error}')),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return SizedBox(
+                height: cardHeight,
+                child: const Center(child: Text('No past events available.')),
+              );
+            }
+
+            final pastEvents = snapshot.data!;
+            return SizedBox(
+              height: cardHeight,
+              child: PageView.builder(
+                itemCount: pastEvents.length,
+                controller: PageController(viewportFraction: 0.85),
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: screenSize.width * 0.04),
+                    child: _buildPastEventCard(pastEvents[index], screenSize),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -416,159 +524,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildSection({
-    required Size screenSize,
-    required String title,
-    required List<Event> items,
-    required Widget Function(Event) itemBuilder,
-  }) {
-    final screenWidth = screenSize.width;
-    final screenHeight = screenSize.height;
-    final cardHeight = screenHeight * 0.32;
+  
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: screenHeight * 0.02),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.05,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: cardHeight,
-          child: PageView.builder(
-            itemCount: items.length,
-            controller: PageController(viewportFraction: 0.85),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: EdgeInsets.only(right: screenWidth * 0.04),
-                child: itemBuilder(items[index]),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInternshipCard(Event event, Size screenSize) {
-    final screenWidth = screenSize.width;
-    final screenHeight = screenSize.height;
-
-    return Container(
-      decoration: AppTheme.cardDecoration(context).copyWith(
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.accentBlue.withOpacity(0.1),
-            AppTheme.primaryDarkBlue.withOpacity(0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.04),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Added to prevent overflow
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(screenWidth * 0.03),
-                  decoration: BoxDecoration(
-                    color: AppTheme.accentBlue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.work_outline,
-                    color: AppTheme.accentBlue,
-                    size: screenWidth * 0.06,
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.03),
-                Expanded(
-                  child: Text(
-                    event.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.04,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: screenHeight * 0.02),
-            Expanded(
-              // Added Expanded to constrain the description
-              child: SingleChildScrollView(
-                // Added SingleChildScrollView for long descriptions
-                child: Text(
-                  event.description,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: screenWidth * 0.032,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.01),
-            Row(
-              children: [
-                Icon(
-                  Icons.schedule,
-                  color: AppTheme.textSecondary(context),
-                  size: screenWidth * 0.04,
-                ),
-                SizedBox(width: screenWidth * 0.01),
-                Expanded(
-                  child: Text(
-                    event.date,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondary(context),
-                      fontSize: screenWidth * 0.028,
-                    ),
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.02),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EventDetailScreen(event: event),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accentBlue,
-                    foregroundColor: AppTheme.textPrimary(context),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.04,
-                      vertical: screenHeight * 0.01,
-                    ),
-                    minimumSize: Size(screenWidth * 0.15, screenHeight * 0.04),
-                  ),
-                  child: Text(
-                    'Apply',
-                    style: TextStyle(fontSize: screenWidth * 0.032),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildPastEventCard(Event event, Size screenSize) {
     final screenWidth = screenSize.width;
@@ -584,7 +541,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // Added to prevent overflow
+        mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
             flex: 2,
@@ -638,10 +595,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min, // Added to prevent overflow
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    // Wrapped in Flexible to prevent overflow
                     child: Text(
                       event.title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -710,4 +666,145 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
       ),
     );
   }
+}
+
+Widget buildInternshipCard(OutboundInternship internship, Size screenSize, BuildContext context) {
+  final screenWidth = screenSize.width;
+  final screenHeight = screenSize.height;
+
+  return InkWell(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OutboundDetailPage(internship: internship),
+        ),
+      );
+    },
+    borderRadius: BorderRadius.circular(16),
+    child: Container(
+      decoration: AppTheme.cardDecoration(context).copyWith(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.accentBlue.withOpacity(0.1),
+            AppTheme.primaryDarkBlue.withOpacity(0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(screenWidth * 0.03),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentBlue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.work_outline,
+                    color: AppTheme.accentBlue,
+                    size: screenWidth * 0.06,
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.03),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        internship.title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenWidth * 0.04,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${internship.university}, ${internship.country}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: screenWidth * 0.03,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.015),
+            Text(
+              'Topic: ${internship.topic}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: screenWidth * 0.032,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            color: AppTheme.textSecondary(context),
+                            size: screenWidth * 0.035,
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: Text(
+                              internship.duration,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.textSecondary(context),
+                                fontSize: screenWidth * 0.028,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: screenHeight * 0.005),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.attach_money,
+                            color: AppTheme.textSecondary(context),
+                            size: screenWidth * 0.035,
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: Text(
+                              internship.cost,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.textSecondary(context),
+                                fontSize: screenWidth * 0.028,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

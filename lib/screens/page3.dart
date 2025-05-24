@@ -6,9 +6,9 @@ import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/providers/internship_provider.dart';
 import 'package:ircell/screens/events/generate_ticket.dart';
-import 'package:ircell/screens/internships/outbound_detail_page.dart';
+import 'package:ircell/screens/page1.dart';
 import 'package:ircell/screens/profile_page.dart';
-import 'package:ircell/screens/chatbot/chatbot_icon.dart';
+import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
 
@@ -187,7 +187,8 @@ class _Page3State extends State<Page3> {
           ),
 
           // Chatbot icon positioned in the bottom right corner
-          Positioned(bottom: 20, right: 20, child: FloatingButtonsStack()),
+          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
+          Positioned(bottom: 90, right: 20, child: const ScanIcon()),
         ],
       ),
     );
@@ -488,80 +489,28 @@ class _Page3State extends State<Page3> {
               ),
 
               SizedBox(
-                height: 175,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 8,
-                  ),
-                  itemCount: userInternships.length,
-                  itemBuilder: (context, index) {
-                    final internship = userInternships[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => OutboundDetailPage(
-                                    internship: internship,
-                                  ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: 280,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                internship.title,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                internship.university,
-                                style: const TextStyle(fontSize: 14),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                internship.country,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const Spacer(),
-                              Text(
-                                "Duration: ${internship.duration}",
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+  height: 240, // Adjusted height to better fit the new card layout
+  child: ListView.builder(
+    scrollDirection: Axis.horizontal,
+    padding: const EdgeInsets.symmetric(
+      vertical: 12,
+      horizontal: 8,
+    ),
+    itemCount: userInternships.length,
+    itemBuilder: (context, index) {
+      final internship = userInternships[index];
+      final screenSize = MediaQuery.of(context).size;
+      return Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: SizedBox(
+          width: 300, // Ensure fixed width to keep cards uniform
+          child: buildInternshipCard(internship, screenSize, context),
+        ),
+      );
+    },
+  ),
+),
+
             ],
           ),
         );
