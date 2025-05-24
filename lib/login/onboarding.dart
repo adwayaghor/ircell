@@ -33,7 +33,6 @@ class _OnboardState extends State<Onboarding> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController emailController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
@@ -398,22 +397,6 @@ class _OnboardState extends State<Onboarding> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your last name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    controller: emailController,
-                    cursorColor: Colors.blueAccent,
-                    decoration: _buildInputDecoration('Email'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      } else if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email address';
                       }
                       return null;
                     },
