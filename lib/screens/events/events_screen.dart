@@ -98,7 +98,7 @@ class _EventsScreenState extends State<EventsScreen>
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
                       child: Text(
-                        'A',
+                        createEmailShortForm(),
                         style: TextStyle(
                           color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,

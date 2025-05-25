@@ -99,12 +99,42 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.event.title,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Row(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    // Title text that wraps
+    Expanded(
+      child: Text(
+        widget.event.title,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+        softWrap: true,
+        overflow: TextOverflow.visible,
+      ),
+    ),
+
+    // Like button column (fixed size)
+    Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          iconSize: 36,
+          icon: Icon(
+            isLiked ? Icons.favorite : Icons.favorite_border,
+            color: isLiked ? Colors.red : Colors.grey,
+          ),
+          onPressed: _toggleLike,
+        ),
+        Text(
+          '$likesCount Likes',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
+    ),
+  ],
+),
+
                     const SizedBox(height: 12),
                     _buildDetailRow("📅 Date", widget.event.date),
                     _buildDetailRow("⏰ Time", widget.event.time),
@@ -173,25 +203,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           icon: const Icon(Icons.local_activity),
                           label: const Text("Event Activities"),
                         ),
-                        const SizedBox(height: 24),
-                        Center(
-                          child: Column(
-                            children: [
-                              IconButton(
-                                iconSize: 36,
-                                icon: Icon(
-                                  isLiked ? Icons.favorite : Icons.favorite_border,
-                                  color: isLiked ? Colors.red : Colors.grey,
-                                ),
-                                onPressed: _toggleLike,
-                              ),
-                              Text(
-                                '$likesCount Likes',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
-                        ),
+                        
                       ],
                     ),
                     const SizedBox(height: 78),
