@@ -6,7 +6,7 @@ import 'package:ircell/backend/fetch_user_data.dart';
 import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
-import 'package:ircell/screens/activities/about_us.dart';
+import 'package:ircell/screens/about_us.dart';
 import 'package:ircell/screens/profile%20page/edit_profile_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';

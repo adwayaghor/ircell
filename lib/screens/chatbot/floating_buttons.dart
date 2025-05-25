@@ -8,7 +8,7 @@ import 'package:ircell/screens/community/write_blog.dart';
 class ChatbotIcon extends StatelessWidget {
   final VoidCallback? onPressed;
 
-  const ChatbotIcon({Key? key, this.onPressed}) : super(key: key);
+  const ChatbotIcon({super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {

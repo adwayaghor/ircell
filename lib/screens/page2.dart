@@ -9,7 +9,7 @@ import 'package:ircell/screens/events/events_screen.dart';
 import 'package:ircell/screens/page2/higher_studies.dart';
 import 'package:ircell/screens/page2/international_students.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
-import 'package:ircell/screens/activities/about_us.dart';
+import 'package:ircell/screens/about_us.dart';
 import 'package:ircell/screens/page2/international_students_info.dart';
 import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/info.dart';
