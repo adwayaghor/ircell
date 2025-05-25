@@ -5,7 +5,7 @@ import 'package:ircell/screens/community/alumni_blogs.dart';
 import 'package:ircell/screens/community/articles_page.dart';
 import 'package:ircell/screens/community/blog_details.dart';
 import 'package:ircell/screens/community/japan_facilitation_centre/jfc.dart';
-import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';

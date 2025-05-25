@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ircell/screens/higher_studies_form.dart';
+import 'package:ircell/screens/page2/higher_studies_form.dart';
 
 class HigherStudiesPage extends StatelessWidget {
   const HigherStudiesPage({super.key});

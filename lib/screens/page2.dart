@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
-import 'package:ircell/screens/activities.dart';
+import 'package:ircell/screens/page2/activities.dart';
 import 'package:ircell/screens/activities/alumni.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/events_screen.dart';
-import 'package:ircell/screens/higher_studies.dart';
-import 'package:ircell/screens/international_students.dart';
+import 'package:ircell/screens/page2/higher_studies.dart';
+import 'package:ircell/screens/page2/international_students.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/about_us.dart';
-import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
 

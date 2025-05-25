@@ -7,7 +7,7 @@ import 'package:ircell/providers/internship_provider.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/event_details.dart';
 import 'package:ircell/screens/internships/outbound_detail_page.dart';
-import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
 

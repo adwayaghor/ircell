@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/providers/event_provider.dart';
 import 'package:ircell/screens/events/event_details.dart';
-import 'package:ircell/screens/profile_page.dart';
+import 'package:ircell/screens/profile%20page/profile_page.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});

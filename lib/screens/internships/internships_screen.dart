@@ -22,7 +22,7 @@ class _InternshipsState extends State<InternshipsScreen> {
         backgroundColor: AppTheme.backgroundColor(context),
         appBar: AppBar(
           title: Text(
-            'Internships',
+            'Student Mobility',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
