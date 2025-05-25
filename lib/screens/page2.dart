@@ -5,6 +5,7 @@ import 'package:ircell/screens/activities/alumni.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/events_screen.dart';
 import 'package:ircell/screens/higher_studies.dart';
+import 'package:ircell/screens/international_students.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/about_us.dart';
 import 'package:ircell/screens/profile_page.dart';
@@ -41,100 +42,111 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  
   Widget _buildSection1(BuildContext context, Size screenSize) {
-  double horizontalPadding = screenSize.width * 0.04;
-  double verticalPadding = screenSize.height * 0.01;
-  double buttonSpacing = screenSize.width * 0.001;
+    double horizontalPadding = screenSize.width * 0.04;
+    double verticalPadding = screenSize.height * 0.01;
+    double buttonSpacing = screenSize.width * 0.001;
 
-  // Increased from 0.18 to 0.24 to enlarge buttons
-  double imageSize = screenSize.width * 0.19;
+    // Increased from 0.18 to 0.24 to enlarge buttons
+    double imageSize = screenSize.width * 0.19;
 
-  // Increased from 0.035 to 0.045 to enlarge labels
-  double textFontSize = screenSize.width * 0.040;
+    // Increased from 0.035 to 0.045 to enlarge labels
+    double textFontSize = screenSize.width * 0.040;
 
-  final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  String getImagePath(String imageName) {
-    return isDark
-        ? 'assets/images/dark/$imageName'
-        : 'assets/images/light/$imageName';
-  }
+    String getImagePath(String imageName) {
+      return isDark
+          ? 'assets/images/dark/$imageName'
+          : 'assets/images/light/$imageName';
+    }
 
-  Widget buildImageButton({
-    required String label,
-    required String imageName,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
+    Widget buildImageButton({
+      required String label,
+      required String imageName,
+      required VoidCallback onTap,
+    }) {
+      return Expanded(
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: onTap,
+              child: CircleAvatar(
+                radius: imageSize / 2,
+                backgroundImage: AssetImage(getImagePath('$imageName.png')),
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+            SizedBox(
+              height: screenSize.height * 0.01,
+            ), // slightly increased spacing
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: textFontSize.clamp(14.0, 18.0),
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: horizontalPadding.clamp(12.0, 20.0),
+        vertical: verticalPadding.clamp(6.0, 12.0),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: onTap,
-            child: CircleAvatar(
-              radius: imageSize / 2,
-              backgroundImage: AssetImage(getImagePath('$imageName.png')),
-              backgroundColor: Colors.transparent,
-            ),
-          ),
-          SizedBox(height: screenSize.height * 0.01), // slightly increased spacing
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: textFontSize.clamp(14.0, 18.0),
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
-            ),
+          SizedBox(height: screenSize.height * 0.015),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildImageButton(
+                label: 'Events',
+                imageName: 'event',
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EventsScreen(),
+                      ),
+                    ),
+              ),
+              SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
+              buildImageButton(
+                label: 'Internships',
+                imageName: 'intern',
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const InternshipsScreen(),
+                      ),
+                    ),
+              ),
+              SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
+              buildImageButton(
+                label: 'My Activity',
+                imageName: 'activity',
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ActivitiesPage(),
+                      ),
+                    ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  return Container(
-    margin: EdgeInsets.symmetric(
-      horizontal: horizontalPadding.clamp(12.0, 20.0),
-      vertical: verticalPadding.clamp(6.0, 12.0),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: screenSize.height * 0.015),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            buildImageButton(
-              label: 'Events',
-              imageName: 'event',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EventsScreen()),
-              ),
-            ),
-            SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
-            buildImageButton(
-              label: 'Internships',
-              imageName: 'intern',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const InternshipsScreen()),
-              ),
-            ),
-            SizedBox(width: buttonSpacing.clamp(2.0, 16.0)),
-            buildImageButton(
-              label: 'My Activity',
-              imageName: 'activity',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ActivitiesPage()),
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
   Widget _buildFeatureCard(
     String title,
     String subtitle,
@@ -154,25 +166,25 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     double bottomPadding = screenSize.width * 0.04;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-  
-  // Determine image path based on theme
-  String getImagePath(String imageName) {
-    return isDark 
-      ? 'assets/images/dark/$imageName' 
-      : 'assets/images/light/$imageName';
-  }
 
-  if (imagePath.contains('higher_studies')) {
-    imagePath = getImagePath('higher_studies.png');
-  } else if (imagePath.contains('international_alumni')) {
-    imagePath = getImagePath('international_alumni.png');
-  } else if (imagePath.contains('international_students')) {
-    imagePath = getImagePath('international_students.png');
-  } else if (imagePath.contains('about_us')) {
-    imagePath = getImagePath('about_us.png');
-  } else {
-    imagePath = imagePath; // fallback to original path
-  }
+    // Determine image path based on theme
+    String getImagePath(String imageName) {
+      return isDark
+          ? 'assets/images/dark/$imageName'
+          : 'assets/images/light/$imageName';
+    }
+
+    if (imagePath.contains('higher_studies')) {
+      imagePath = getImagePath('higher_studies.png');
+    } else if (imagePath.contains('international_alumni')) {
+      imagePath = getImagePath('international_alumni.png');
+    } else if (imagePath.contains('international_students')) {
+      imagePath = getImagePath('international_students.png');
+    } else if (imagePath.contains('about_us')) {
+      imagePath = getImagePath('about_us.png');
+    } else {
+      imagePath = imagePath; // fallback to original path
+    }
 
     Widget cardContent = Card(
       clipBehavior: Clip.antiAlias,
@@ -189,7 +201,10 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, AppTheme.accentBlue.withOpacity(0.3)],
+                  colors: [
+                    Colors.transparent,
+                    AppTheme.accentBlue.withOpacity(0.3),
+                  ],
                   begin: Alignment.bottomRight,
                   end: Alignment.bottomRight,
                 ),
@@ -237,13 +252,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.black.withOpacity(0.1),
-          //     blurRadius: 8,
-          //     offset: const Offset(0, 2),
-          //   ),
-          // ],
         ),
         child: cardContent,
       );
@@ -389,11 +397,11 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       child: Column(
                         children: [
                           SizedBox(height: screenSize.height * 0.02),
-                          _buildSection1(context, screenSize,),
+                          _buildSection1(context, screenSize),
 
-                          const SizedBox(height: 15,),
+                          const SizedBox(height: 15),
                           Divider(),
-                          const SizedBox(height: 15,),
+                          const SizedBox(height: 15),
                           // Feature cards section
                           Padding(
                             padding: EdgeInsets.fromLTRB(12, 0, 12, 20),
@@ -419,9 +427,14 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                           screenSize,
                                           isLarge: true,
                                           onTap: () {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                              return HigherStudiesPage();
-                                            },));
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return HigherStudiesPage();
+                                                },
+                                              ),
+                                            );
                                           },
                                         ),
                                       ),
@@ -461,13 +474,23 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                             ),
                                             // International Community
                                             Expanded(
-                                              // Use Expanded to fill available space
+                                              // Expanded to fill available space
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
                                                 'international_students',
-                                                0.16, // This will be overridden by Expanded
+                                                0.16, // overridden by Expanded
                                                 screenSize,
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (context) =>
+                                                              const InternationalStudentsPage(),
+                                                    ),
+                                                  );
+                                                },
                                               ),
                                             ),
                                           ],
