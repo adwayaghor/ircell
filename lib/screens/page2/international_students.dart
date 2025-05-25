@@ -1,32 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/providers/internship_provider.dart';
-
-class MobilityRequest {
-  final String id;
-  final String destination;
-  final DateTime dateTime;
-  final String purpose;
-  final String
-  status; // 'pending', 'faculty_approved', 'fully_approved', 'rejected'
-  final bool facultyApproval;
-  final bool wardenApproval;
-  final DateTime? facultyApprovedAt;
-  final DateTime? wardenApprovedAt;
-
-  MobilityRequest({
-    required this.id,
-    required this.destination,
-    required this.dateTime,
-    required this.purpose,
-    required this.status,
-    required this.facultyApproval,
-    required this.wardenApproval,
-    this.facultyApprovedAt,
-    this.wardenApprovedAt,
-  });
-}
+import 'package:ircell/providers/mobility_request_provider.dart';
+import 'package:ircell/screens/page2/qr_view_example.dart';
 
 class InternationalStudentsPage extends StatefulWidget {
   const InternationalStudentsPage({super.key});
@@ -39,69 +17,40 @@ class InternationalStudentsPage extends StatefulWidget {
 class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
   final user = Auth().currentUser;
   String? uid;
+  List<InboundInternship> internships = [];
+  bool isLoading = true;
+  String? errorMessage;
+  List<MobilityRequest> mobilityRequests = [];
+  bool isMobilityLoading = false;
+
   @override
   void initState() {
     super.initState();
     uid = user?.uid;
+    _loadInternships();
+    _loadMobilityRequests();
   }
-  // Mock data
-  final List<InboundInternship> mockInternships = [
-    InboundInternship(
-      id: '1',
-      title: 'AI Research Internship',
-      university: 'Technical University of Berlin',
-      country: 'Germany',
-      topic: 'Machine Learning & Computer Vision',
-      duration: '6 months',
-      status: 'Active',
-      coordinator: 'Dr. Kumar Sharma',
-      description:
-          'Research internship focusing on advanced AI applications in healthcare and autonomous systems.',
-      announcements: [
-        'Welcome orientation on Monday 9 AM',
-        'Lab access cards available at reception',
-        'Weekly progress meetings every Friday',
-      ],
-    ),
-    InboundInternship(
-      id: '2',
-      title: 'Sustainable Engineering Project',
-      university: 'École Polytechnique',
-      country: 'France',
-      topic: 'Environmental Engineering',
-      duration: '4 months',
-      status: 'Starting Soon',
-      coordinator: 'Prof. Anita Desai',
-      description:
-          'Collaborative project on sustainable urban development and green technology solutions.',
-      announcements: [
-        'Project kickoff meeting scheduled',
-        'Required documents submission deadline: June 1st',
-      ],
-    ),
-  ];
 
-  final List<MobilityRequest> mockMobilityRequests = [
-    MobilityRequest(
-      id: '1',
-      destination: 'City Center Mall',
-      dateTime: DateTime.now().add(Duration(days: 2)),
-      purpose: 'Shopping and cultural exploration',
-      status: 'faculty_approved',
-      facultyApproval: true,
-      wardenApproval: false,
-      facultyApprovedAt: DateTime.now().subtract(Duration(hours: 2)),
-    ),
-    MobilityRequest(
-      id: '2',
-      destination: 'India Gate, Delhi',
-      dateTime: DateTime.now().add(Duration(days: 5)),
-      purpose: 'Tourist visit with fellow students',
-      status: 'pending',
-      facultyApproval: false,
-      wardenApproval: false,
-    ),
-  ];
+  Future<void> _loadInternships() async {
+    try {
+      setState(() {
+        isLoading = true;
+        errorMessage = null;
+      });
+
+      final fetchedInternships = await fetchAllInboundInternships();
+
+      setState(() {
+        internships = fetchedInternships;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Failed to load internships: $e';
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,19 +96,21 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
                       topRight: Radius.circular(24),
                     ),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Inbound Internships Section
-                        _buildInboundInternshipsSection(),
-
-                        const SizedBox(height: 32),
-
-                        // Mobility Section
-                        _buildMobilitySection(),
-                      ],
+                  child: RefreshIndicator(
+                    onRefresh: _loadInternships,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Inbound Internships Section
+                          _buildInboundInternshipsSection(),
+                          const SizedBox(height: 32),
+                          // Mobility Section
+                          _buildMobilitySection(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -175,26 +126,125 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'My Inbound Internships',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppTheme.textPrimary(context),
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'My Inbound Internships',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppTheme.textPrimary(context),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (isLoading)
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 16),
 
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: mockInternships.length,
-            itemBuilder: (context, index) {
-              final internship = mockInternships[index];
-              return _buildInternshipCard(internship);
-            },
+        if (errorMessage != null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red.withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 32),
+                const SizedBox(height: 8),
+                Text(
+                  errorMessage!,
+                  style: TextStyle(color: Colors.red[700]),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _loadInternships,
+                  child: Text('Retry'),
+                ),
+              ],
+            ),
+          )
+        else if (isLoading)
+          SizedBox(
+            height: 250,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading internships...',
+                    style: TextStyle(color: AppTheme.textSecondary(context)),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else if (internships.isEmpty)
+          Container(
+            height: 250,
+            width: double.infinity,
+            decoration: AppTheme.cardDecoration(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.school_outlined,
+                  size: 64,
+                  color: AppTheme.textSecondary(context),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No Internships Found',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.textPrimary(context),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'You don\'t have any inbound internships yet.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _loadInternships,
+                  icon: Icon(Icons.refresh),
+                  label: Text('Refresh'),
+                ),
+                // const SizedBox(height: 5),
+              ],
+            ),
+          )
+        else
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: internships.length,
+              itemBuilder: (context, index) {
+                final internship = internships[index];
+                return _buildInternshipCard(internship);
+              },
+            ),
           ),
-        ),
       ],
     );
   }
@@ -375,15 +425,52 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
 
         const SizedBox(height: 16),
 
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: mockMobilityRequests.length,
-          itemBuilder: (context, index) {
-            final request = mockMobilityRequests[index];
-            return _buildMobilityRequestCard(request);
-          },
-        ),
+        if (isMobilityLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (mobilityRequests.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(32),
+            decoration: AppTheme.cardDecoration(context),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.directions_walk,
+                  size: 48,
+                  color: AppTheme.textSecondary(context),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No mobility requests yet',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Request permission to leave campus',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary(context),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: mobilityRequests.length,
+            itemBuilder: (context, index) {
+              final request = mobilityRequests[index];
+              return _buildMobilityRequestCard(request);
+            },
+          ),
       ],
     );
   }
@@ -667,55 +754,84 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
 
                         const SizedBox(height: 24),
 
-                        Text(
-                          'Announcements',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleMedium?.copyWith(
-                            color: AppTheme.textPrimary(context),
-                            fontWeight: FontWeight.bold,
+                        if (internship.announcements.isNotEmpty) ...[
+                          Text(
+                            'Announcements',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(
+                              color: AppTheme.textPrimary(context),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
 
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 8),
 
-                        ...internship.announcements
-                            .map(
-                              (announcement) => Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.announcement,
-                                      size: 16,
-                                      color:
-                                          Theme.of(
+                          ...internship.announcements
+                              .map(
+                                (announcement) => Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.announcement,
+                                        size: 16,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          announcement,
+                                          style: Theme.of(
                                             context,
-                                          ).colorScheme.secondary,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        announcement,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodySmall?.copyWith(
-                                          color: AppTheme.textPrimary(context),
+                                          ).textTheme.bodySmall?.copyWith(
+                                            color: AppTheme.textPrimary(
+                                              context,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(),
+                              )
+                              .toList(),
+                        ] else
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppTheme.textSecondary(
+                                context,
+                              ).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: AppTheme.textSecondary(context),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'No announcements yet',
+                                  style: TextStyle(
+                                    color: AppTheme.textSecondary(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -763,100 +879,256 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
 
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppTheme.cardColor(context),
-            title: Text(
-              'Request Campus Exit',
-              style: TextStyle(color: AppTheme.textPrimary(context)),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: destinationController,
-                  style: TextStyle(color: AppTheme.textPrimary(context)),
-                  decoration: const InputDecoration(
-                    labelText: 'Destination',
-                    hintText: 'Where are you going?',
-                  ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppTheme.cardColor(context),
+              title: Text(
+                'Request Campus Exit',
+                style: TextStyle(color: AppTheme.textPrimary(context)),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: destinationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Destination',
+                        hintText: 'Where are you going?',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: purposeController,
+                      decoration: const InputDecoration(
+                        labelText: 'Purpose',
+                        hintText: 'Why are you going?',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Date & Time',
+                        style: TextStyle(color: AppTheme.textPrimary(context)),
+                      ),
+                      subtitle: Text(
+                        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} at ${selectedTime.format(context)}',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.calendar_today,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 30),
+                          ),
+                        );
+                        if (date != null) {
+                          final time = await showTimePicker(
+                            context: context,
+                            initialTime: selectedTime,
+                          );
+                          if (time != null) {
+                            setDialogState(() {
+                              selectedDate = date;
+                              selectedTime = time;
+                            });
+                          }
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: purposeController,
-                  style: TextStyle(color: AppTheme.textPrimary(context)),
-                  decoration: const InputDecoration(
-                    labelText: 'Purpose',
-                    hintText: 'Why are you going?',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    'Date & Time',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Cancel',
                     style: TextStyle(color: AppTheme.textPrimary(context)),
                   ),
-                  subtitle: Text(
-                    '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} at ${selectedTime.format(context)}',
-                    style: TextStyle(color: AppTheme.textSecondary(context)),
-                  ),
-                  trailing: Icon(
-                    Icons.calendar_today,
-                    color: AppTheme.textSecondary(context),
-                  ),
-                  onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 30)),
-                    );
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: selectedTime,
-                      );
-                      if (time != null) {
-                        setState(() {
-                          selectedDate = date;
-                          selectedTime = time;
-                        });
-                      }
-                    }
-                  },
+                ),
+                ElevatedButton(
+                  onPressed:
+                      () => _submitMobilityRequest(
+                        context,
+                        destinationController.text,
+                        purposeController.text,
+                        selectedDate,
+                        selectedTime,
+                      ),
+                  child: const Text('Submit'),
                 ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: AppTheme.textSecondary(context)),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (destinationController.text.isNotEmpty &&
-                      purposeController.text.isNotEmpty) {
-                    // Add request logic here
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Mobility request submitted!'),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Submit'),
-              ),
-            ],
-          ),
+            );
+          },
+        );
+      },
     );
   }
 
+  Future<void> _submitMobilityRequest(
+    BuildContext dialogContext,
+    String destination,
+    String purpose,
+    DateTime selectedDate,
+    TimeOfDay selectedTime,
+  ) async {
+    if (destination.isEmpty || purpose.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final currentUser = Auth().currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User not authenticated'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Combine selected date and time
+      final selectedDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+
+      // Create the request data
+      final requestData = {
+        'student_id': currentUser.uid,
+        'destination': destination.trim(),
+        'purpose': purpose.trim(),
+        'date_time': Timestamp.fromDate(selectedDateTime),
+        'status': 'pending',
+        'faculty_approval': false,
+        'warden_approval': false,
+        'faculty_approved_at': null,
+        'warden_approved_at': null,
+        'created_at': FieldValue.serverTimestamp(),
+        'updated_at': FieldValue.serverTimestamp(),
+      };
+
+      // THIS IS THE KEY PART - Actually write to Firestore
+      await FirebaseFirestore.instance
+          .collection('student_mobility')
+          .add(requestData);
+
+      // Close the dialog
+      Navigator.pop(dialogContext);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mobility request submitted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Refresh the mobility requests list
+      await _loadMobilityRequests();
+    } catch (e) {
+      print('Error submitting mobility request: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to submit request: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _loadMobilityRequests() async {
+    final currentUser = Auth().currentUser;
+    if (currentUser == null) return;
+
+    try {
+      setState(() {
+        isMobilityLoading = true;
+      });
+
+      final querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('student_mobility')
+              .where('student_id', isEqualTo: currentUser.uid)
+              .get();
+
+      List<MobilityRequest> requests =
+          querySnapshot.docs.map((doc) {
+            final data = doc.data();
+
+            return MobilityRequest(
+              id: doc.id,
+              destination: data['destination'] ?? '',
+              purpose: data['purpose'] ?? '',
+              dateTime:
+                  (data['date_time'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              status: data['status'] ?? 'pending',
+              // Use camelCase field names (the actual data in Firestore)
+              facultyApproval: _convertToBoolean(data['facultyApproval']),
+              wardenApproval: _convertToBoolean(data['warden_approval']),
+              facultyApprovedAt: _convertToDateTime(data['facultyApprovedAt']),
+              wardenApprovedAt: _convertToDateTime(data['warden_approved_at']),
+            );
+          }).toList();
+
+      requests.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+      setState(() {
+        mobilityRequests = requests;
+        isMobilityLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isMobilityLoading = false;
+      });
+      print('Error loading mobility requests: $e');
+    }
+  }
+
+  // Helper method to safely convert to boolean
+  bool _convertToBoolean(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    if (value is int) return value != 0;
+    return false;
+  }
+
+  // Helper method to safely convert to DateTime
+  DateTime? _convertToDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    return null;
+  }
+
   void _showQRCodeDialog() {
+    // This should be a unique code that only wardens have access to
+    const wardenQRCode = "hostel_student_access_authorize";
+
     showDialog(
       context: context,
       builder:
@@ -876,25 +1148,18 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Show this screen to the hostel warden and scan the QR code at their desk to get approval.',
+                  'Scan the warden\'s QR code to get approval',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppTheme.textSecondary(context)),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Approval Code: WRD-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('Scan QR Code'),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the current dialog
+                    await _scanQRCodeForApproval(wardenQRCode);
+                  },
                 ),
               ],
             ),
@@ -903,20 +1168,65 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Cancel',
-                  style: TextStyle(color: AppTheme.textSecondary(context)),
+                  style: TextStyle(color: AppTheme.textPrimary(context)),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Warden approval received!')),
-                  );
-                },
-                child: const Text('Confirm Approval'),
               ),
             ],
           ),
     );
+  }
+
+  Future<void> _scanQRCodeForApproval(String expectedQRCode) async {
+    final currentContext = context;
+    final currentRequest = mobilityRequests.firstWhere(
+      (req) => req.status == 'faculty_approved',
+    );
+
+    try {
+      final qrCode = await Navigator.push<String>(
+        currentContext,
+        MaterialPageRoute(builder: (context) => const QRScannerScreen()),
+      );
+
+      if (qrCode == expectedQRCode) {
+        // Update Firestore with warden approval
+        await FirebaseFirestore.instance
+            .collection('student_mobility')
+            .doc(currentRequest.id)
+            .update({
+              'warden_approval': true,
+              'warden_approved_at': FieldValue.serverTimestamp(),
+              'status': 'fully_approved',
+            });
+
+        // Refresh the list
+        await _loadMobilityRequests();
+
+        if (currentContext.mounted) {
+          ScaffoldMessenger.of(currentContext).showSnackBar(
+            const SnackBar(
+              content: Text('Warden approval successful!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else if (currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          const SnackBar(
+            content: Text('Invalid QR code. Please scan the warden\'s code.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

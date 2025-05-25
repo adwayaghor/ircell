@@ -3,6 +3,7 @@ import 'package:ircell/admin/alumni/alumni_options.dart';
 import 'package:ircell/admin/event/event_upload.dart';
 import 'package:ircell/admin/event/view_event.dart';
 import 'package:ircell/admin/higher_studies/higher_studies.dart';
+import 'package:ircell/admin/international_students/international_students_admin.dart';
 import 'package:ircell/admin/student_mobilty/student_mobility.dart';
 
 class AdminPage extends StatelessWidget {
@@ -75,6 +76,18 @@ class AdminPage extends StatelessWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (ctx) => const AlumniOptions(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              _AdminOptionCard(
+                title: 'International Students',
+                icon: Icons.airplanemode_active,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => const InternationalStudentsAdmin(),
                     ),
                   );
                 },
