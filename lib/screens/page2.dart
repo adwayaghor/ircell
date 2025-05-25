@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/screens/page2/activities.dart';
@@ -8,6 +10,7 @@ import 'package:ircell/screens/page2/higher_studies.dart';
 import 'package:ircell/screens/page2/international_students.dart';
 import 'package:ircell/screens/internships/internships_screen.dart';
 import 'package:ircell/screens/activities/about_us.dart';
+import 'package:ircell/screens/page2/international_students_info.dart';
 import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
@@ -473,23 +476,59 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             // International Community
+                                            // Expanded(
+                                            //   // Expanded to fill available space
+                                            //   child: _buildFeatureCard(
+                                            //     "",
+                                            //     "",
+                                            //     'international_students',
+                                            //     0.16, // overridden by Expanded
+                                            //     screenSize,
+                                            //     onTap: () {
+                                            //       Navigator.push(
+                                            //         context,
+                                            //         MaterialPageRoute(
+                                            //           builder:
+                                            //               (context) =>
+                                            //                   const InternationalStudentsPage(),
+                                            //         ),
+                                            //       );
+                                            //     },
+                                            //   ),
+                                            // ),
                                             Expanded(
-                                              // Expanded to fill available space
                                               child: _buildFeatureCard(
                                                 "",
                                                 "",
                                                 'international_students',
-                                                0.16, // overridden by Expanded
+                                                0.16,
                                                 screenSize,
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder:
-                                                          (context) =>
-                                                              const InternationalStudentsPage(),
-                                                    ),
-                                                  );
+                                                onTap: () async {
+                                                  final currentUser = FirebaseAuth.instance.currentUser;
+                                                  if (currentUser == null) return;
+
+                                                  final uid = currentUser.uid;
+
+                                                  final doc = await FirebaseFirestore.instance
+                                                      .collection('international_students')
+                                                      .doc(uid)
+                                                      .get();
+
+                                                  if (doc.exists) {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => const InternationalStudentsPage(),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => const InternationalStudentsInfoPage(),
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                               ),
                                             ),
