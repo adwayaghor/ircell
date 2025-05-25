@@ -7,15 +7,17 @@ class InternationalStudentsAdmin extends StatefulWidget {
   const InternationalStudentsAdmin({super.key});
 
   @override
-  State<InternationalStudentsAdmin> createState() => _InternationalStudentsAdminState();
+  State<InternationalStudentsAdmin> createState() =>
+      _InternationalStudentsAdminState();
 }
 
-class _InternationalStudentsAdminState extends State<InternationalStudentsAdmin> {
+class _InternationalStudentsAdminState
+    extends State<InternationalStudentsAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('International Students Admin'),
+        title: const Text('International Students'),
         elevation: 2,
       ),
       body: const MobilityRequestsAdmin(),
@@ -43,9 +45,7 @@ class MobilityRequestsAdmin extends StatelessWidget {
                 ),
               ),
               SizedBox(height: constraints.maxWidth > 600 ? 24 : 16),
-              Expanded(
-                child: _buildMobilityRequestsList(),
-              ),
+              Expanded(child: _buildMobilityRequestsList()),
             ],
           ),
         );
@@ -55,16 +55,10 @@ class MobilityRequestsAdmin extends StatelessWidget {
 
   Widget _buildMobilityRequestsList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('student_mobility')
-          .snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection('student_mobility').snapshots(),
       builder: (context, snapshot) {
-        print('Stream state: ${snapshot.connectionState}');
-        print('Has data: ${snapshot.hasData}');
-        print('Has error: ${snapshot.hasError}');
-        
         if (snapshot.hasError) {
-          print('Firestore error: ${snapshot.error}');
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
@@ -73,31 +67,21 @@ class MobilityRequestsAdmin extends StatelessWidget {
         }
 
         if (!snapshot.hasData) {
-          print('No snapshot data');
           return const Center(child: Text('No data available'));
         }
 
         final docs = snapshot.data!.docs;
-        print('Number of documents: ${docs.length}');
-        
+
         if (docs.isEmpty) {
           return const Center(child: Text('No mobility requests found'));
         }
 
-        // Debug: Print first document structure
-        if (docs.isNotEmpty) {
-          final firstDoc = docs.first.data() as Map<String, dynamic>;
-          print('First document data: $firstDoc');
-          print('First document ID: ${docs.first.id}');
-        }
-
         // Convert Firestore documents to MobilityRequest objects
         final mobilityRequests = <MobilityRequest>[];
-        
+
         for (final doc in docs) {
           try {
             final data = doc.data() as Map<String, dynamic>;
-            print('Processing document ${doc.id}: $data');
             final request = MobilityRequest.fromMap(data, doc.id);
             mobilityRequests.add(request);
           } catch (e) {
@@ -105,10 +89,12 @@ class MobilityRequestsAdmin extends StatelessWidget {
           }
         }
 
-        print('Successfully converted ${mobilityRequests.length} requests');
-
         if (mobilityRequests.isEmpty) {
-          return const Center(child: Text('Error converting documents to MobilityRequest objects'));
+          return const Center(
+            child: Text(
+              'Error converting documents to MobilityRequest objects',
+            ),
+          );
         }
 
         return LayoutBuilder(
@@ -149,9 +135,7 @@ class MobilityRequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         padding: EdgeInsets.all(isWideScreen ? 24.0 : 16.0),
         child: Column(
@@ -172,7 +156,7 @@ class MobilityRequestCard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 400;
-        
+
         if (isNarrow) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +173,7 @@ class MobilityRequestCard extends StatelessWidget {
             ],
           );
         }
-        
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,11 +241,7 @@ class MobilityRequestCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: isWideScreen ? 20 : 16,
-          color: Colors.grey[600],
-        ),
+        Icon(icon, size: isWideScreen ? 20 : 16, color: Colors.grey[600]),
         SizedBox(width: isWideScreen ? 12 : 8),
         Expanded(
           child: Column(
@@ -295,7 +275,7 @@ class MobilityRequestCard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 500;
-        
+
         if (isNarrow) {
           return Column(
             children: [
@@ -311,7 +291,7 @@ class MobilityRequestCard extends StatelessWidget {
             ],
           );
         }
-        
+
         return Row(
           children: [
             Expanded(
@@ -324,9 +304,7 @@ class MobilityRequestCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            Expanded(
-              child: _buildWardenStatusCard(),
-            ),
+            Expanded(child: _buildWardenStatusCard()),
           ],
         );
       },
@@ -336,23 +314,29 @@ class MobilityRequestCard extends StatelessWidget {
   Widget _buildApprovalCard(
     BuildContext context,
     String role,
-    bool isApproved, {
+    bool? isApproved, { // Changed to nullable bool
     required VoidCallback onApprove,
     required VoidCallback onReject,
   }) {
-    final approvalColor = isApproved ? Colors.green : Colors.grey[400]!;
-    
+    final isApprovedBool = isApproved ?? false;
+    final approvalColor =
+        isApprovedBool
+            ? Colors.green
+            : isApproved == null
+            ? Colors.grey[400]!
+            : Colors.red;
+
     return Container(
       padding: EdgeInsets.all(isWideScreen ? 16 : 12),
       decoration: BoxDecoration(
-        color: isApproved
-            ? Colors.green.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.05),
+        color:
+            isApproved == null
+                ? Colors.grey.withOpacity(0.05)
+                : (isApprovedBool
+                    ? Colors.green.withOpacity(0.05)
+                    : Colors.red.withOpacity(0.05)),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: approvalColor,
-          width: 1.5,
-        ),
+        border: Border.all(color: approvalColor, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -366,7 +350,11 @@ class MobilityRequestCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  isApproved ? Icons.check_circle : Icons.pending,
+                  isApproved == null
+                      ? Icons.pending
+                      : isApprovedBool
+                      ? Icons.check_circle
+                      : Icons.block,
                   color: approvalColor,
                   size: isWideScreen ? 20 : 18,
                 ),
@@ -388,7 +376,7 @@ class MobilityRequestCard extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isVeryNarrow = constraints.maxWidth < 200;
-              
+
               if (isVeryNarrow) {
                 return Column(
                   children: [
@@ -397,8 +385,11 @@ class MobilityRequestCard extends StatelessWidget {
                       child: _buildActionButton(
                         icon: Icons.check,
                         label: 'Approve',
-                        color: Colors.green,
-                        onPressed: onApprove,
+                        color:
+                            isApproved == true
+                                ? Colors.green.withOpacity(0.5)
+                                : Colors.green,
+                        onPressed: isApproved == true ? null : onApprove,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -407,22 +398,28 @@ class MobilityRequestCard extends StatelessWidget {
                       child: _buildActionButton(
                         icon: Icons.close,
                         label: 'Reject',
-                        color: Colors.red,
-                        onPressed: onReject,
+                        color:
+                            isApproved == false
+                                ? Colors.red.withOpacity(0.5)
+                                : Colors.red,
+                        onPressed: isApproved == false ? null : onReject,
                       ),
                     ),
                   ],
                 );
               }
-              
+
               return Row(
                 children: [
                   Expanded(
                     child: _buildActionButton(
                       icon: Icons.check,
                       label: 'Approve',
-                      color: Colors.green,
-                      onPressed: onApprove,
+                      color:
+                          isApproved == true
+                              ? Colors.green.withOpacity(0.5)
+                              : Colors.green,
+                      onPressed: isApproved == true ? null : onApprove,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -430,8 +427,11 @@ class MobilityRequestCard extends StatelessWidget {
                     child: _buildActionButton(
                       icon: Icons.close,
                       label: 'Reject',
-                      color: Colors.red,
-                      onPressed: onReject,
+                      color:
+                          isApproved == false
+                              ? Colors.red.withOpacity(0.5)
+                              : Colors.red,
+                      onPressed: isApproved == false ? null : onReject,
                     ),
                   ),
                 ],
@@ -444,19 +444,18 @@ class MobilityRequestCard extends StatelessWidget {
   }
 
   Widget _buildWardenStatusCard() {
-    final approvalColor = mobilityRequest.wardenApproval ? Colors.green : Colors.grey[400]!;
-    
+    final approvalColor =
+        mobilityRequest.wardenApproval ? Colors.green : Colors.grey[400]!;
+
     return Container(
       padding: EdgeInsets.all(isWideScreen ? 16 : 12),
       decoration: BoxDecoration(
-        color: mobilityRequest.wardenApproval
-            ? Colors.green.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.05),
+        color:
+            mobilityRequest.wardenApproval
+                ? Colors.green.withOpacity(0.05)
+                : Colors.grey.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: approvalColor,
-          width: 1.5,
-        ),
+        border: Border.all(color: approvalColor, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,7 +469,9 @@ class MobilityRequestCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  mobilityRequest.wardenApproval ? Icons.check_circle : Icons.pending,
+                  mobilityRequest.wardenApproval
+                      ? Icons.check_circle
+                      : Icons.pending,
                   color: approvalColor,
                   size: isWideScreen ? 20 : 18,
                 ),
@@ -510,7 +511,7 @@ class MobilityRequestCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    mobilityRequest.wardenApproval 
+                    mobilityRequest.wardenApproval
                         ? 'Approved offline'
                         : 'Pending offline approval',
                     style: TextStyle(
@@ -532,24 +533,28 @@ class MobilityRequestCard extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) {
     return OutlinedButton.icon(
       icon: Icon(icon, size: isWideScreen ? 18 : 16),
       label: Text(
         label,
-        style: TextStyle(fontSize: isWideScreen ? 14 : 12),
+        style: TextStyle(
+          fontSize: isWideScreen ? 14 : 12,
+          color: onPressed == null ? color.withOpacity(0.5) : color,
+        ),
       ),
       style: OutlinedButton.styleFrom(
-        foregroundColor: color,
-        side: BorderSide(color: color, width: 1.5),
+        foregroundColor: onPressed == null ? color.withOpacity(0.5) : color,
+        side: BorderSide(
+          color: onPressed == null ? color.withOpacity(0.5) : color,
+          width: 1.5,
+        ),
         padding: EdgeInsets.symmetric(
           vertical: isWideScreen ? 12 : 10,
           horizontal: isWideScreen ? 16 : 12,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: onPressed,
     );
@@ -561,17 +566,17 @@ class MobilityRequestCard extends StatelessWidget {
   }
 
   Color _getStatusColor(String status) {
-  switch (status) {
-    case 'faculty_approved':
-      return Colors.blue;
-    case 'fully_approved':
-      return Colors.green;
-    case 'rejected':
-      return Colors.red;
-    default:
-      return Colors.orange;
+    switch (status) {
+      case 'faculty_approved':
+        return Colors.blue;
+      case 'fully_approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.orange;
+    }
   }
-}
 
   Widget _buildStatusChip(String status) {
     final color = _getStatusColor(status);
@@ -598,16 +603,74 @@ class MobilityRequestCard extends StatelessWidget {
   }
 
   Future<void> _handleApproval(
-      BuildContext context, String role, bool approved) async {
+    BuildContext context,
+    String role,
+    bool approved,
+  ) async {
     try {
+      // Check current status
+      final currentApproval =
+          role == 'faculty'
+              ? mobilityRequest.facultyApproval
+              : mobilityRequest.wardenApproval;
+
+      // If already in the desired state
+      if (currentApproval == approved) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Request is already ${approved ? 'approved' : 'rejected'} by $role',
+            ),
+            backgroundColor: Colors.blue,
+          ),
+        );
+        return;
+      }
+
+      // If changing an existing approval/rejection, ask for confirmation
+      if (currentApproval) {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: Text('Confirm ${approved ? 'approval' : 'rejection'}'),
+                content: Text(
+                  'This request was previously ${currentApproval ? 'approved' : 'rejected'} by $role. '
+                  'Are you sure you want to ${approved ? 'approve' : 'reject'} it?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    style: TextButton.styleFrom(
+                      foregroundColor: approved ? Colors.green : Colors.red,
+                    ),
+                    child: Text(approved ? 'Approve' : 'Reject'),
+                  ),
+                ],
+              ),
+        );
+
+        if (confirmed != true) return;
+      }
+
       final updateData = <String, dynamic>{
-        '${role}Approval': approved,
-        '${role}ApprovedAt': FieldValue.serverTimestamp(),
+        '${role}_approval': approved,
+        '${role}_approved_at': FieldValue.serverTimestamp(),
+        'updated_at': FieldValue.serverTimestamp(),
       };
 
       // Update status based on faculty approval only
       if (role == 'faculty') {
         updateData['status'] = approved ? 'faculty_approved' : 'rejected';
+      }
+
+      // If warden is approving and faculty has already approved, mark as fully approved
+      if (role == 'warden' && approved && mobilityRequest.facultyApproval) {
+        updateData['status'] = 'fully_approved';
       }
 
       await FirebaseFirestore.instance
@@ -617,14 +680,17 @@ class MobilityRequestCard extends StatelessWidget {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$role approval ${approved ? 'granted' : 'revoked'}'),
+          content: Text(
+            'Request ${approved ? 'approved' : 'rejected'} by $role',
+          ),
           backgroundColor: approved ? Colors.green : Colors.red,
+          duration: const Duration(seconds: 2),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update approval: $e'),
+          content: Text('Failed to update approval: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
