@@ -135,11 +135,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
     ),
   );
 }
-
-
-
-  // First, update your _buildFeatureCard method to handle flexible heights:
-
   Widget _buildFeatureCard(
     String title,
     String subtitle,
@@ -295,7 +290,6 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                 icon: Icon(
                   Icons.info_outline,
                   color: AppTheme.textPrimary(context),
-                  size: screenSize.width * 0.06,
                 ),
                 onPressed: () => PageInfo.showInfoDialog(context, 'Page2'),
               ),
@@ -305,18 +299,16 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                 Container(
                   decoration: AppTheme.glassDecoration(context),
                   child: IconButton(
-                    icon: Icon(
-                      Icons.notifications,
-                      size: screenSize.width * 0.06,
-                    ),
+                    icon: const Icon(Icons.notifications),
                     onPressed:
                         () => PageNotification.showNotificationDialog(
                           context,
                           'Page2',
                         ),
+                    // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
-                SizedBox(width: screenSize.width * 0.02),
+                const SizedBox(width: 8),
                 Material(
                   color: Colors.transparent,
                   shape: const CircleBorder(),
@@ -331,14 +323,12 @@ class _HomeScreenState extends State<Page2> with TickerProviderStateMixin {
                       );
                     },
                     child: CircleAvatar(
-                      radius: screenSize.width * 0.05,
                       backgroundColor: AppTheme.accentBlue,
                       child: Text(
-                        'A',
+                        createEmailShortForm(),
                         style: TextStyle(
                           color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,
-                          fontSize: screenSize.width * 0.04,
                         ),
                       ),
                     ),

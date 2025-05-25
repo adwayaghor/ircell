@@ -1,10 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ircell/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ircell/login/auth.dart';
-import 'package:ircell/login/splash_screen.dart';
 import 'package:ircell/screens/community/alumni_blogs.dart';
 import 'package:ircell/screens/community/articles_page.dart';
+import 'package:ircell/screens/community/blog_details.dart';
 import 'package:ircell/screens/community/japan_facilitation_centre/jfc.dart';
 import 'package:ircell/screens/profile_page.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
@@ -23,8 +22,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
   List<AlumniBlog> recentBlogs = [];
   late TabController _tabController;
 
-  final User? user = Auth().currentUser;
-
   @override
   void initState() {
     super.initState();
@@ -37,129 +34,79 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> signOut(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Sign Out'),
-            content: const Text('Are you sure you want to sign out?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('No'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Yes'),
-              ),
-            ],
-          ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await Auth().signOut();
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const SplashScreen()),
-          (route) => false,
-        );
-      } on FirebaseAuthException catch (e) {
-        showDialog(
-          context: context,
-          builder:
-              (_) => AlertDialog(
-                title: const Text('Error'),
-                content: Text(e.message ?? 'An error occurred'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Got it!'),
-                  ),
-                ],
-              ),
-        );
-      }
-    }
-  }
-
-  Widget userUID() {
-    return Text(user?.email ?? 'User email');
-  }
-
-  Widget signOutButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => signOut(context),
-      child: const Text('Sign Out'),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          decoration: AppTheme.glassDecoration(context),
-          child: IconButton(
-            icon: Icon(
-              Icons.info_outline,
-              color: Theme.of(context).colorScheme.onSurface,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              decoration: AppTheme.glassDecoration(context),
+              child: IconButton(
+                icon: Icon(
+                  Icons.info_outline,
+                  color: AppTheme.textPrimary(context),
+                ),
+                onPressed: () => PageInfo.showInfoDialog(context, 'Page4'),
+              ),
             ),
-            onPressed: () => PageInfo.showInfoDialog(context, 'Page4'),
-          ),
-        ),
-        title: const Text('IR Community'),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    decoration: AppTheme.glassDecoration(context),
-                    child: IconButton(
-                      icon: const Icon(Icons.notifications),
-                      onPressed:
-                          () => PageNotification.showNotificationDialog(
-                            context,
-                            'Page4',
-                          ),
-                      // onPressed: () => PageNotification.showSameNotification(context);
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Material(
-                    color: Colors.transparent,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: () {
-                        Navigator.push(
+            Text(
+              'IR Community',
+              style: TextStyle(
+                color: AppTheme.textPrimary(context),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            Row(
+              children: [
+                Container(
+                  decoration: AppTheme.glassDecoration(context),
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications),
+                    onPressed:
+                        () => PageNotification.showNotificationDialog(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfilePage(),
-                          ),
-                        );
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: AppTheme.accentBlue,
-                        child: Text(
-                          'A',
-                          style: TextStyle(
-                            color: AppTheme.textPrimary(context),
-                            fontWeight: FontWeight.bold,
-                          ),
+                          'Page4',
+                        ),
+                    // onPressed: () => PageNotification.showSameNotification(context);
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Material(
+                  color: Colors.transparent,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: AppTheme.accentBlue,
+                      child: Text(
+                        createEmailShortForm(),
+                        style: TextStyle(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                ),
+              ],
+            ),
+          ],
+        ),
+
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Padding(
@@ -305,11 +252,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
-
-            const SizedBox(height: 24),
-            userUID(),
-            const SizedBox(height: 20),
-            signOutButton(context),
           ],
         ),
       ),
@@ -332,7 +274,8 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AlumniBlogListPage(), // ✅ NEW PAGE
+                    builder:
+                        (context) => const AlumniBlogListPage(), // ✅ NEW PAGE
                   ),
                 );
               },
@@ -345,39 +288,88 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    child: _buildBlogItem(
-                      title: 'My Experience at Tokyo University',
-                      author: 'Akira Tanaka',
-                      date: 'May 10, 2025',
-                    ),
+            FutureBuilder<QuerySnapshot>(
+              future:
+                  FirebaseFirestore.instance
+                      .collection('alumni_blogs')
+                      .orderBy('timestamp', descending: true)
+                      .limit(3)
+                      .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Text('No blogs available.');
+                }
+
+                final blogs =
+                    snapshot.data!.docs
+                        .map(
+                          (doc) => AlumniBlog.fromMap(
+                            doc.data() as Map<String, dynamic>,
+                          ),
+                        )
+                        .toList();
+
+                return SizedBox(
+                  height: 160, // Adjust height as needed
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: blogs.length,
+                    itemBuilder: (context, index) {
+                      final blog = blogs[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AlumniBlogDetailPage(blog: blog),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Container(
+                            width: 250, // Adjust width as needed
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  blog.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'By ${blog.firstName} ${blog.lastName}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  "${blog.timestamp.day}/${blog.timestamp.month}/${blog.timestamp.year}",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  const SizedBox(width: 16),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    child: _buildBlogItem(
-                      title: 'Navigating Student Life in Osaka',
-                      author: 'Chen Wei',
-                      date: 'April 22, 2025',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    child: _buildBlogItem(
-                      title: 'From Engineering Student to Tech Lead in Tokyo',
-                      author: 'Kim Soo-jin',
-                      date: 'March 15, 2025',
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
+
             const SizedBox(height: 24),
             Divider(color: AppTheme.textSecondary(context), thickness: 1),
             const SizedBox(height: 16),
@@ -418,7 +410,7 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Featured Videos',
+              'Testimonials by IR students',
               style: TextStyle(
                 color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
@@ -507,87 +499,6 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBlogItem({
-    required String title,
-    required String author,
-    required String date,
-  }) {
-    return Card(
-      child: InkWell(
-        onTap: () {
-          
-        },
-        child: Padding(
-          
-          // decoration: BoxDecoration(
-          //   border: Border.all(color: AppTheme.textPrimary(context), width: 0.5),
-          //   borderRadius: BorderRadius.circular(12.0),
-          // ),
-          padding: const EdgeInsets.all(16),
-          // child: Card(
-          // child: InkWell(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.person, size: 30, color: Colors.grey),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary(context),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'By $author • $date',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary(context),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: 8,
-                          color: AppTheme.textSecondary(context),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Read more',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

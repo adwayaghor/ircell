@@ -80,7 +80,7 @@ class _HigherStudiesFormPageState extends State<HigherStudiesFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    //final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Higher Studies Form'),

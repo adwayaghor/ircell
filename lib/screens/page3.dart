@@ -133,7 +133,7 @@ class _Page3State extends State<Page3> {
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
                       child: Text(
-                        'A',
+                        createEmailShortForm(),
                         style: TextStyle(
                           color: AppTheme.textPrimary(context),
                           fontWeight: FontWeight.bold,
@@ -195,41 +195,45 @@ class _Page3State extends State<Page3> {
   }
 
   Widget _buildHeaderSection() {
-    return Row(
-      children: [
-        // IR Logo/Image Placeholder with glass decoration
-        Container(
-          width: 80,
-          height: 80,
-          decoration: AppTheme.glassDecoration(context).copyWith(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(
-              'IR',
-              style: Theme.of(
-                context,
-              ).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
+  final Size screenSize = MediaQuery.of(context).size;
+  final double imageSize = screenSize.width * 0.4; // Responsive size
+
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      // IR Logo Image with glass decoration
+      Container(
+        width: imageSize,
+        height: imageSize,
+        decoration: AppTheme.glassDecoration(context).copyWith(
+          borderRadius: BorderRadius.circular(imageSize / 2),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            'assets/images/ircircle.png',
+            fit: BoxFit.fill,
           ),
         ),
+      ),
 
-        const SizedBox(width: 16),
+      const SizedBox(width: 16),
 
-        // "Book a ticket for an event" text
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Book a', style: Theme.of(context).textTheme.titleLarge),
-              Text('ticket for', style: Theme.of(context).textTheme.titleLarge),
-              Text('an event', style: Theme.of(context).textTheme.titleLarge),
-            ],
-          ),
+      // Header Text
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Book a', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text('ticket for', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text('any event', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          ],
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 
   Widget _buildTabSelector() {
     return Container(

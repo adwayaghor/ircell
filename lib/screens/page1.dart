@@ -126,6 +126,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                           context,
                           'Page1',
                         ),
+                    // onPressed: () => PageNotification.showSameNotification(context);
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -144,7 +145,13 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     },
                     child: CircleAvatar(
                       backgroundColor: AppTheme.accentBlue,
-                      child: Icon(Icons.person_4_outlined, color: Colors.white),
+                      child: Text(
+                        createEmailShortForm(),
+                        style: TextStyle(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -152,6 +159,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
+      
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

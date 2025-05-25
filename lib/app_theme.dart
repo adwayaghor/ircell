@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppTheme {
   // Main colors - now split into light and dark variants
@@ -216,5 +217,37 @@ class AppTheme {
         ),
       ],
     );
+  }
+}
+
+class ThemeController {
+  static final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(
+    ThemeMode.system,
+  );
+
+  static const String _themeKey = 'selected_theme';
+
+  static Future<void> setThemeMode(ThemeMode mode) async {
+    themeModeNotifier.value = mode; // Always assign to trigger rebuild
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeKey, mode.name);
+  }
+
+  static Future<void> loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeStr = prefs.getString(_themeKey);
+
+    switch (themeStr) {
+      case 'light':
+        themeModeNotifier.value = ThemeMode.light;
+        break;
+      case 'dark':
+        themeModeNotifier.value = ThemeMode.dark;
+        break;
+      case 'system':
+      default:
+        themeModeNotifier.value = ThemeMode.system;
+        break;
+    }
   }
 }

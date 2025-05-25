@@ -19,27 +19,30 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedTab = 0;
   Map<String, dynamic>? userDetails; // Make it a class-level variable
 
   @override
-void initState() {
-  super.initState();
-  _loadUserDetails();
-}
+  void initState() {
+    super.initState();
+    _loadUserDetails();
+  }
 
-void _loadUserDetails() async {
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  final collection = await getUserCollectionForStream();
-  if (uid != null && collection != null) {
-    final snapshot = await FirebaseFirestore.instance.collection(collection).doc(uid).get();
-    if (snapshot.exists) {
-      setState(() {
-        userDetails = snapshot.data()!;
-      });
+  void _loadUserDetails() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final collection = await getUserCollectionForStream();
+    if (uid != null && collection != null) {
+      final snapshot =
+          await FirebaseFirestore.instance
+              .collection(collection)
+              .doc(uid)
+              .get();
+      if (snapshot.exists) {
+        setState(() {
+          userDetails = snapshot.data()!;
+        });
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +58,18 @@ void _loadUserDetails() async {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(width: 48),
-            Text(
-              'Profile',
-              style: TextStyle(
-                color:
-                    Theme.of(
-                      context,
-                    ).colorScheme.onSurface, // For primary text color,
-                fontWeight: FontWeight.bold,
-                fontSize: screenSize.width * 0.05,
+            const SizedBox(width: 1),
+            Center(
+              child: Text(
+                'Profile',
+                style: TextStyle(
+                  color:
+                      Theme.of(
+                        context,
+                      ).colorScheme.onSurface, // For primary text color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenSize.width * 0.05,
+                ),
               ),
             ),
             Container(
@@ -83,7 +88,9 @@ void _loadUserDetails() async {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditProfilePage(userDetails: userDetails),
+                        builder:
+                            (context) =>
+                                EditProfilePage(userDetails: userDetails),
                       ),
                     );
                   } else {
@@ -91,7 +98,7 @@ void _loadUserDetails() async {
                       SnackBar(content: Text('User details not found')),
                     );
                   }
-                }
+                },
               ),
             ),
           ],
@@ -113,15 +120,13 @@ void _loadUserDetails() async {
 
                 SizedBox(height: verticalPadding * 1.5),
 
-                // Personal Info & Preferences tabs
-                _buildTabSelector(),
+                // Personal Info content
+                _buildPersonalInfoContent(),
 
                 SizedBox(height: verticalPadding),
 
-                // Main content area based on selected tab
-                _selectedTab == 0
-                    ? _buildPersonalInfoContent()
-                    : _buildPreferencesContent(),
+                // Preferences content
+                _buildPreferencesContent(),
 
                 SizedBox(height: verticalPadding),
 
@@ -136,210 +141,152 @@ void _loadUserDetails() async {
   }
 
   Widget _buildProfileHeader(BuildContext context) {
-  final Size screenSize = MediaQuery.of(context).size;
-  final double profilePicSize = screenSize.width * 0.22;
-  final double fontSize = screenSize.width * 0.045;
-  final double smallFontSize = screenSize.width * 0.035;
-  final double spacing = screenSize.height * 0.01;
+    final Size screenSize = MediaQuery.of(context).size;
+    final double profilePicSize = screenSize.width * 0.22;
+    final double fontSize = screenSize.width * 0.045;
+    final double smallFontSize = screenSize.width * 0.035;
+    final double spacing = screenSize.height * 0.01;
 
-  final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  return FutureBuilder<String?>(
-    future: getUserCollectionForStream(),
-    builder: (context, futureSnapshot) {
-      if (futureSnapshot.connectionState == ConnectionState.waiting) {
-        return buildShimmerRow(profilePicSize, fontSize, smallFontSize, spacing, screenSize);
-      }
+    return FutureBuilder<String?>(
+      future: getUserCollectionForStream(),
+      builder: (context, futureSnapshot) {
+        if (futureSnapshot.connectionState == ConnectionState.waiting) {
+          return buildShimmerRow(
+            profilePicSize,
+            fontSize,
+            smallFontSize,
+            spacing,
+            screenSize,
+          );
+        }
 
-      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
-        return Text("User not found in any collection", style: TextStyle(color: Colors.red));
-      }
+        if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+          return Text(
+            "User not found in any collection",
+            style: TextStyle(color: Colors.red),
+          );
+        }
 
-      final collection = futureSnapshot.data!;
+        final collection = futureSnapshot.data!;
 
-      return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data == null || !snapshot.data!.exists) {
-            return buildShimmerRow(profilePicSize, fontSize, smallFontSize, spacing, screenSize);
-          }
+        return StreamBuilder<DocumentSnapshot>(
+          stream:
+              FirebaseFirestore.instance
+                  .collection(collection)
+                  .doc(uid)
+                  .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData ||
+                snapshot.data == null ||
+                !snapshot.data!.exists) {
+              return buildShimmerRow(
+                profilePicSize,
+                fontSize,
+                smallFontSize,
+                spacing,
+                screenSize,
+              );
+            }
 
-          final userDetails = snapshot.data!.data() as Map<String, dynamic>;
+            final userDetails = snapshot.data!.data() as Map<String, dynamic>;
 
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: profilePicSize,
-                height: profilePicSize,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.2)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    createEmailShortForm(userDetails['email']),
-                    style: TextStyle(
-                      fontSize: profilePicSize * 0.5,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: profilePicSize,
+                  height: profilePicSize,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              SizedBox(width: screenSize.width * 0.04),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '${userDetails['first_name'] ?? ''} ${userDetails['last_name'] ?? ''}',
+                  child: Center(
+                    child: Text(
+                      createEmailShortForm(),
                       style: TextStyle(
-                        fontSize: fontSize,
+                        fontSize: profilePicSize * 0.5,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: spacing / 2),
-                    Text(
-                      userDetails['email'] ?? '',
-                      style: TextStyle(
-                        fontSize: smallFontSize,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: spacing),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(width: screenSize.width * 0.04),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${userDetails['first_name'] ?? ''}${userDetails['last_name'] ?? ''}',
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: spacing / 2),
+                      Text(
+                        userDetails['email'] ?? '',
+                        style: TextStyle(
+                          fontSize: smallFontSize,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: spacing),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget buildShimmerRow(
+    double profilePicSize,
+    double fontSize,
+    double smallFontSize,
+    double spacing,
+    Size screenSize,
+  ) {
+    return Row(
+      children: [
+        buildShimmer(width: profilePicSize, height: profilePicSize),
+        SizedBox(width: screenSize.width * 0.04),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildShimmer(width: 160, height: fontSize + 8),
+              SizedBox(height: spacing / 2),
+              buildShimmer(width: 160, height: smallFontSize + 4),
             ],
-          );
-        },
-      );
-    },
-  );
-}
-
-Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontSize, double spacing, Size screenSize) {
-  return Row(
-    children: [
-      buildShimmer(width: profilePicSize, height: profilePicSize),
-      SizedBox(width: screenSize.width * 0.04),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildShimmer(width: 160, height: fontSize + 8),
-            SizedBox(height: spacing / 2),
-            buildShimmer(width: 160, height: smallFontSize + 4),
-          ],
+          ),
         ),
-      ),
-    ],
-  );
-}
-
+      ],
+    );
+  }
 
   Widget buildShimmer({double width = 150, double height = 16}) {
     return Shimmer.fromColors(
       baseColor: Colors.black12,
       highlightColor: Colors.grey,
       child: Container(width: width, height: height, color: Colors.white),
-    );
-  }
-
-  Widget _buildTabSelector() {
-    final Size screenSize = MediaQuery.of(context).size;
-    final double tabHeight = screenSize.height * 0.05;
-    final double fontSize = screenSize.width * 0.04;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor(context).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-      ),
-      child: Row(
-        children: [
-          // Personal Info Tab
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedTab = 0;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: tabHeight * 0.5),
-                decoration: BoxDecoration(
-                  color:
-                      _selectedTab == 0
-                          ? AppTheme.accentBlue.withOpacity(0.3)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-                ),
-                child: Text(
-                  'Personal Info',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    color:
-                        _selectedTab == 0
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context).textTheme.bodyMedium?.color,
-                    fontWeight:
-                        _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Preferences Tab
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedTab = 1;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: tabHeight * 0.5),
-                decoration: BoxDecoration(
-                  color:
-                      _selectedTab == 1
-                          ? AppTheme.accentBlue.withOpacity(0.3)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-                ),
-                child: Text(
-                  'Preferences',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    color:
-                        _selectedTab == 1
-                            ? Theme.of(context).colorScheme.onSurface
-                            : Theme.of(context).textTheme.bodyMedium?.color,
-                    fontWeight:
-                        _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -394,12 +341,6 @@ Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontS
     }
   }
 
-  String createEmailShortForm(String? email) {
-    if (email == null || email.length < 7) return '-';
-    return '${email[0].toUpperCase()}${email[6].toUpperCase()}';
-  }
-
-
   Widget _buildPersonalInfoContent() {
     final Size screenSize = MediaQuery.of(context).size;
     final double padding = screenSize.width * 0.04;
@@ -407,80 +348,83 @@ Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontS
     final double titleSize = screenSize.width * 0.05;
     final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  return FutureBuilder<String?>(
-    future: getUserCollectionForStream(),
-    builder: (context, futureSnapshot) {
-      if (futureSnapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      }
+    return FutureBuilder<String?>(
+      future: getUserCollectionForStream(),
+      builder: (context, futureSnapshot) {
+        if (futureSnapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
-        return Text("User collection not found.");
-      }
+        if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+          return Text("User collection not found.");
+        }
 
-      final collection = futureSnapshot.data!;
+        final collection = futureSnapshot.data!;
 
-      return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Text("User data not found.");
-          }
+        return StreamBuilder<DocumentSnapshot>(
+          stream:
+              FirebaseFirestore.instance
+                  .collection(collection)
+                  .doc(uid)
+                  .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Text("User data not found.");
+            }
 
-          final data = snapshot.data!.data() as Map<String, dynamic>;
+            final data = snapshot.data!.data() as Map<String, dynamic>;
 
-          return Container(
-            width: double.infinity,
-            decoration: AppTheme.glassDecoration(
-              context,
-            ).copyWith(borderRadius: BorderRadius.circular(screenSize.width * 0.04)),
-            padding: EdgeInsets.all(padding),
-            // Fixed height constraint removed to prevent overflow
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // Take only needed space
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Personal Information',
-                  style: TextStyle(
-                    fontSize: titleSize,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
+            return Container(
+              width: double.infinity,
+              decoration: AppTheme.glassDecoration(context).copyWith(
+                borderRadius: BorderRadius.circular(screenSize.width * 0.04),
+              ),
+              padding: EdgeInsets.all(padding),
+              // Fixed height constraint removed to prevent overflow
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Take only needed space
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ),
 
-                SizedBox(height: spacing),
+                  SizedBox(height: spacing),
 
-                // Personal info fields
-                _buildInfoItem('Email', data['email'] ?? '', Icons.email),
-                SizedBox(height: spacing * 0.8),
-                _buildInfoItem(
-                  'Phone',
-                  '+91 ${data['contact'] ?? ''}',
-                  Icons.phone,
-                ),
-                SizedBox(height: spacing * 0.8),
-                _buildInfoItem(
-                  'Department',
-                  data['department'] ?? '',
-                  Icons.school,
-                ),
-                SizedBox(height: spacing * 0.8),
-                _buildInfoItem(
-                  'Year',
-                  data['year'] ?? '',
-                  Icons.calendar_today,
-                ),
-                SizedBox(height: spacing * 1.5),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
+                  // Personal info fields
+                  _buildInfoItem('Email', data['email'] ?? '', Icons.email),
+                  SizedBox(height: spacing * 0.8),
+                  _buildInfoItem(
+                    'Phone',
+                    '+91 ${data['contact'] ?? ''}',
+                    Icons.phone,
+                  ),
+                  SizedBox(height: spacing * 0.8),
+                  _buildInfoItem(
+                    'Department',
+                    data['department'] ?? '',
+                    Icons.school,
+                  ),
+                  SizedBox(height: spacing * 0.8),
+                  _buildInfoItem(
+                    'Year',
+                    data['year'] ?? '',
+                    Icons.calendar_today,
+                  ),
+                  SizedBox(height: spacing * 1.5),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildInfoItem(String label, String value, IconData icon) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -533,146 +477,221 @@ Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontS
     );
   }
 
-  Widget _buildPreferencesContent() {
+  Widget _buildThemeToggleTile(double fontSize) {
   final Size screenSize = MediaQuery.of(context).size;
-  final double padding = screenSize.width * 0.04;
-  final double spacing = screenSize.height * 0.015;
-  final double titleSize = screenSize.width * 0.05;
-  final double chipSpacing = screenSize.width * 0.02;
-  final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+  final ThemeMode currentMode = ThemeController.themeModeNotifier.value;
 
-  return FutureBuilder(
-    future: getUserCollectionForStream(), // Replace with your actual async function
-    builder: (context, futureSnapshot) {
-      if (futureSnapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      }
+  final double iconContainerSize = screenSize.width * 0.1;
+  final double iconSize = screenSize.width * 0.05;
+  final double titleSize = screenSize.width * 0.04;
+  final double dropdownFontSize = screenSize.width * 0.035;
 
-      if (!futureSnapshot.hasData || futureSnapshot.data == null) {
-        return Text("User collection not found.");
-      }
-
-      final collection = futureSnapshot.data!;
-
-      return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection(collection).doc(uid).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Text("User data not found.");
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      // Icon container
+      Container(
+        width: iconContainerSize,
+        height: iconContainerSize,
+        decoration: BoxDecoration(
+          color: AppTheme.accentBlue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(screenSize.width * 0.02),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.brightness_6,
+            color: AppTheme.accentBlue,
+            size: iconSize,
+          ),
+        ),
+      ),
+      SizedBox(width: screenSize.width * 0.03),
+      // Title text
+      Expanded(
+        child: Text(
+          'Theme',
+          style: TextStyle(
+            fontSize: titleSize,
+            color: AppTheme.textPrimary(context),
+          ),
+        ),
+      ),
+      // Dropdown
+      DropdownButton<ThemeMode>(
+        value: currentMode,
+        underline: const SizedBox(),
+        style: TextStyle(
+          fontSize: dropdownFontSize,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        dropdownColor: Theme.of(context).colorScheme.surface,
+        onChanged: (ThemeMode? newMode) {
+          if (newMode != null) {
+            ThemeController.setThemeMode(newMode);
           }
-
-          final data = snapshot.data!.data() as Map<String, dynamic>;
-
-          List interests = [];
-
-          if (data['interests'] is List) {
-            interests = data['interests'];
-          } else if (data['interests'] is String) {
-            try {
-              interests = (data['interests']);
-            } catch (_) {
-              interests = [];
-            }
-          }
-          return Container(
-            width: double.infinity,
-            decoration: AppTheme.glassDecoration(context).copyWith(
-              borderRadius: BorderRadius.circular(screenSize.width * 0.04),
-            ),
-            padding: EdgeInsets.all(padding),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Preferences',
-                  style: TextStyle(
-                    fontSize: titleSize,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(height: spacing),
-                _buildSettingItem(
-                  'Notifications',
-                  'Receive app notifications',
-                  Icons.notifications_none,
-                  true,
-                ),
-                SizedBox(height: spacing * 0.8),
-                _buildSettingItem(
-                  'Email updates',
-                  'Receive updates via email',
-                  Icons.mark_email_unread_outlined,
-                  true,
-                ),
-                SizedBox(height: spacing),
-                Text(
-                  'Interests',
-                  style: TextStyle(
-                    fontSize: titleSize,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary(context),
-                  ),
-                ),
-                SizedBox(height: spacing * 0.8),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: screenSize.width - (2 * padding),
-                  ),
-                  child: Wrap(
-                    spacing: chipSpacing,
-                    runSpacing: chipSpacing,
-                    children: interests.isEmpty
-                        ? [Text("No interests found")]
-                        : interests.map<Widget>(
-                            (interest) => _buildInterestChip(interest),
-                          ).toList(),
-                  ),
-                ),
-                SizedBox(height: spacing),
-                InkWell(
-                  onTap: () {
-                    // Add interest action
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: screenSize.height * 0.008,
-                      horizontal: screenSize.width * 0.03,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.accentBlue.withOpacity(0.5)),
-                      borderRadius: BorderRadius.circular(screenSize.width * 0.05),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: AppTheme.accentBlue,
-                          size: screenSize.width * 0.04,
-                        ),
-                        SizedBox(width: screenSize.width * 0.01),
-                        Text(
-                          'Add Interest',
-                          style: TextStyle(
-                            fontSize: screenSize.width * 0.035,
-                            color: AppTheme.accentBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
         },
-      );
-    }
+        items: const [
+          DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+          DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+        ],
+      ),
+    ],
   );
 }
 
+  Widget _buildPreferencesContent() {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double padding = screenSize.width * 0.04;
+    final double spacing = screenSize.height * 0.015;
+    final double titleSize = screenSize.width * 0.05;
+    final double chipSpacing = screenSize.width * 0.02;
+    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    return FutureBuilder(
+      future:
+          getUserCollectionForStream(), // Replace with your actual async function
+      builder: (context, futureSnapshot) {
+        if (futureSnapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!futureSnapshot.hasData || futureSnapshot.data == null) {
+          return Text("User collection not found.");
+        }
+
+        final collection = futureSnapshot.data!;
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream:
+              FirebaseFirestore.instance
+                  .collection(collection)
+                  .doc(uid)
+                  .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Text("User data not found.");
+            }
+
+            final data = snapshot.data!.data() as Map<String, dynamic>;
+
+            List interests = [];
+
+            if (data['interests'] is List) {
+              interests = data['interests'];
+            } else if (data['interests'] is String) {
+              try {
+                interests = (data['interests']);
+              } catch (_) {
+                interests = [];
+              }
+            }
+            return Container(
+              width: double.infinity,
+              decoration: AppTheme.glassDecoration(context).copyWith(
+                borderRadius: BorderRadius.circular(screenSize.width * 0.04),
+              ),
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Preferences',
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  _buildThemeToggleTile(titleSize),
+                  SizedBox(height: spacing * 0.8),
+                  _buildSettingItem(
+                    'Notifications',
+                    'Receive app notifications',
+                    Icons.notifications_none,
+                    true,
+                  ),
+                  SizedBox(height: spacing * 0.8),
+                  _buildSettingItem(
+                    'Email updates',
+                    'Receive updates via email',
+                    Icons.mark_email_unread_outlined,
+                    true,
+                  ),
+                  SizedBox(height: spacing),
+                  Text(
+                    'Interests',
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                  SizedBox(height: spacing * 0.8),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: screenSize.width - (2 * padding),
+                    ),
+                    child: Wrap(
+                      spacing: chipSpacing,
+                      runSpacing: chipSpacing,
+                      children:
+                          interests.isEmpty
+                              ? [Text("No interests found")]
+                              : interests
+                                  .map<Widget>(
+                                    (interest) => _buildInterestChip(interest),
+                                  )
+                                  .toList(),
+                    ),
+                  ),
+                  SizedBox(height: spacing),
+                  InkWell(
+                    onTap: () {
+                      // Add interest action
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenSize.height * 0.008,
+                        horizontal: screenSize.width * 0.03,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppTheme.accentBlue.withOpacity(0.5),
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          screenSize.width * 0.05,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            color: AppTheme.accentBlue,
+                            size: screenSize.width * 0.04,
+                          ),
+                          SizedBox(width: screenSize.width * 0.01),
+                          Text(
+                            'Add Interest',
+                            style: TextStyle(
+                              fontSize: screenSize.width * 0.035,
+                              color: AppTheme.accentBlue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildSettingItem(
     String title,
@@ -758,10 +777,17 @@ Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontS
         children: [
           Text(
             interest,
-            style: TextStyle(fontSize: fontSize, color: AppTheme.textPrimary(context)),
+            style: TextStyle(
+              fontSize: fontSize,
+              color: AppTheme.textPrimary(context),
+            ),
           ),
           SizedBox(width: screenSize.width * 0.01),
-          Icon(Icons.close, color: AppTheme.textSecondary(context), size: iconSize),
+          Icon(
+            Icons.close,
+            color: AppTheme.textSecondary(context),
+            size: iconSize,
+          ),
         ],
       ),
     );
@@ -1045,4 +1071,31 @@ Widget buildShimmerRow(double profilePicSize, double fontSize, double smallFontS
       ),
     );
   }
+}
+
+String createEmailShortForm() {
+  final user = Auth().currentUser;
+  final email = user?.email;
+  if (email == null || email.length < 2) return '-';
+
+  // Get first character
+  String firstChar = email[0].toUpperCase();
+
+  // Find second valid letter
+  String secondChar = '';
+  for (int i = 1; i < email.length; i++) {
+    String char = email[i].toUpperCase();
+    // Check if character is a letter (A-Z)
+    if (char.codeUnitAt(0) >= 65 && char.codeUnitAt(0) <= 90) {
+      secondChar = char;
+      break;
+    }
+  }
+
+  // If no second letter found, use first letter twice or add 'X'
+  if (secondChar.isEmpty) {
+    secondChar = 'X';
+  }
+
+  return firstChar + secondChar;
 }
