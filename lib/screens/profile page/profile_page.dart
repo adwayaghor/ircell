@@ -479,7 +479,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildThemeToggleTile(double fontSize) {
   final Size screenSize = MediaQuery.of(context).size;
-  final ThemeMode currentMode = ThemeController.themeModeNotifier.value;
 
   final double iconContainerSize = screenSize.width * 0.1;
   final double iconSize = screenSize.width * 0.05;
