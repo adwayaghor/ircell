@@ -489,7 +489,6 @@ class _ProfilePageState extends State<ProfilePage> {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      // Icon container
       Container(
         width: iconContainerSize,
         height: iconContainerSize,
@@ -506,35 +505,42 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       SizedBox(width: screenSize.width * 0.03),
-      // Title text
       Expanded(
         child: Text(
           'Theme',
           style: TextStyle(
             fontSize: titleSize,
-            color: AppTheme.textPrimary(context),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
-      // Dropdown
-      DropdownButton<ThemeMode>(
-        value: currentMode,
-        underline: const SizedBox(),
-        style: TextStyle(
-          fontSize: dropdownFontSize,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        dropdownColor: Theme.of(context).colorScheme.surface,
-        onChanged: (ThemeMode? newMode) {
-          if (newMode != null) {
-            ThemeController.setThemeMode(newMode);
-          }
+      // Wrap DropdownButton with ValueListenableBuilder to rebuild on theme change
+      ValueListenableBuilder<ThemeMode>(
+        valueListenable: ThemeController.themeModeNotifier,
+        builder: (context, currentMode, _) {
+          return DropdownButton<ThemeMode>(
+            value: currentMode,
+            underline: const SizedBox(),
+            style: TextStyle(
+              fontSize: dropdownFontSize,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            dropdownColor: Theme.of(context).colorScheme.surface,
+            onChanged: (ThemeMode? newMode) async {
+              if (newMode != null) {
+                await ThemeController.setThemeMode(newMode);
+                // Force rebuild of the entire app by updating the notifier
+                ThemeController.themeModeNotifier.value = newMode;
+              }
+            },
+            items: const [
+              DropdownMenuItem(
+                value: ThemeMode.system, child: Text('System')),
+              DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+              DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+            ],
+          );
         },
-        items: const [
-          DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
-          DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-        ],
       ),
     ],
   );

@@ -221,33 +221,36 @@ class AppTheme {
 }
 
 class ThemeController {
-  static final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(
-    ThemeMode.system,
-  );
+  static final ValueNotifier<ThemeMode> themeModeNotifier = 
+      ValueNotifier(ThemeMode.system);
 
   static const String _themeKey = 'selected_theme';
 
   static Future<void> setThemeMode(ThemeMode mode) async {
-    themeModeNotifier.value = mode; // Always assign to trigger rebuild
+    // Update the notifier first for immediate UI change
+    themeModeNotifier.value = mode;
+    // Then save to preferences
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, mode.name);
+    await prefs.setString(_themeKey, mode.toString().split('.').last);
   }
 
   static Future<void> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final themeStr = prefs.getString(_themeKey);
-
+    
+    ThemeMode mode;
     switch (themeStr) {
       case 'light':
-        themeModeNotifier.value = ThemeMode.light;
+        mode = ThemeMode.light;
         break;
       case 'dark':
-        themeModeNotifier.value = ThemeMode.dark;
+        mode = ThemeMode.dark;
         break;
       case 'system':
       default:
-        themeModeNotifier.value = ThemeMode.system;
+        mode = ThemeMode.system;
         break;
     }
+    themeModeNotifier.value = mode;
   }
 }
