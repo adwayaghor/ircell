@@ -80,6 +80,7 @@ class _InternationalStudentsPageState extends State<InternationalStudentsPage> {
                       ).textTheme.displayMedium?.copyWith(
                         color: AppTheme.textPrimary(context),
                         fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
                   ],

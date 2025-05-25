@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userDetails;
 
-  const EditProfilePage({required this.userDetails, Key? key}) : super(key: key);
+  const EditProfilePage({super.key, required this.userDetails});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();

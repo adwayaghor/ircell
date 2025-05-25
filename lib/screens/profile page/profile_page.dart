@@ -6,6 +6,7 @@ import 'package:ircell/backend/fetch_user_data.dart';
 import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
+import 'package:ircell/screens/activities/about_us.dart';
 import 'package:ircell/screens/profile%20page/edit_profile_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -478,72 +479,74 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildThemeToggleTile(double fontSize) {
-  final Size screenSize = MediaQuery.of(context).size;
+    final Size screenSize = MediaQuery.of(context).size;
 
-  final double iconContainerSize = screenSize.width * 0.1;
-  final double iconSize = screenSize.width * 0.05;
-  final double titleSize = screenSize.width * 0.04;
-  final double dropdownFontSize = screenSize.width * 0.035;
+    final double iconContainerSize = screenSize.width * 0.1;
+    final double iconSize = screenSize.width * 0.05;
+    final double titleSize = screenSize.width * 0.04;
+    final double dropdownFontSize = screenSize.width * 0.035;
 
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Container(
-        width: iconContainerSize,
-        height: iconContainerSize,
-        decoration: BoxDecoration(
-          color: AppTheme.accentBlue.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(screenSize.width * 0.02),
-        ),
-        child: Center(
-          child: Icon(
-            Icons.brightness_6,
-            color: AppTheme.accentBlue,
-            size: iconSize,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: iconContainerSize,
+          height: iconContainerSize,
+          decoration: BoxDecoration(
+            color: AppTheme.accentBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(screenSize.width * 0.02),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.brightness_6,
+              color: AppTheme.accentBlue,
+              size: iconSize,
+            ),
           ),
         ),
-      ),
-      SizedBox(width: screenSize.width * 0.03),
-      Expanded(
-        child: Text(
-          'Theme',
-          style: TextStyle(
-            fontSize: titleSize,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-      ),
-      // Wrap DropdownButton with ValueListenableBuilder to rebuild on theme change
-      ValueListenableBuilder<ThemeMode>(
-        valueListenable: ThemeController.themeModeNotifier,
-        builder: (context, currentMode, _) {
-          return DropdownButton<ThemeMode>(
-            value: currentMode,
-            underline: const SizedBox(),
+        SizedBox(width: screenSize.width * 0.03),
+        Expanded(
+          child: Text(
+            'Theme',
             style: TextStyle(
-              fontSize: dropdownFontSize,
+              fontSize: titleSize,
               color: Theme.of(context).colorScheme.onSurface,
             ),
-            dropdownColor: Theme.of(context).colorScheme.surface,
-            onChanged: (ThemeMode? newMode) async {
-              if (newMode != null) {
-                await ThemeController.setThemeMode(newMode);
-                // Force rebuild of the entire app by updating the notifier
-                ThemeController.themeModeNotifier.value = newMode;
-              }
-            },
-            items: const [
-              DropdownMenuItem(
-                value: ThemeMode.system, child: Text('System')),
-              DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-              DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-            ],
-          );
-        },
-      ),
-    ],
-  );
-}
+          ),
+        ),
+        // Wrap DropdownButton with ValueListenableBuilder to rebuild on theme change
+        ValueListenableBuilder<ThemeMode>(
+          valueListenable: ThemeController.themeModeNotifier,
+          builder: (context, currentMode, _) {
+            return DropdownButton<ThemeMode>(
+              value: currentMode,
+              underline: const SizedBox(),
+              style: TextStyle(
+                fontSize: dropdownFontSize,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              dropdownColor: Theme.of(context).colorScheme.surface,
+              onChanged: (ThemeMode? newMode) async {
+                if (newMode != null) {
+                  await ThemeController.setThemeMode(newMode);
+                  // Force rebuild of the entire app by updating the notifier
+                  ThemeController.themeModeNotifier.value = newMode;
+                }
+              },
+              items: const [
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text('System'),
+                ),
+                DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
 
   Widget _buildPreferencesContent() {
     final Size screenSize = MediaQuery.of(context).size;
@@ -890,10 +893,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 SizedBox(height: smallSpacing),
                 InkWell(
                   onTap: () {
-                    final Uri url = Uri.parse(
-                      'https://www.pccoepune.com/ir/ir-coordinators.php',
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AboutUsPage()),
                     );
-                    launchUrl(url);
                   },
                   child: Text(
                     'About Us',

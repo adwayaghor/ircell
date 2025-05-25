@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/providers/event_provider.dart';
 
-class EventDetailScreen extends StatefulWidget {
+class PastEventDetailScreen extends StatefulWidget {
   final Event event;
 
-  const EventDetailScreen({super.key, required this.event});
+  const PastEventDetailScreen({super.key, required this.event});
 
   @override
-  State<EventDetailScreen> createState() => _EventDetailScreenState();
+  State<PastEventDetailScreen> createState() => _PastEventDetailScreenState();
 }
 
-class _EventDetailScreenState extends State<EventDetailScreen> {
+class _PastEventDetailScreenState extends State<PastEventDetailScreen> {
   
   bool isLiked = false;
   int likesCount = 0;
@@ -30,7 +30,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     uid = user?.uid ?? "";
 
     final doc = await FirebaseFirestore.instance
-        .collection('events')
+        .collection('past_events')
         .doc(widget.event.id)
         .get();
 
@@ -45,7 +45,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   }
 
   Future<void> _toggleLike() async {
-    final docRef = FirebaseFirestore.instance.collection('events').doc(widget.event.id);
+    final docRef = FirebaseFirestore.instance.collection('past_events').doc(widget.event.id);
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       final snapshot = await transaction.get(docRef);
       if (!snapshot.exists) return;
@@ -124,75 +124,23 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 14,
+                    Center(
+                      child: Column(
+                        children: [
+                          IconButton(
+                            iconSize: 36,
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_border,
+                              color: isLiked ? Colors.red : Colors.grey,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            onPressed: _toggleLike,
                           ),
-                          onPressed: () => _handleRSVP(context, widget.event),
-                          icon: const Icon(Icons.event_available),
-                          label: const Text("RSVP"),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade200,
-                            foregroundColor: Colors.black87,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                          Text(
+                            '$likesCount Likes',
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Text("Event Activities"),
-                                content: Text(
-                                  "Details of activities for '${widget.event.title}' go here.",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: const Text("Close"),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.local_activity),
-                          label: const Text("Event Activities"),
-                        ),
-                        const SizedBox(height: 24),
-                        Center(
-                          child: Column(
-                            children: [
-                              IconButton(
-                                iconSize: 36,
-                                icon: Icon(
-                                  isLiked ? Icons.favorite : Icons.favorite_border,
-                                  color: isLiked ? Colors.red : Colors.grey,
-                                ),
-                                onPressed: _toggleLike,
-                              ),
-                              Text(
-                                '$likesCount Likes',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 78),
                   ],

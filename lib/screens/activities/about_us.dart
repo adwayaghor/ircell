@@ -8,257 +8,227 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          'About Us',
-          style: TextStyle(color: AppTheme.textPrimary(context)),
-        ),
-        centerTitle: true,
-        backgroundColor:
-            isDark
-                ? AppTheme.primaryDarkBlue.withOpacity(0.9)
-                : AppTheme.accentBlue.withOpacity(0.9),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient:
-              isDark
-                  ? AppTheme.blueGradient(context)
-                  : LinearGradient(
-                    colors: [Colors.blue.shade50, Colors.white],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 100, bottom: 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildSectionTitle('About IR', context),
-                const SizedBox(height: 20),
-                _buildAboutIRSection(context),
-                const SizedBox(height: 40),
-                _buildSectionTitle('IR Coordinators', context),
-                const SizedBox(height: 20),
-                _buildCoordinatorsSection(context),
-                const SizedBox(height: 40),
-                _buildSectionTitle('Partnerships', context),
-                const SizedBox(height: 20),
-                _buildPartnershipsSection(context),
-                const SizedBox(height: 40),
-                _buildSectionTitle('Our Team', context),
-                const SizedBox(height: 20),
-                _buildVolunteersGrid(context),
-                const SizedBox(height: 20),
-                _buildSectionTitle('Our Developer Team', context),
-                const SizedBox(height: 20),
-                _buildDevelopersGrid(context),
-                const SizedBox(height: 20),
-                _buildSectionTitle('Contact Us', context),
-                const SizedBox(height: 20),
-                _buildContactUsSection(context),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            color: AppTheme.textPrimary(context),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDevelopersGrid(BuildContext context) {
-    // final isDark = Theme.of(context).brightness == Brightness.dark;
-    const developers = [
-      {
-        'name': 'Adway Aghor',
-        'role': 'Team Leader',
-        'image': 'assets/dev1.jpg',
-      },
-      {
-        'name': 'Kalyani Patil',
-        'role': 'Flutter Developer',
-        'image': 'assets/dev2.jpg',
-      },
-      {
-        'name': 'Atharv Rao',
-        'role': 'Backend & Flutter Developer',
-        'image': 'assets/dev3.jpg',
-      },
-      {
-        'name': 'Tanushka Patil',
-        'role': 'Flutter Developer',
-        'image': 'assets/dev4.jpg',
-      },
-      {
-        'name': 'Aditya Bhosale',
-        'role': 'ML & Data Science',
-        'image': 'assets/dev4.jpg',
-      },
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: developers.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 3 / 4,
-        ),
-        itemBuilder: (context, index) {
-          final dev = developers[index];
-          return _buildGlassCard(
-            context: context,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(dev['image']!),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    dev['name']!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppTheme.textPrimary(context),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    dev['role']!,
-                    style: TextStyle(
-                      color: AppTheme.textSecondary(context),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              decoration: AppTheme.glassDecoration(context),
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: AppTheme.textPrimary(context),
+                ),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildVolunteersGrid(BuildContext context) {
-    // final isDark = Theme.of(context).brightness == Brightness.dark;
-    const developers = [
-      {
-        'name': 'Volunteer 1',
-        'role': 'Team Leader',
-        'image': 'assets/dev1.jpg',
-      },
-      {
-        'name': 'Volunteer 2',
-        'role': 'Event Management',
-        'image': 'assets/dev2.jpg',
-      },
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: developers.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 3 / 4,
-        ),
-        itemBuilder: (context, index) {
-          final dev = developers[index];
-          return _buildGlassCard(
-            context: context,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(dev['image']!),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    dev['name']!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppTheme.textPrimary(context),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    dev['role']!,
-                    style: TextStyle(
-                      color: AppTheme.textSecondary(context),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+            Text(
+              'About Us',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppTheme.textPrimary(context),
+                fontWeight: FontWeight.bold,
               ),
             ),
-          );
-        },
+            const SizedBox(width: 48), // Balance the row
+          ],
+        ),
       ),
-    );
-  }
-
-  Widget _buildAboutIRSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: _buildGlassCard(
-        context: context,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'At the International Relations Cell, we are engaged in increasing global outreach by promoting the academic and research exchange for students and faculty of PCCOE and its international partners. The International Relations Office maintains and sustains Memorandums of Understanding (MoUs) with various international universities and organisations which are active in strengthening the global academic and research exchanges.',
-            style: TextStyle(
-              fontSize: 16,
-              height: 1.5,
-              color: AppTheme.textPrimary(context),
-            ),
+      backgroundColor: AppTheme.backgroundColor(context),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header section with IR image
+              _buildHeaderSection(context),
+              
+              const SizedBox(height: 24),
+              
+              // About IR Section
+              _buildSectionCard(
+                context: context,
+                title: 'About IR',
+                child: _buildAboutIRContent(context),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // IR Coordinators Section
+              _buildSectionCard(
+                context: context,
+                title: 'IR Coordinators',
+                child: _buildCoordinatorsContent(context),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Partnerships Section
+              _buildSectionCard(
+                context: context,
+                title: 'Partnerships',
+                child: _buildPartnershipsContent(context),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Our Team Section
+              _buildSectionCard(
+                context: context,
+                title: 'Our Team',
+                child: _buildTeamGrid(context, isVolunteers: true),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Developer Team Section
+              _buildSectionCard(
+                context: context,
+                title: 'Our Developer Team',
+                child: _buildTeamGrid(context, isVolunteers: false),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Contact Us Section
+              _buildSectionCard(
+                context: context,
+                title: 'Contact Us',
+                child: _buildContactUsContent(context),
+              ),
+              
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCoordinatorsSection(BuildContext context) {
+  Widget _buildHeaderSection(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double imageSize = screenSize.width * 0.3;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // IR Logo Image with glass decoration
+        Container(
+          width: imageSize,
+          height: imageSize,
+          decoration: AppTheme.glassDecoration(context).copyWith(
+            borderRadius: BorderRadius.circular(imageSize / 2),
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              'assets/images/ircircle.png',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentBlue.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.business,
+                    size: imageSize * 0.4,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 16),
+
+        // Header Text
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'International',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              Text(
+                'Relations',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              Text(
+                'Cell',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.accentBlue,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionCard({
+    required BuildContext context,
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      decoration: AppTheme.glassDecoration(context),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section Title with underline
+          Container(
+            padding: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: AppTheme.accentBlue.withOpacity(0.3),
+                  width: 2,
+                ),
+              ),
+            ),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary(context),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutIRContent(BuildContext context) {
+    return Text(
+      'At the International Relations Cell, we are engaged in increasing global outreach by promoting the academic and research exchange for students and faculty of PCCOE and its international partners. The International Relations Office maintains and sustains Memorandums of Understanding (MoUs) with various international universities and organisations which are active in strengthening the global academic and research exchanges.',
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        height: 1.6,
+        color: AppTheme.textPrimary(context),
+      ),
+    );
+  }
+
+  Widget _buildCoordinatorsContent(BuildContext context) {
     const coordinators = [
       {
         'name': 'Dr. Roshani Raut',
@@ -266,193 +236,324 @@ class AboutUsPage extends StatelessWidget {
         'department': 'IR',
         'image': 'assets/coordinator1.jpg',
       },
-      // {
-      //   'name': 'Emily Wilson',
-      //   'position': 'IR Communications Manager',
-      //   'department': 'Marketing Department',
-      //   'image': 'assets/coordinator2.jpg',
-      // },
     ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children:
-            coordinators.map((coordinator) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: _buildGlassCard(
-                  context: context,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundImage: AssetImage(coordinator['image']!),
-                          backgroundColor: Colors.transparent,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                coordinator['name']!,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: AppTheme.textPrimary(context),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                coordinator['position']!,
-                                style: TextStyle(
-                                  color: AppTheme.textSecondary(context),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                coordinator['department']!,
-                                style: TextStyle(
-                                  color: AppTheme.textSecondary(context),
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+    return Column(
+      children: coordinators.map((coordinator) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppTheme.cardColor(context).withOpacity(0.3),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.accentBlue.withOpacity(0.2),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Profile Image
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.accentBlue.withOpacity(0.3),
+                    width: 2,
                   ),
                 ),
-              );
-            }).toList(),
-      ),
+                child: ClipOval(
+                  child: Image.asset(
+                    coordinator['image']!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppTheme.accentBlue.withOpacity(0.2),
+                        child: Icon(
+                          Icons.person,
+                          color: AppTheme.textPrimary(context),
+                          size: 30,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      coordinator['name']!,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary(context),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      coordinator['position']!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ),
+                    Text(
+                      coordinator['department']!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _buildPartnershipsSection(BuildContext context) {
+  Widget _buildPartnershipsContent(BuildContext context) {
     const partners = [
       'RWTH Aachen University',
       'PETRONAS University',
       'LSI R&D lab, Japan',
     ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: _buildGlassCard(
-        context: context,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Our Valued Partners',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: AppTheme.textPrimary(context),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Column(
-                children:
-                    partners.map((partner) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.business,
-                              size: 20,
-                              color: AppTheme.textSecondary(context),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              partner,
-                              style: TextStyle(
-                                color: AppTheme.textPrimary(context),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Our Valued Partners',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.textPrimary(context),
           ),
         ),
-      ),
+        const SizedBox(height: 12),
+        ...partners.map((partner) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor(context).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: AppTheme.accentBlue.withOpacity(0.2),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.business,
+                  size: 20,
+                  color: AppTheme.accentBlue,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    partner,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
     );
   }
 
-  Widget _buildContactUsSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: _buildGlassCard(
-        context: context,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text(
-                'Get in Touch',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: AppTheme.textPrimary(context),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _buildContactItem(
-                Icons.email,
-                'Email',
-                'contact@irplatform.com',
-                context,
-              ),
-              const SizedBox(height: 12),
-              _buildContactItem(
-                Icons.phone,
-                'Phone',
-                '+1 (555) 123-4567',
-                context,
-              ),
-              const SizedBox(height: 12),
-              _buildContactItem(
-                Icons.location_on,
-                'Address',
-                '123 Financial District,\nNew York, NY 10005',
-                context,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Follow Us',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: AppTheme.textPrimary(context),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialIcon(Icons.facebook, context),
-                  const SizedBox(width: 16),
-                  _buildSocialIcon(Icons.camera_alt, context),
-                  const SizedBox(width: 16),
-                  _buildSocialIcon(Icons.link, context),
-                ],
+  Widget _buildTeamGrid(BuildContext context, {required bool isVolunteers}) {
+    final teamMembers = isVolunteers
+        ? [
+            {
+              'name': 'Volunteer 1',
+              'role': 'Team Leader',
+              'image': 'assets/dev1.jpg',
+            },
+            {
+              'name': 'Volunteer 2',
+              'role': 'Event Management',
+              'image': 'assets/dev2.jpg',
+            },
+          ]
+        : [
+            {
+              'name': 'Adway Aghor',
+              'role': 'Team Leader',
+              'image': 'assets/dev1.jpg',
+            },
+            {
+              'name': 'Kalyani Patil',
+              'role': 'Flutter Developer',
+              'image': 'assets/dev2.jpg',
+            },
+            {
+              'name': 'Atharv Rao',
+              'role': 'Backend & Flutter Developer',
+              'image': 'assets/dev3.jpg',
+            },
+            {
+              'name': 'Tanushka Patil',
+              'role': 'Flutter Developer',
+              'image': 'assets/dev4.jpg',
+            },
+            {
+              'name': 'Aditya Bhosale',
+              'role': 'ML & Data Science',
+              'image': 'assets/dev4.jpg',
+            },
+          ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: teamMembers.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.85,
+      ),
+      itemBuilder: (context, index) {
+        final member = teamMembers[index];
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppTheme.cardColor(context).withOpacity(0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppTheme.accentBlue.withOpacity(0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Profile Image
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.accentBlue.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    member['image']!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppTheme.accentBlue.withOpacity(0.2),
+                        child: Icon(
+                          Icons.person,
+                          color: AppTheme.textPrimary(context),
+                          size: 30,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                member['name']!,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary(context),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                member['role']!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.textSecondary(context),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildContactUsContent(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'Get in Touch',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.textPrimary(context),
+          ),
         ),
-      ),
+        const SizedBox(height: 16),
+        
+        // Contact Information
+        _buildContactItem(
+          Icons.email,
+          'Email',
+          'contact@irplatform.com',
+          context,
+        ),
+        const SizedBox(height: 12),
+        _buildContactItem(
+          Icons.phone,
+          'Phone',
+          '+1 (555) 123-4567',
+          context,
+        ),
+        const SizedBox(height: 12),
+        _buildContactItem(
+          Icons.location_on,
+          'Address',
+          '123 Financial District,\nNew York, NY 10005',
+          context,
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Social Media
+        Text(
+          'Follow Us',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.textPrimary(context),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildSocialIcon(Icons.facebook, context),
+            const SizedBox(width: 16),
+            _buildSocialIcon(Icons.camera_alt, context),
+            const SizedBox(width: 16),
+            _buildSocialIcon(Icons.link, context),
+          ],
+        ),
+      ],
     );
   }
 
@@ -462,32 +563,48 @@ class AboutUsPage extends StatelessWidget {
     String value,
     BuildContext context,
   ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: AppTheme.textSecondary(context)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary(context),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: TextStyle(color: AppTheme.textSecondary(context)),
-                softWrap: true,
-              ),
-            ],
-          ),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor(context).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: AppTheme.accentBlue.withOpacity(0.2),
         ),
-      ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: AppTheme.accentBlue,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  softWrap: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -498,41 +615,14 @@ class AboutUsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardColor(context).withOpacity(0.3),
         shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: AppTheme.textPrimary(context)),
-    );
-  }
-
-  Widget _buildGlassCard({
-    required BuildContext context,
-    required Widget child,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color:
-              isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.7),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color:
-                isDark
-                    ? Colors.white.withOpacity(0.2)
-                    : Colors.blue.withOpacity(0.2),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.1 : 0.05),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
+        border: Border.all(
+          color: AppTheme.accentBlue.withOpacity(0.3),
         ),
-        child: child,
+      ),
+      child: Icon(
+        icon,
+        color: AppTheme.accentBlue,
+        size: 20,
       ),
     );
   }

@@ -67,7 +67,6 @@ class _Page3State extends State<Page3> {
         eventTitles = attending;
       });
     } catch (e) {
-      print('Error loading events: $e');
       // If offline or error, load from cache
       final cached = await EventCache.getCachedEvents();
       setState(() {
@@ -89,62 +88,65 @@ class _Page3State extends State<Page3> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              decoration: AppTheme.glassDecoration(context),
-              child: IconButton(
-                icon: Icon(
-                  Icons.info_outline,
-                  color: AppTheme.textPrimary(context),
-                ),
-                onPressed: () => PageInfo.showInfoDialog(context, 'Page3'),
-              ),
-            ),
-            Row(
-              children: [
-                Container(
-                  decoration: AppTheme.glassDecoration(context),
-                  child: IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed:
-                        () => PageNotification.showNotificationDialog(
-                          context,
-                          'Page3',
-                        ),
-                    // onPressed: () => PageNotification.showSameNotification(context);
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0), // Reduced padding
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                decoration: AppTheme.glassDecoration(context),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: AppTheme.textPrimary(context),
                   ),
+                  onPressed: () => PageInfo.showInfoDialog(context, 'Page3'),
                 ),
-                const SizedBox(width: 8),
-                Material(
-                  color: Colors.transparent,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfilePage(),
-                        ),
-                      );
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: AppTheme.accentBlue,
-                      child: Text(
-                        createEmailShortForm(),
-                        style: TextStyle(
-                          color: AppTheme.textPrimary(context),
-                          fontWeight: FontWeight.bold,
+              ),
+              Row(
+                children: [
+                  Container(
+                    decoration: AppTheme.glassDecoration(context),
+                    child: IconButton(
+                      icon: const Icon(Icons.notifications),
+                      onPressed:
+                          () => PageNotification.showNotificationDialog(
+                            context,
+                            'Page3',
+                          ),
+                      // onPressed: () => PageNotification.showSameNotification(context);
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Material(
+                    color: Colors.transparent,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: AppTheme.accentBlue,
+                        child: Text(
+                          createEmailShortForm(),
+                          style: TextStyle(
+                            color: AppTheme.textPrimary(context),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       backgroundColor: AppTheme.backgroundColor(context),
@@ -153,7 +155,8 @@ class _Page3State extends State<Page3> {
           // Using SingleChildScrollView to prevent overflow
           SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.all(16.0),
+              width: double.infinity, // Ensure full width
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0), // Reduced horizontal padding
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -168,7 +171,7 @@ class _Page3State extends State<Page3> {
                   const SizedBox(height: 16),
 
                   // Main content area based on selected tab - Fixed height container
-                  Container(
+                  SizedBox(
                     height: 180, // Consistent with _buildCurrentlyBookedContent
                     child:
                         _selectedTab == 0
@@ -180,63 +183,79 @@ class _Page3State extends State<Page3> {
                   _buildInternshipsSection(),
 
                   // Add bottom padding to prevent content from being hidden by ChatbotIcon
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 120), // Increased padding to account for both floating buttons
                 ],
               ),
             ),
           ),
-
+        ],
+      ),
+      // Move floating buttons outside of body to make them always visible
+      floatingActionButton: Stack(
+        children: [
           // Chatbot icon positioned in the bottom right corner
-          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
-          Positioned(bottom: 90, right: 20, child: const ScanIcon()),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ChatbotIcon(),
+          ),
+          Positioned(
+            bottom: 90,
+            right: 20,
+            child: const ScanIcon(),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double imageSize = screenSize.width * 0.35; // Slightly reduced to give more space to text
+
+    return Container(
+      width: double.infinity, // Ensure full width
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // IR Logo Image with glass decoration
+          Container(
+            width: imageSize,
+            height: imageSize,
+            decoration: AppTheme.glassDecoration(context).copyWith(
+              borderRadius: BorderRadius.circular(imageSize / 2),
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/ircircle.png',
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          // Header Text
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Book a', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+                Text('ticket for', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+                Text('any event', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
-  final Size screenSize = MediaQuery.of(context).size;
-  final double imageSize = screenSize.width * 0.4; // Responsive size
-
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      // IR Logo Image with glass decoration
-      Container(
-        width: imageSize,
-        height: imageSize,
-        decoration: AppTheme.glassDecoration(context).copyWith(
-          borderRadius: BorderRadius.circular(imageSize / 2),
-        ),
-        child: ClipOval(
-          child: Image.asset(
-            'assets/images/ircircle.png',
-            fit: BoxFit.fill,
-          ),
-        ),
-      ),
-
-      const SizedBox(width: 16),
-
-      // Header Text
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Book a', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-            Text('ticket for', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-            Text('any event', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-
   Widget _buildTabSelector() {
     return Container(
+      width: double.infinity, // Ensure full width
       decoration: BoxDecoration(
         color: AppTheme.cardColor(context).withOpacity(0.5),
         borderRadius: BorderRadius.circular(12),
@@ -316,13 +335,12 @@ class _Page3State extends State<Page3> {
   Widget _buildCurrentlyBookedContent() {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8), // Reduced padding
       itemCount: eventTitles.isEmpty ? 1 : eventTitles.length,
       itemBuilder: (context, index) {
         if (eventTitles.isEmpty) {
           return Container(
-            width:
-                MediaQuery.of(context).size.width - 64, // Account for padding
+            width: MediaQuery.of(context).size.width - 32, // Adjusted for reduced padding
             decoration: AppTheme.glassDecoration(context).copyWith(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -352,8 +370,8 @@ class _Page3State extends State<Page3> {
             }
           },
           child: Container(
-            width: 260,
-            margin: const EdgeInsets.only(right: 16),
+            width: 280, // Increased width to use more screen space
+            margin: const EdgeInsets.only(right: 12), // Reduced margin
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
@@ -477,6 +495,7 @@ class _Page3State extends State<Page3> {
             children: [
               // Header
               Container(
+                width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   border: Border(
@@ -493,28 +512,27 @@ class _Page3State extends State<Page3> {
               ),
 
               SizedBox(
-  height: 240, // Adjusted height to better fit the new card layout
-  child: ListView.builder(
-    scrollDirection: Axis.horizontal,
-    padding: const EdgeInsets.symmetric(
-      vertical: 12,
-      horizontal: 8,
-    ),
-    itemCount: userInternships.length,
-    itemBuilder: (context, index) {
-      final internship = userInternships[index];
-      final screenSize = MediaQuery.of(context).size;
-      return Padding(
-        padding: const EdgeInsets.only(right: 12),
-        child: SizedBox(
-          width: 300, // Ensure fixed width to keep cards uniform
-          child: buildInternshipCard(internship, screenSize, context),
-        ),
-      );
-    },
-  ),
-),
-
+                height: 240, // Adjusted height to better fit the new card layout
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 4, // Reduced padding
+                  ),
+                  itemCount: userInternships.length,
+                  itemBuilder: (context, index) {
+                    final internship = userInternships[index];
+                    final screenSize = MediaQuery.of(context).size;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8), // Reduced padding
+                      child: SizedBox(
+                        width: 320, // Increased width to use more screen space
+                        child: buildInternshipCard(internship, screenSize, context),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );
@@ -573,6 +591,7 @@ class _Page3State extends State<Page3> {
         children: [
           // Internships header
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               border: Border(

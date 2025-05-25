@@ -9,6 +9,7 @@ class Event {
   final String speaker;
   final String description;
   final String imageURL;
+  final int likes;
   final List<String> attendanceList;
 
   Event({
@@ -20,6 +21,7 @@ class Event {
     required this.speaker,
     required this.description,
     required this.imageURL,
+    required this.likes,
     required this.attendanceList,
   });
 
@@ -33,6 +35,7 @@ class Event {
       speaker: data['speaker']?.toString() ?? '',
       description: data['description']?.toString() ?? '',
       imageURL: data['imageURL']?.toString() ?? '',
+      likes: data['likes'],
       attendanceList: (data['attendanceList'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??

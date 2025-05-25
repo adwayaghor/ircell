@@ -6,7 +6,9 @@ import 'package:ircell/providers/event_provider.dart';
 import 'package:ircell/providers/internship_provider.dart';
 import 'package:ircell/screens/chatbot/floating_buttons.dart';
 import 'package:ircell/screens/events/event_details.dart';
+import 'package:ircell/screens/events/past_event_details.dart';
 import 'package:ircell/screens/internships/outbound_detail_page.dart';
+import 'package:ircell/screens/liked_events.dart';
 import 'package:ircell/screens/profile%20page/profile_page.dart';
 import 'package:ircell/screens/info.dart';
 import 'package:ircell/screens/notification.dart';
@@ -507,30 +509,35 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Widget _buildLikedEvents() {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(
+  //           Icons.favorite_border,
+  //           color: AppTheme.textSecondary(context),
+  //           size: 64,
+  //         ),
+  //         const SizedBox(height: 16),
+  //         Text(
+  //           'No liked events yet',
+  //           style: Theme.of(context).textTheme.titleLarge,
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Text(
+  //           'Your liked events will appear here',
+  //           style: Theme.of(context).textTheme.bodyMedium,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildLikedEvents() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.favorite_border,
-            color: AppTheme.textSecondary(context),
-            size: 64,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No liked events yet',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your liked events will appear here',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-    );
-  }
+  return const LikedEventsPage();
+}
+
 
   
 
@@ -645,7 +652,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => EventDetailScreen(event: event),
+                                  (context) => PastEventDetailScreen(event: event),
                             ),
                           );
                         },
