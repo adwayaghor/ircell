@@ -3,7 +3,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 
 Future<void> sendEmailsToAllUsers(Map<String, dynamic> eventDetails) async {
-  final smtpServer = gmail('your_email@gmail.com', 'your_app_password');
+  final smtpServer = gmail('AtharvRaob@gmail.com', 'fhufwtrblxnryrra');
   List<String> allEmails = [];
 
   try {
@@ -18,7 +18,7 @@ Future<void> sendEmailsToAllUsers(Map<String, dynamic> eventDetails) async {
     allEmails = allEmails.toSet().toList(); // Remove duplicates
 
     final message = Message()
-      ..from = Address('your_email@gmail.com', 'PCCOE Events')
+      ..from = Address('AtharvRaob@gmail.com', 'PCCOE Events')
       ..recipients.addAll(allEmails)
       ..subject = '📢 New Event: ${eventDetails['title']}'
       ..html = '''
