@@ -89,7 +89,9 @@ class _Page3State extends State<Page3> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0), // Reduced padding
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+          ), // Reduced padding
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -156,7 +158,10 @@ class _Page3State extends State<Page3> {
           SingleChildScrollView(
             child: Container(
               width: double.infinity, // Ensure full width
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0), // Reduced horizontal padding
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 16.0,
+              ), // Reduced horizontal padding
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -183,7 +188,9 @@ class _Page3State extends State<Page3> {
                   _buildInternshipsSection(),
 
                   // Add bottom padding to prevent content from being hidden by ChatbotIcon
-                  const SizedBox(height: 120), // Increased padding to account for both floating buttons
+                  const SizedBox(
+                    height: 120,
+                  ), // Increased padding to account for both floating buttons
                 ],
               ),
             ),
@@ -194,16 +201,8 @@ class _Page3State extends State<Page3> {
       floatingActionButton: Stack(
         children: [
           // Chatbot icon positioned in the bottom right corner
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: ChatbotIcon(),
-          ),
-          Positioned(
-            bottom: 90,
-            right: 20,
-            child: const ScanIcon(),
-          ),
+          Positioned(bottom: 20, right: 20, child: ChatbotIcon()),
+          Positioned(bottom: 90, right: 20, child: const ScanIcon()),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -212,7 +211,8 @@ class _Page3State extends State<Page3> {
 
   Widget _buildHeaderSection() {
     final Size screenSize = MediaQuery.of(context).size;
-    final double imageSize = screenSize.width * 0.35; // Slightly reduced to give more space to text
+    final double imageSize =
+        screenSize.width * 0.35; // Slightly reduced to give more space to text
 
     return Container(
       width: double.infinity, // Ensure full width
@@ -223,9 +223,9 @@ class _Page3State extends State<Page3> {
           Container(
             width: imageSize,
             height: imageSize,
-            decoration: AppTheme.glassDecoration(context).copyWith(
-              borderRadius: BorderRadius.circular(imageSize / 2),
-            ),
+            decoration: AppTheme.glassDecoration(
+              context,
+            ).copyWith(borderRadius: BorderRadius.circular(imageSize / 2)),
             child: ClipOval(
               child: Image.asset(
                 'assets/images/ircircle.png',
@@ -242,9 +242,24 @@ class _Page3State extends State<Page3> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Book a', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-                Text('ticket for', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-                Text('any event', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  'Book a',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'ticket for',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'any event',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
               ],
             ),
           ),
@@ -335,21 +350,37 @@ class _Page3State extends State<Page3> {
   Widget _buildCurrentlyBookedContent() {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 8), // Reduced padding
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: eventTitles.isEmpty ? 1 : eventTitles.length,
       itemBuilder: (context, index) {
         if (eventTitles.isEmpty) {
-          return Container(
-            width: MediaQuery.of(context).size.width - 32, // Adjusted for reduced padding
-            decoration: AppTheme.glassDecoration(context).copyWith(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
-                'No booked events yet',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary(context)),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              decoration: AppTheme.glassDecoration(
+                context,
+              ).copyWith(borderRadius: BorderRadius.circular(16)),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.event_busy,
+                      size: 40,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'You haven’t booked any events yet',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -370,8 +401,8 @@ class _Page3State extends State<Page3> {
             }
           },
           child: Container(
-            width: 280, // Increased width to use more screen space
-            margin: const EdgeInsets.only(right: 12), // Reduced margin
+            width: MediaQuery.of(context).size.width - 32,
+            margin: const EdgeInsets.only(right: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
@@ -388,7 +419,6 @@ class _Page3State extends State<Page3> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ticket Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -399,14 +429,15 @@ class _Page3State extends State<Page3> {
                         color: AppTheme.accentBlue,
                       ),
                     ),
-                    Icon(Icons.qr_code_2_rounded, color: AppTheme.textPrimary(context)),
+                    Icon(
+                      Icons.qr_code_2_rounded,
+                      color: AppTheme.textPrimary(context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
-
-                // Event Title - Fixed height with ellipsis to prevent overflow
                 Container(
-                  height: 50, // Fixed height for title area
+                  height: 50,
                   child: Text(
                     event,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -417,10 +448,7 @@ class _Page3State extends State<Page3> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-
                 const Spacer(),
-
-                // Footer with placeholder date or status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -447,9 +475,9 @@ class _Page3State extends State<Page3> {
   Widget _buildPastTicketsContent() {
     return Container(
       width: double.infinity,
-      decoration: AppTheme.glassDecoration(context).copyWith(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: AppTheme.glassDecoration(
+        context,
+      ).copyWith(borderRadius: BorderRadius.circular(16)),
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -458,9 +486,9 @@ class _Page3State extends State<Page3> {
           const SizedBox(height: 16),
           Text(
             'Past event tickets will appear here',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondary(context)),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppTheme.textSecondary(context),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -512,7 +540,8 @@ class _Page3State extends State<Page3> {
               ),
 
               SizedBox(
-                height: 240, // Adjusted height to better fit the new card layout
+                height:
+                    240, // Adjusted height to better fit the new card layout
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(
@@ -524,10 +553,16 @@ class _Page3State extends State<Page3> {
                     final internship = userInternships[index];
                     final screenSize = MediaQuery.of(context).size;
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8), // Reduced padding
+                      padding: const EdgeInsets.only(
+                        right: 8,
+                      ), // Reduced padding
                       child: SizedBox(
                         width: 320, // Increased width to use more screen space
-                        child: buildInternshipCard(internship, screenSize, context),
+                        child: buildInternshipCard(
+                          internship,
+                          screenSize,
+                          context,
+                        ),
                       ),
                     );
                   },
@@ -612,15 +647,15 @@ class _Page3State extends State<Page3> {
             height: 80,
             width: double.infinity,
             margin: const EdgeInsets.only(top: 12),
-            decoration: AppTheme.glassDecoration(context).copyWith(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            decoration: AppTheme.glassDecoration(
+              context,
+            ).copyWith(borderRadius: BorderRadius.circular(12)),
             child: Center(
               child: Text(
                 'Internship opportunities will appear here',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary(context)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textSecondary(context),
+                ),
               ),
             ),
           ),
