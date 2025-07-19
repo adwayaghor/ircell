@@ -161,7 +161,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-      
+
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -186,7 +186,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           ).withOpacity(0.7), // Changed
           indicatorColor:
               AppTheme.accentBlue, // Changed from white to accent color
-          indicatorWeight: 4,          
+          indicatorWeight: 4,
         ),
       ),
       body: Stack(
@@ -211,7 +211,31 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No events available.'));
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.event_busy, size: 48, color: AppTheme.accentBlue),
+                const SizedBox(height: 12),
+                Text(
+                  'No featured events yet',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Stay tuned! New events will appear here.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         final events = snapshot.data!;
@@ -310,12 +334,42 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             } else if (snapshot.hasError) {
               return SizedBox(
                 height: cardHeight,
-                child: Center(child: Text('Error loading internships: ${snapshot.error}')),
+                child: Center(
+                  child: Text('Error loading internships: ${snapshot.error}'),
+                ),
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return SizedBox(
                 height: cardHeight,
-                child: const Center(child: Text('No internships available.')),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.work_off,
+                        size: 40,
+                        color: AppTheme.accentBlue,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'No internships available',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Check back later for new opportunities!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             }
 
@@ -328,7 +382,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.only(right: screenSize.width * 0.04),
-                    child: buildInternshipCard(internships[index], screenSize, context),
+                    child: buildInternshipCard(
+                      internships[index],
+                      screenSize,
+                      context,
+                    ),
                   );
                 },
               ),
@@ -367,12 +425,42 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
             } else if (snapshot.hasError) {
               return SizedBox(
                 height: cardHeight,
-                child: Center(child: Text('Error loading past events: ${snapshot.error}')),
+                child: Center(
+                  child: Text('Error loading past events: ${snapshot.error}'),
+                ),
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return SizedBox(
                 height: cardHeight,
-                child: const Center(child: Text('No past events available.')),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.history_toggle_off,
+                        size: 40,
+                        color: AppTheme.accentBlue,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'No past events yet',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Past events will appear here once completed.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             }
 
@@ -448,7 +536,6 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -509,38 +596,9 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
     );
   }
 
-  // Widget _buildLikedEvents() {
-  //   return Center(
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         Icon(
-  //           Icons.favorite_border,
-  //           color: AppTheme.textSecondary(context),
-  //           size: 64,
-  //         ),
-  //         const SizedBox(height: 16),
-  //         Text(
-  //           'No liked events yet',
-  //           style: Theme.of(context).textTheme.titleLarge,
-  //         ),
-  //         const SizedBox(height: 8),
-  //         Text(
-  //           'Your liked events will appear here',
-  //           style: Theme.of(context).textTheme.bodyMedium,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildLikedEvents() {
-  return const LikedEventsPage();
-}
-
-
-  
-
+    return const LikedEventsPage();
+  }
 
   Widget _buildPastEventCard(Event event, Size screenSize) {
     final screenWidth = screenSize.width;
@@ -652,7 +710,8 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => PastEventDetailScreen(event: event),
+                                  (context) =>
+                                      PastEventDetailScreen(event: event),
                             ),
                           );
                         },
@@ -683,7 +742,11 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   }
 }
 
-Widget buildInternshipCard(OutboundInternship internship, Size screenSize, BuildContext context) {
+Widget buildInternshipCard(
+  OutboundInternship internship,
+  Size screenSize,
+  BuildContext context,
+) {
   final screenWidth = screenSize.width;
   final screenHeight = screenSize.height;
 
@@ -735,7 +798,9 @@ Widget buildInternshipCard(OutboundInternship internship, Size screenSize, Build
                     children: [
                       Text(
                         internship.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: screenWidth * 0.04,
                         ),
@@ -759,9 +824,9 @@ Widget buildInternshipCard(OutboundInternship internship, Size screenSize, Build
             SizedBox(height: screenHeight * 0.015),
             Text(
               'Topic: ${internship.topic}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: screenWidth * 0.032,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: screenWidth * 0.032),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -783,7 +848,9 @@ Widget buildInternshipCard(OutboundInternship internship, Size screenSize, Build
                           Expanded(
                             child: Text(
                               internship.duration,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
                                 color: AppTheme.textSecondary(context),
                                 fontSize: screenWidth * 0.028,
                               ),
@@ -803,7 +870,9 @@ Widget buildInternshipCard(OutboundInternship internship, Size screenSize, Build
                           Expanded(
                             child: Text(
                               internship.cost,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
                                 color: AppTheme.textSecondary(context),
                                 fontSize: screenWidth * 0.028,
                               ),
@@ -814,7 +883,6 @@ Widget buildInternshipCard(OutboundInternship internship, Size screenSize, Build
                     ],
                   ),
                 ),
-                
               ],
             ),
           ],

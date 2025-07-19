@@ -616,14 +616,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(height: spacing * 0.8),
                   _buildSettingItem(
                     'Notifications',
-                    'Receive app notifications',
+                    'Receive app notifications for latest updates soon!',
                     Icons.notifications_none,
                     true,
                   ),
                   SizedBox(height: spacing * 0.8),
                   _buildSettingItem(
                     'Email updates',
-                    'Receive updates via email',
+                    'Receive latest updates via email shortly!',
                     Icons.mark_email_unread_outlined,
                     true,
                   ),
@@ -856,18 +856,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   buttonTextSize,
                 ),
               ),
-              SizedBox(width: buttonSpacing),
-              Expanded(
-                child: _buildAccountActionItem(
-                  'Delete Account',
-                  Icons.delete_outline,
-                  Colors.red.withOpacity(0.1),
-                  Colors.red,
-                  actionButtonHeight,
-                  iconSize,
-                  buttonTextSize,
-                ),
-              ),
+              // SizedBox(width: buttonSpacing),
+              // Expanded(
+              //   child: _buildAccountActionItem(
+              //     'Delete Account',
+              //     Icons.delete_outline,
+              //     Colors.red.withOpacity(0.1),
+              //     Colors.red,
+              //     actionButtonHeight,
+              //     iconSize,
+              //     buttonTextSize,
+              //   ),
+              // ),
             ],
           ),
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ircell/app_theme.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userDetails;
@@ -55,7 +56,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         title: Text("Edit Profile"),
         elevation: 0,
-        backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -84,7 +84,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 14),
-                    backgroundColor: Colors.deepPurpleAccent,
+                    backgroundColor: AppTheme.accentBlue,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: updateUserData,

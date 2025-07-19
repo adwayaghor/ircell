@@ -357,7 +357,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   // Temporary Development Button - can be removed for production
                   Visibility(
-                    visible: true, // Set to false for production
+                    visible: false, // Set to false for production
                     child: OutlinedButton(
                       onPressed: () {
                         Navigator.push(

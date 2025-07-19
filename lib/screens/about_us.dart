@@ -46,61 +46,87 @@ class AboutUsPage extends StatelessWidget {
             children: [
               // Header section with IR image
               _buildHeaderSection(context),
-              
+
               const SizedBox(height: 24),
-              
+
               // About IR Section
               _buildSectionCard(
                 context: context,
                 title: 'About IR',
                 child: _buildAboutIRContent(context),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // IR Coordinators Section
               _buildSectionCard(
                 context: context,
                 title: 'IR Coordinators',
                 child: _buildCoordinatorsContent(context),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Partnerships Section
               _buildSectionCard(
                 context: context,
                 title: 'Partnerships',
                 child: _buildPartnershipsContent(context),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Our Team Section
               _buildSectionCard(
                 context: context,
                 title: 'Our Team',
-                child: _buildTeamGrid(context, isVolunteers: true),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.construction,
+                        size: 48,
+                        color: AppTheme.accentBlue.withOpacity(0.7),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'We’re still putting the pieces together!',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppTheme.textPrimary(context),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'This section will be updated soon.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textSecondary(context),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Developer Team Section
               _buildSectionCard(
                 context: context,
                 title: 'Our Developer Team',
                 child: _buildTeamGrid(context, isVolunteers: false),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Contact Us Section
               _buildSectionCard(
                 context: context,
                 title: 'Contact Us',
                 child: _buildContactUsContent(context),
               ),
-              
+
               const SizedBox(height: 20),
             ],
           ),
@@ -120,9 +146,9 @@ class AboutUsPage extends StatelessWidget {
         Container(
           width: imageSize,
           height: imageSize,
-          decoration: AppTheme.glassDecoration(context).copyWith(
-            borderRadius: BorderRadius.circular(imageSize / 2),
-          ),
+          decoration: AppTheme.glassDecoration(
+            context,
+          ).copyWith(borderRadius: BorderRadius.circular(imageSize / 2)),
           child: ClipOval(
             child: Image.asset(
               'assets/images/ircircle.png',
@@ -239,80 +265,85 @@ class AboutUsPage extends StatelessWidget {
     ];
 
     return Column(
-      children: coordinators.map((coordinator) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppTheme.cardColor(context).withOpacity(0.3),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppTheme.accentBlue.withOpacity(0.2),
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Profile Image
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppTheme.accentBlue.withOpacity(0.3),
-                    width: 2,
+      children:
+          coordinators.map((coordinator) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.cardColor(context).withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.accentBlue.withOpacity(0.2)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Profile Image
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.accentBlue.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        coordinator['image']!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AppTheme.accentBlue.withOpacity(0.2),
+                            child: Icon(
+                              Icons.person,
+                              color: AppTheme.textPrimary(context),
+                              size: 30,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    coordinator['image']!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppTheme.accentBlue.withOpacity(0.2),
-                        child: Icon(
-                          Icons.person,
-                          color: AppTheme.textPrimary(context),
-                          size: 30,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          coordinator['name']!,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary(context),
+                          ),
                         ),
-                      );
-                    },
+                        const SizedBox(height: 4),
+                        Text(
+                          coordinator['position']!,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                        Text(
+                          coordinator['department']!,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      coordinator['name']!,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary(context),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      coordinator['position']!,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary(context),
-                      ),
-                    ),
-                    Text(
-                      coordinator['department']!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary(context),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
@@ -341,17 +372,11 @@ class AboutUsPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.cardColor(context).withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: AppTheme.accentBlue.withOpacity(0.2),
-              ),
+              border: Border.all(color: AppTheme.accentBlue.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.business,
-                  size: 20,
-                  color: AppTheme.accentBlue,
-                ),
+                Icon(Icons.business, size: 20, color: AppTheme.accentBlue),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -370,46 +395,47 @@ class AboutUsPage extends StatelessWidget {
   }
 
   Widget _buildTeamGrid(BuildContext context, {required bool isVolunteers}) {
-    final teamMembers = isVolunteers
-        ? [
-            {
-              'name': 'Volunteer 1',
-              'role': 'Team Leader',
-              'image': 'assets/dev1.jpg',
-            },
-            {
-              'name': 'Volunteer 2',
-              'role': 'Event Management',
-              'image': 'assets/dev2.jpg',
-            },
-          ]
-        : [
-            {
-              'name': 'Adway Aghor',
-              'role': 'Team Leader',
-              'image': 'assets/dev1.jpg',
-            },
-            {
-              'name': 'Kalyani Patil',
-              'role': 'Flutter Developer',
-              'image': 'assets/dev2.jpg',
-            },
-            {
-              'name': 'Atharv Rao',
-              'role': 'Backend & Flutter Developer',
-              'image': 'assets/dev3.jpg',
-            },
-            {
-              'name': 'Tanushka Patil',
-              'role': 'Flutter Developer',
-              'image': 'assets/dev4.jpg',
-            },
-            {
-              'name': 'Aditya Bhosale',
-              'role': 'ML & Data Science',
-              'image': 'assets/dev4.jpg',
-            },
-          ];
+    final teamMembers =
+        isVolunteers
+            ? [
+              {
+                'name': 'Volunteer 1',
+                'role': 'Team Leader',
+                'image': 'assets/dev1.jpg',
+              },
+              {
+                'name': 'Volunteer 2',
+                'role': 'Event Management',
+                'image': 'assets/dev2.jpg',
+              },
+            ]
+            : [
+              {
+                'name': 'Adway Aghor',
+                'role': 'Team Leader',
+                'image': 'assets/dev1.jpg',
+              },
+              {
+                'name': 'Kalyani Patil',
+                'role': 'Flutter Developer',
+                'image': 'assets/dev2.jpg',
+              },
+              {
+                'name': 'Atharv Rao',
+                'role': 'Backend & Flutter Developer',
+                'image': 'assets/dev3.jpg',
+              },
+              {
+                'name': 'Tanushka Patil',
+                'role': 'Flutter Developer',
+                'image': 'assets/dev4.jpg',
+              },
+              {
+                'name': 'Aditya Bhosale',
+                'role': 'ML & Data Science',
+                'image': 'assets/dev4.jpg',
+              },
+            ];
 
     return GridView.builder(
       shrinkWrap: true,
@@ -428,9 +454,7 @@ class AboutUsPage extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppTheme.cardColor(context).withOpacity(0.3),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppTheme.accentBlue.withOpacity(0.2),
-            ),
+            border: Border.all(color: AppTheme.accentBlue.withOpacity(0.2)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -509,7 +533,7 @@ class AboutUsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         // Contact Information
         _buildContactItem(
           Icons.email,
@@ -518,12 +542,7 @@ class AboutUsPage extends StatelessWidget {
           context,
         ),
         const SizedBox(height: 12),
-        _buildContactItem(
-          Icons.phone,
-          'Phone',
-          '+1 (555) 123-4567',
-          context,
-        ),
+        _buildContactItem(Icons.phone, 'Phone', '+1 (555) 123-4567', context),
         const SizedBox(height: 12),
         _buildContactItem(
           Icons.location_on,
@@ -531,9 +550,9 @@ class AboutUsPage extends StatelessWidget {
           '123 Financial District,\nNew York, NY 10005',
           context,
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Social Media
         Text(
           'Follow Us',
@@ -568,18 +587,12 @@ class AboutUsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardColor(context).withOpacity(0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppTheme.accentBlue.withOpacity(0.2),
-        ),
+        border: Border.all(color: AppTheme.accentBlue.withOpacity(0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppTheme.accentBlue,
-          ),
+          Icon(icon, size: 20, color: AppTheme.accentBlue),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -615,15 +628,9 @@ class AboutUsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardColor(context).withOpacity(0.3),
         shape: BoxShape.circle,
-        border: Border.all(
-          color: AppTheme.accentBlue.withOpacity(0.3),
-        ),
+        border: Border.all(color: AppTheme.accentBlue.withOpacity(0.3)),
       ),
-      child: Icon(
-        icon,
-        color: AppTheme.accentBlue,
-        size: 20,
-      ),
+      child: Icon(icon, color: AppTheme.accentBlue, size: 20),
     );
   }
 }

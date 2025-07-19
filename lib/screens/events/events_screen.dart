@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ircell/app_theme.dart';
 import 'package:ircell/providers/event_provider.dart';
 import 'package:ircell/screens/events/event_details.dart';
@@ -13,10 +14,13 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen>
     with SingleTickerProviderStateMixin {
-   late TabController _tabController;
+  late TabController _tabController;
   late TextEditingController _searchController;
   String _searchQuery = '';
   int _selectedTabIndex = 0;
+
+  bool _filterByDate = false;
+  String? _filterBySession; // 'morning' or 'afternoon'
 
   late Future<List<Event>> upcomingEventsFuture;
   late Future<List<Event>> pastEventsFuture;
@@ -60,7 +64,10 @@ class _EventsScreenState extends State<EventsScreen>
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary(context)),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: AppTheme.textPrimary(context),
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Text('Events', style: Theme.of(context).textTheme.titleLarge),
@@ -68,7 +75,6 @@ class _EventsScreenState extends State<EventsScreen>
                 ],
               ),
             ),
-            
             Row(
               children: [
                 Container(
@@ -78,7 +84,7 @@ class _EventsScreenState extends State<EventsScreen>
                       Icons.filter_list,
                       color: AppTheme.textPrimary(context),
                     ),
-                    onPressed: () {},
+                    onPressed: _showFilterBottomSheet,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -130,15 +136,78 @@ class _EventsScreenState extends State<EventsScreen>
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return _buildLoadingView();
                     }
+
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No events found."));
+                      return Container(
+                        margin: const EdgeInsets.all(24),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.event_note,
+                                size: 64,
+                                color: AppTheme.accentBlue.withOpacity(0.7),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No past events found',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary(context),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Find completed events here.',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(
+                                  color: AppTheme.textSecondary(context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     }
 
-                    final filteredEvents = snapshot.data!.where((event) {
-                      return event.title.toLowerCase().contains(
-                            _searchQuery.toLowerCase(),
-                          );
-                    }).toList();
+                    final filteredEvents =
+                        snapshot.data!.where((event) {
+                          final matchesTitle = event.title
+                              .toLowerCase()
+                              .contains(_searchQuery.toLowerCase());
+
+                          final eventDate = DateFormat(
+                            "yyyy-MM-dd",
+                          ).parse(event.date);
+                          final now = DateTime.now();
+                          final inOneWeek = now.add(const Duration(days: 7));
+                          final isWithin7Days =
+                              eventDate.isAfter(now) &&
+                              eventDate.isBefore(inOneWeek);
+
+                          final eventTime = DateFormat(
+                            "hh:mm a",
+                          ).parse(event.time);
+                          final isMorning = eventTime.hour < 12;
+                          final isAfternoon = eventTime.hour >= 12;
+
+                          final matchesDateFilter =
+                              !_filterByDate || isWithin7Days;
+
+                          final matchesTimeFilter =
+                              _filterBySession == null ||
+                              (_filterBySession == 'morning' && isMorning) ||
+                              (_filterBySession == 'afternoon' && isAfternoon);
+
+                          return matchesTitle &&
+                              matchesDateFilter &&
+                              matchesTimeFilter;
+                        }).toList();
 
                     return SizedBox(
                       height: MediaQuery.of(context).size.height * 0.7,
@@ -151,7 +220,8 @@ class _EventsScreenState extends State<EventsScreen>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => EventDetailScreen(event: event),
+                                  builder:
+                                      (_) => EventDetailScreen(event: event),
                                 ),
                               );
                             },
@@ -178,11 +248,19 @@ class _EventsScreenState extends State<EventsScreen>
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
-                                    child: Text("${event.date} | ${event.time}"),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0,
+                                      vertical: 4,
+                                    ),
+                                    child: Text(
+                                      "${event.date} | ${event.time}",
+                                    ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0,
+                                      vertical: 4,
+                                    ),
                                     child: Text("Location: ${event.location}"),
                                   ),
                                   const SizedBox(height: 12),
@@ -203,18 +281,105 @@ class _EventsScreenState extends State<EventsScreen>
     );
   }
 
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      backgroundColor: AppTheme.cardColor(context),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Filter Events',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _filterByDate,
+                        onChanged: (val) {
+                          setModalState(() => _filterByDate = val!);
+                        },
+                      ),
+                      const Text("Within 1 week"),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text("Session:"),
+                      const SizedBox(width: 12),
+                      ChoiceChip(
+                        label: const Text("Morning"),
+                        selected: _filterBySession == 'morning',
+                        onSelected: (_) {
+                          setModalState(() {
+                            _filterBySession = 'morning';
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: const Text("Afternoon"),
+                        selected: _filterBySession == 'afternoon',
+                        onSelected: (_) {
+                          setModalState(() {
+                            _filterBySession = 'afternoon';
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: const Text("Clear"),
+                        selected: _filterBySession == null,
+                        onSelected: (_) {
+                          setModalState(() {
+                            _filterBySession = null;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Apply Filter"),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildSearchBar() {
     return Container(
-      decoration: AppTheme.glassDecoration(context).copyWith(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: AppTheme.glassDecoration(
+        context,
+      ).copyWith(borderRadius: BorderRadius.circular(12)),
       child: TextField(
         controller: _searchController,
         style: TextStyle(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           hintText: 'Search events...',
           hintStyle: TextStyle(color: AppTheme.textSecondary(context)),
-          prefixIcon: Icon(Icons.search, color: AppTheme.textSecondary(context)),
+          prefixIcon: Icon(
+            Icons.search,
+            color: AppTheme.textSecondary(context),
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
@@ -235,110 +400,57 @@ class _EventsScreenState extends State<EventsScreen>
       ),
       child: Row(
         children: [
-          // Upcoming Tab
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedTabIndex = 0;
-                  _tabController.animateTo(0);
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color:
-                      _selectedTabIndex == 0
-                          ? AppTheme.accentBlue.withOpacity(0.3)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.event_available,
-                      size: 16,
-                      color:
-                          _selectedTabIndex == 0
-                              ? AppTheme.textPrimary(context)
-                              : AppTheme.textSecondary(context),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Upcoming',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color:
-                            _selectedTabIndex == 0
-                                ? AppTheme.textPrimary(context)
-                                : AppTheme.textSecondary(context),
-                        fontWeight:
-                            _selectedTabIndex == 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Past Tab
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedTabIndex = 1;
-                  _tabController.animateTo(1);
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color:
-                      _selectedTabIndex == 1
-                          ? AppTheme.accentBlue.withOpacity(0.3)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.history,
-                      size: 16,
-                      color:
-                          _selectedTabIndex == 1
-                              ? AppTheme.textPrimary(context)
-                              : AppTheme.textSecondary(context),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Past Events',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color:
-                            _selectedTabIndex == 1
-                                ? AppTheme.textPrimary(context)
-                                : AppTheme.textSecondary(context),
-                        fontWeight:
-                            _selectedTabIndex == 1
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _buildTab('Upcoming', 0, Icons.event_available),
+          _buildTab('Past Events', 1, Icons.history),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTab(String label, int index, IconData icon) {
+    final isSelected = _selectedTabIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedTabIndex = index;
+            _tabController.animateTo(index);
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color:
+                isSelected
+                    ? AppTheme.accentBlue.withOpacity(0.3)
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color:
+                    isSelected
+                        ? AppTheme.textPrimary(context)
+                        : AppTheme.textSecondary(context),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color:
+                      isSelected
+                          ? AppTheme.textPrimary(context)
+                          : AppTheme.textSecondary(context),
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

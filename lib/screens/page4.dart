@@ -399,99 +399,59 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildVideosTab() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
-    final crossAxisCount = screenWidth > 600 ? 3 : 2;
+  final screenWidth = MediaQuery.of(context).size.width;
+  final contentPadding = screenWidth > 600 ? 24.0 : 16.0;
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(contentPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Testimonials by IR students',
-              style: TextStyle(
-                color: AppTheme.textPrimary(context),
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return _buildVideoCard(index);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVideoCard(int index) {
-    return Container(
-      decoration: AppTheme.cardDecoration(context),
+  return SingleChildScrollView(
+    child: Padding(
+      padding: EdgeInsets.all(contentPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.accentBlue.withOpacity(0.7),
-                      AppTheme.darkTeal.withOpacity(0.5),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.play_circle_outline,
-                    size: 40,
-                    color: AppTheme.textPrimary(context),
-                  ),
-                ),
-              ),
+          Text(
+            'Testimonials by IR students',
+            style: TextStyle(
+              color: AppTheme.textPrimary(context),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            decoration: AppTheme.cardDecoration(context).copyWith(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.accentBlue.withOpacity(0.2),
+                  AppTheme.darkTeal.withOpacity(0.2),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Icon(
+                  Icons.video_library_outlined,
+                  size: 48,
+                  color: AppTheme.accentBlue,
+                ),
+                const SizedBox(height: 12),
                 Text(
-                  'Video Title ${index + 1}',
+                  "Videos Coming Soon",
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary(context),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
-                  '2:45 • May ${10 + index}, 2025',
+                  "We're gathering inspiring stories from IR students. Stay tuned!",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: AppTheme.textSecondary(context),
                   ),
                 ),
@@ -500,8 +460,9 @@ class _Page4State extends State<Page4> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildArchiveItem({required String title, required IconData icon}) {
     return Container(

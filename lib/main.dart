@@ -10,7 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   WebViewPlatform.instance = AndroidWebViewPlatform();
-  await ThemeController.loadThemeMode(); // Load saved theme
+  await ThemeController.loadThemeMode();
   runApp(const MyApp());
 }
 
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           title: 'IR CELL',
           theme: AppTheme.buildTheme(Brightness.light),
           darkTheme: AppTheme.buildTheme(Brightness.dark),
-          themeMode: mode, // This will automatically switch between themes
+          themeMode: mode,
           home: const SplashScreen(),
         );
       },

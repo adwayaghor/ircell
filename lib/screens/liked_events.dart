@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ircell/app_theme.dart';
 import 'package:ircell/providers/event_provider.dart'; // Event model
 import 'package:ircell/screens/events/event_details.dart';
 import 'package:ircell/screens/events/past_event_details.dart'; // <-- Import this
@@ -21,23 +22,28 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
         .collection('events')
         .where('likedBy', arrayContains: uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return Event(
-                id: doc.id,
-                title: data['title'] ?? '',
-                date: data['date'] ?? '',
-                time: data['time'] ?? '',
-                location: data['location'] ?? '',
-                speaker: data['speaker'] ?? '',
-                description: data['description'] ?? '',
-                imageURL: data['imageURL'] ?? '',
-                likes: data['likes'],
-                attendanceList: (data['attendanceList'] as List<dynamic>?)
-                        ?.map((e) => e.toString())
-                        .toList() ?? [],
-              );
-            }).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) {
+                final data = doc.data();
+                return Event(
+                  id: doc.id,
+                  title: data['title'] ?? '',
+                  date: data['date'] ?? '',
+                  time: data['time'] ?? '',
+                  location: data['location'] ?? '',
+                  speaker: data['speaker'] ?? '',
+                  description: data['description'] ?? '',
+                  imageURL: data['imageURL'] ?? '',
+                  likes: data['likes'],
+                  attendanceList:
+                      (data['attendanceList'] as List<dynamic>?)
+                          ?.map((e) => e.toString())
+                          .toList() ??
+                      [],
+                );
+              }).toList(),
+        );
   }
 
   Stream<List<Event>> _likedPastEventsStream() {
@@ -48,23 +54,28 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
         .collection('past_events')
         .where('likedBy', arrayContains: uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return Event(
-                id: doc.id,
-                title: data['title'] ?? '',
-                date: data['date'] ?? '',
-                time: data['time'] ?? '',
-                location: data['location'] ?? '',
-                speaker: data['speaker'] ?? '',
-                description: data['description'] ?? '',
-                imageURL: data['imageURL'] ?? '',
-                likes: data['likes'],
-                attendanceList: (data['attendanceList'] as List<dynamic>?)
-                        ?.map((e) => e.toString())
-                        .toList() ?? [],
-              );
-            }).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) {
+                final data = doc.data();
+                return Event(
+                  id: doc.id,
+                  title: data['title'] ?? '',
+                  date: data['date'] ?? '',
+                  time: data['time'] ?? '',
+                  location: data['location'] ?? '',
+                  speaker: data['speaker'] ?? '',
+                  description: data['description'] ?? '',
+                  imageURL: data['imageURL'] ?? '',
+                  likes: data['likes'],
+                  attendanceList:
+                      (data['attendanceList'] as List<dynamic>?)
+                          ?.map((e) => e.toString())
+                          .toList() ??
+                      [],
+                );
+              }).toList(),
+        );
   }
 
   Widget _buildEventCard(Event event, VoidCallback onTap) {
@@ -73,16 +84,15 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10),
         elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (event.imageURL.isNotEmpty)
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(15)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(15),
+                ),
                 child: Image.network(
                   event.imageURL,
                   height: 180,
@@ -141,8 +151,12 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding:
-            const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 30),
+        padding: const EdgeInsets.only(
+          top: 10,
+          left: 20,
+          right: 20,
+          bottom: 30,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,20 +176,58 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
                   final likedEvents = snapshot.data;
 
                   if (likedEvents == null || likedEvents.isEmpty) {
-                    return const Text('No upcoming liked events.');
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 30,
+                        horizontal: 16,
+                      ),
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardColor(context).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.favorite_border,
+                            color: AppTheme.accentBlue,
+                            size: 48,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "No upcoming liked events",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary(context),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Tap the heart icon on events you like!",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   return Column(
-                    children: likedEvents.map((event) {
-                      return _buildEventCard(event, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EventDetailScreen(event: event),
-                          ),
-                        );
-                      });
-                    }).toList(),
+                    children:
+                        likedEvents.map((event) {
+                          return _buildEventCard(event, () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventDetailScreen(event: event),
+                              ),
+                            );
+                          });
+                        }).toList(),
                   );
                 },
               ),
@@ -195,20 +247,59 @@ class _LikedEventsPageState extends State<LikedEventsPage> {
                   final pastEvents = snapshot.data;
 
                   if (pastEvents == null || pastEvents.isEmpty) {
-                    return const Text('No past liked events.');
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 30,
+                        horizontal: 16,
+                      ),
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardColor(context).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.history,
+                            color: AppTheme.accentBlue,
+                            size: 48,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "No past liked events",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary(context),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Liked past events will appear here.",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   return Column(
-                    children: pastEvents.map((event) {
-                      return _buildEventCard(event, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PastEventDetailScreen(event: event),
-                          ),
-                        );
-                      });
-                    }).toList(),
+                    children:
+                        pastEvents.map((event) {
+                          return _buildEventCard(event, () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => PastEventDetailScreen(event: event),
+                              ),
+                            );
+                          });
+                        }).toList(),
                   );
                 },
               ),
