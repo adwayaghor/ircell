@@ -348,38 +348,23 @@ class _Page3State extends State<Page3> {
   }
 
   Widget _buildCurrentlyBookedContent() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return PageView.builder(
+      controller: PageController(viewportFraction: 0.9),
       itemCount: eventTitles.isEmpty ? 1 : eventTitles.length,
       itemBuilder: (context, index) {
         if (eventTitles.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          return Center(
             child: Container(
-              width: double.infinity,
-              height: 200,
+              width: MediaQuery.of(context).size.width * 0.8,
               decoration: AppTheme.glassDecoration(
                 context,
               ).copyWith(borderRadius: BorderRadius.circular(16)),
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.event_busy,
-                      size: 40,
-                      color: AppTheme.textSecondary(context),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'You haven’t booked any events yet',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.textSecondary(context),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'No booked events yet',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppTheme.textSecondary(context),
+                  ),
                 ),
               ),
             ),
@@ -401,14 +386,13 @@ class _Page3State extends State<Page3> {
             }
           },
           child: Container(
-            width: MediaQuery.of(context).size.width - 32,
-            margin: const EdgeInsets.only(right: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppTheme.accentBlue.withOpacity(0.3)),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 8,
@@ -557,7 +541,7 @@ class _Page3State extends State<Page3> {
                         right: 8,
                       ), // Reduced padding
                       child: SizedBox(
-                        width: 320, // Increased width to use more screen space
+                        width: 320,
                         child: buildInternshipCard(
                           internship,
                           screenSize,

@@ -7,6 +7,7 @@ import 'package:ircell/backend/shared_pref.dart';
 import 'package:ircell/login/auth.dart';
 import 'package:ircell/login/splash_screen.dart';
 import 'package:ircell/screens/about_us.dart';
+import 'package:ircell/screens/profile%20page/add_interests.dart';
 import 'package:ircell/screens/profile%20page/edit_profile_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -556,6 +557,33 @@ class _ProfilePageState extends State<ProfilePage> {
     final double chipSpacing = screenSize.width * 0.02;
     final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
+    final List<String> interestKeywords = [
+      'Higher Studies',
+      'IELTS',
+      'GRE',
+      'GMAT',
+      'Internships',
+      'IR Events',
+      'Germany',
+      'Japan',
+      'USA',
+      'Singapore',
+      'Language Study',
+      'German Language',
+      'Japanese Language',
+      'Career Guidance',
+      'Scholarships',
+      'Exchange Programs',
+      'Research',
+      'UK',
+      'Australia',
+      'Canada',
+      'Technical Skills',
+      'Cultural Exchange',
+      'Networking',
+      'Mentorship',
+    ];
+
     return FutureBuilder(
       future:
           getUserCollectionForStream(), // Replace with your actual async function
@@ -649,16 +677,42 @@ class _ProfilePageState extends State<ProfilePage> {
                               ? [Text("No interests found")]
                               : interests
                                   .map<Widget>(
-                                    (interest) => _buildInterestChip(interest),
+                                    (interest) =>
+                                        _buildInterestChip(interest, interests),
                                   )
                                   .toList(),
                     ),
                   ),
                   SizedBox(height: spacing),
                   InkWell(
-                    onTap: () {
-                      // Add interest action
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => AddInterestScreen(
+                                existingInterests: interests,
+                                interestKeywords:
+                                    interestKeywords, // <-- this comes from your list
+                              ),
+                        ),
+                      );
+
+                      if (result != null && result is List<String>) {
+                        final uid = FirebaseAuth.instance.currentUser?.uid;
+                        if (uid == null) return;
+
+                        setState(() {
+                          interests = result;
+                        });
+
+                        await FirebaseFirestore.instance
+                            .collection('pccoe_students')
+                            .doc(uid)
+                            .update({'interests': interests});
+                      }
                     },
+
                     child: Container(
                       padding: EdgeInsets.symmetric(
                         vertical: screenSize.height * 0.008,
@@ -765,13 +819,14 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInterestChip(String interest) {
+  // Replace your _buildInterestChip method with this optimized version
+  Widget _buildInterestChip(String interest, List<dynamic> interests) {
     final Size screenSize = MediaQuery.of(context).size;
     final double fontSize = screenSize.width * 0.035;
     final double iconSize = screenSize.width * 0.04;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 4), // Add margin to prevent overflow
+      margin: EdgeInsets.only(bottom: 4),
       padding: EdgeInsets.symmetric(
         horizontal: screenSize.width * 0.03,
         vertical: screenSize.height * 0.006,
@@ -791,10 +846,25 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           SizedBox(width: screenSize.width * 0.01),
-          Icon(
-            Icons.close,
-            color: AppTheme.textSecondary(context),
-            size: iconSize,
+          GestureDetector(
+            onTap: () async {
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid == null) return;
+
+              // Remove setState() - let StreamBuilder handle the update
+              interests.remove(interest);
+
+              // Update Firestore directly - StreamBuilder will automatically rebuild
+              await FirebaseFirestore.instance
+                  .collection('pccoe_students')
+                  .doc(uid)
+                  .update({'interests': interests});
+            },
+            child: Icon(
+              Icons.close,
+              color: AppTheme.textSecondary(context),
+              size: iconSize,
+            ),
           ),
         ],
       ),
